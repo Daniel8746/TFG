@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.Casino" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/black</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ruleta_icono</item>
+        <item name="postSplashScreenTheme">@android:style/Theme.Material.NoActionBar</item>
+    </style>
+</resources>

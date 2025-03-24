@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>API Rest Libros - MySQL Server</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            table {
+                border:1px solid black;
+                border-collapse:collapse;                
+            }
+            table td,
+            table th {
+                border:1px solid black;
+                padding:5px 10px;
+            }
+            table th {
+                background-color:orange;
+            }
+            .cabecera {
+                font-weight: bold;
+                background-color:#dddddd;
+            }
+            .rotulo {
+                font-weight: bold;
+                background-color:#f2deac;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>API Rest - MySQL Server</h1>       
+        <table>
+            <tr>
+                <td class="rotulo">Database</td>
+                <td>worldnew</td>
+            </tr>                
+            <tr>
+                <td class="rotulo">Table</td>
+                <td>country</br>city</td>
+            </tr>  
+            <tr>
+                <td class="rotulo">Content-Type</td>
+                <td>application/json</td>
+            </tr>  
+            <tr>
+                <td class="rotulo">Accept</td>
+                <td>application/json</td>
+            </tr>  
+        </table>
+
+         <br><br> 
+
+        <table>
+            <tr>
+                <th>MÉTODO</th>
+                <th>PATH</th>
+            </tr>
+            <tr>
+                <td class="cabecera">GET</td>
+                <td>
+                    /apijpql/world/ciudad/{id}
+                    <br>
+                    <a href="/apijpql/world/ciudad/653">/apijpql/world/ciudad/653</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="cabecera">GET</td>
+                <td>
+                    /apijpql/world/pais/{code}
+                    <br>
+                    <a href="/apijpql/world/pais/IRL">/apijpql/world/pais/IRL</a>
+                    <br>
+                    <a href="/apijpql/world/pais/FIN">/apijpql/world/pais/FIN</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="cabecera">GET</td>
+                <td>
+                    /apijpql/world/pais/total/{code}
+                    <br>
+                    <a href="/apijpql/world/pais/total/IRL">/apijpql/world/pais/total/IRL</a>
+                    <br>
+                    <a href="/apijpql/world/pais/total/FIN">/apijpql/world/pais/total/FIN</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="cabecera">GET</td>
+                <td>
+                    /apijpql/world/pais/total
+                    <br>
+                    <a href="/apijpql/world/pais/total">/apijpql/world/pais/total</a>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
