@@ -1,9 +1,6 @@
 package com.pmdm.casino.data.services.usuario
 
 import android.util.Log
-import com.pmdm.casino.data.services.RespuestaApi
-import com.pmdm.casino.data.services.exception.ApiServicesException
-import retrofit2.Response
 import java.math.BigDecimal
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -13,6 +10,28 @@ class UsuarioServiceImplementation @Inject constructor(
     private val usuarioService: UsuarioService
 ) {
     private val logTag: String = "OkHttp"
+
+    suspend fun getSaldo(correo: String): BigDecimal {
+        val mensajeError = "No se ha podido obtener el usuario"
+
+        try {
+            val response = usuarioService.getSaldo(correo)
+
+            if (response.isSuccessful) {
+                Log.d(logTag, response.toString())
+
+                Log.d(logTag, response.body()?.toString() ?: "No hay respuesta")
+            } else {
+                val body = response.errorBody()?.toString()
+                Log.e(logTag, "$mensajeError (código ${response.code()}): $this\n${body}")
+            }
+
+            return response.body()?.saldo ?: BigDecimal(0)
+        } catch (e: Exception) {
+            Log.e(logTag, "Error: ${e.localizedMessage}")
+            return BigDecimal(0)
+        }
+    }
 
     suspend fun login(usuario: UsuarioApiRecord): Boolean {
         val mensajeError = "No se ha podido obtener el usuario"

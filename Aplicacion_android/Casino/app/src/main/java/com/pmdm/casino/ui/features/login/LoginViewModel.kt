@@ -23,7 +23,7 @@ class LoginViewModel @Inject constructor(
     private val usuarioRepository: UsuarioRepository,
     private val validadorLogin: ValidadorLogin
 ) : ViewModel() {
-    private val _usuarioLogin = MutableStateFlow<Boolean>(false)  // Estado inicial nulo
+    private val _usuarioLogin = MutableStateFlow(false)  // Estado inicial false
     val usuarioLogin: StateFlow<Boolean> = _usuarioLogin.asStateFlow()
 
     private val _isLoading = MutableStateFlow(false)

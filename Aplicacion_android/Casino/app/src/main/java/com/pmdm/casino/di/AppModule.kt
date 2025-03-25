@@ -3,6 +3,7 @@ package com.pmdm.casino.di
 import android.content.Context
 import com.pmdm.casino.data.room.CasinoDb
 import com.pmdm.casino.data.room.usuario.UsuarioDao
+import com.pmdm.casino.data.services.juegos.JuegosService
 import com.pmdm.casino.data.services.usuario.UsuarioService
 import dagger.Module
 import dagger.Provides
@@ -49,7 +50,7 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(
+    fun provideRetrofitUsuario(
         okHttpClient: OkHttpClient
     ) : Retrofit = Retrofit.Builder()
         .client(okHttpClient)
@@ -59,7 +60,23 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideContactoService(
+    fun provideRetrofitJuegos(
+        okHttpClient: OkHttpClient
+    ) : Retrofit = Retrofit.Builder()
+        .client(okHttpClient)
+        .baseUrl("http://192.168.100.9:8080/casino/api/juegos/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    @Provides
+    @Singleton
+    fun provideUsuarioService(
         retrofit: Retrofit
     ) : UsuarioService = retrofit.create(UsuarioService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideJuegosService(
+        retrofit: Retrofit
+    ) : JuegosService = retrofit.create(JuegosService::class.java)
 }

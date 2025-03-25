@@ -1,6 +1,5 @@
 package com.pmdm.casino.ui.features.nuevousuario
 
-import android.util.Log
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -11,7 +10,6 @@ import com.pmdm.casino.data.UsuarioRepository
 import com.pmdm.casino.ui.features.toUsuario
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -37,7 +35,7 @@ class NuevoUsuarioViewModel @Inject constructor(
     init {
         // Si no valido al principio no sé porque peta la aplicación
         validacionNuevoUsuarioUiState = validacionNuevoUsuarioUiState.copy(
-            validacionTelefono = validadorNuevoUsuario.validadorTelefono.valida("999999999")
+            validacionTelefono = validadorNuevoUsuario.validadorTelefono.valida("")
         )
     }
 
