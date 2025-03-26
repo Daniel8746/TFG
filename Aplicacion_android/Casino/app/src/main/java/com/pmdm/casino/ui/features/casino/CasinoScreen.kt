@@ -22,6 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.pmdm.casino.R
+import com.pmdm.casino.ui.features.casino.components.AyudaScreen
 import java.math.BigDecimal
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,7 +34,10 @@ fun CasinoScreen(
     onCasinoEvent: (CasinoEvent) -> Unit,
     onBlackJackEvent: (correo: String, saldo: BigDecimal) -> Unit,
     onRuletaEvent: (correo: String, saldo: BigDecimal) -> Unit,
-    onTragaMonedas: (correo: String, saldo: BigDecimal) -> Unit
+    onTragaMonedas: (correo: String, saldo: BigDecimal) -> Unit,
+    onAbrirAyuda: (descripcion: String) -> Unit,
+    onCerrarAyuda: () -> Unit,
+    isAyudaAbierta: Boolean
 ) {
     Column {
         TopAppBar(title = {}, actions = {
@@ -79,7 +83,8 @@ fun CasinoScreen(
                     )
                 ) {
                     Column {
-                        Text(text = it.nombre, textAlign = TextAlign.Center)
+                        Text(text = it.nombre, textAlign = TextAlign.Left)
+                        Text(text = it.tipo, textAlign = TextAlign.Right)
 
                         Image(
                             painter = painterResource(R.drawable.login),
@@ -87,7 +92,7 @@ fun CasinoScreen(
                         )
 
                         IconButton(
-                            onClick = {}
+                            onClick = {onAbrirAyuda(it.reglas)}
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Info,
@@ -95,6 +100,10 @@ fun CasinoScreen(
                             )
                         }
                     }
+                }
+
+                if (isAyudaAbierta) {
+                    AyudaScreen(it.reglas, onCerrarAyuda)
                 }
             }
         }
