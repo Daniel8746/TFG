@@ -10,12 +10,12 @@ plugins {
 
 android {
     namespace = "com.pmdm.casino"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.pmdm.casino"
         minSdk = 28
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -67,6 +67,7 @@ dependencies {
 
     implementation(libs.dagger.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.appcompat)
     ksp(libs.dagger.hilt.android.compiler)
     kspAndroidTest(libs.dagger.hilt.android.compiler)
 
@@ -87,11 +88,12 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation(libs.core.splashscreen)
-
     implementation(libs.com.squareup.retrofit2.converter.gson)
     implementation(libs.com.squareup.retrofit2.retrofit)
     implementation(platform(libs.com.squareup.okhttp3.okhttp.bom))
     implementation(libs.com.squareup.okhttp3.okhttp)
     implementation(libs.com.squareup.okhttp3.logging.interceptor)
+
+    implementation(libs.lottie.compose)
+    implementation(libs.androidx.datastore.preferences)
 }

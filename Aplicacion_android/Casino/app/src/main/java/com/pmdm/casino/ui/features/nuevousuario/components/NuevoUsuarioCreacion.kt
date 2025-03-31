@@ -1,19 +1,27 @@
 package com.pmdm.casino.ui.features.nuevousuario.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.github.pmdmiesbalmis.components.ui.composables.OutlinedTextFieldEmail
 import com.github.pmdmiesbalmis.components.ui.composables.OutlinedTextFieldName
 import com.github.pmdmiesbalmis.components.ui.composables.OutlinedTextFieldPassword
 import com.github.pmdmiesbalmis.components.ui.composables.OutlinedTextFieldWithErrorState
 import com.github.pmdmiesbalmis.components.ui.icons.Filled
 import com.github.pmdmiesbalmis.components.validacion.Validacion
+import com.pmdm.casino.R
 
 @Composable
 fun NuevoUsuarioCreacion(
@@ -28,6 +36,7 @@ fun NuevoUsuarioCreacion(
     validacionPassword: Validacion,
     telefonoState: String,
     validacionTelefono: Validacion,
+    isLoading: Boolean,
     onValueChangeNombre: (String) -> Unit,
     onValueChangeApellidos: (String) -> Unit,
     onValueChangeEmail: (String) -> Unit,
@@ -78,6 +87,17 @@ fun NuevoUsuarioCreacion(
             .fillMaxWidth()
     ) {
         Text("Crear cuenta")
+
+        if (isLoading) {
+            val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.fichas_carga))
+            val progress = animateLottieCompositionAsState(composition = composition)
+
+            LottieAnimation(
+                composition = composition,
+                progress = { progress.progress },
+                modifier = Modifier.size(50.dp) // Ajusta el tamaño según lo necesario
+            )
+        }
     }
 }
 

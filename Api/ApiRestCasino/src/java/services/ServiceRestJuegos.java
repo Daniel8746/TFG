@@ -1,0 +1,64 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package services;
+
+import com.google.gson.Gson;
+import jakarta.ws.rs.Path;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import java.util.List;
+import jpacasino.JPAUtil;
+import jpacasino.Juego;
+import jpacasino.JuegoJpaController;
+
+/**
+ *
+ * @author danie
+ */
+// Servicio REST para gestionar operaciones de usuario
+@Path("juegos")
+public class ServiceRestJuegos {
+
+    private static final EntityManagerFactory emf;
+    private static final JuegoJpaController dao;
+
+    static {
+        emf = JPAUtil.getEntityManagerFactory();
+        dao = new JuegoJpaController(emf);
+    }
+
+    @GET
+    @Path("todos-juegos")
+    @Consumes({MediaType.APPLICATION_JSON})
+    public Response getAll() {
+        Response response;
+
+        try {
+            List<Juego> listaJuegos = dao.findJuegoEntities();
+
+            if (listaJuegos == null || listaJuegos.isEmpty()) {
+                response = Response
+                        .status(Response.Status.BAD_REQUEST)
+                        .build();
+            } else {
+                String mensaje = new Gson().toJson(listaJuegos);
+
+                response = Response
+                        .status(Response.Status.OK)
+                        .entity(mensaje)
+                        .build();
+            }
+        } catch (Exception ex) {
+            response = Response
+                    .status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
+
+        return response;
+    }
+}

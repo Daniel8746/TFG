@@ -14,13 +14,15 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.POST;
-import java.math.BigDecimal;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.Context;
 import java.util.HashMap;
 import jpacasino.JPAUtil;
 import jpacasino.Usuario;
 import jpacasino.UsuarioJpaController;
 import jpacasino.exceptions.IllegalOrphanException;
 import jpacasino.exceptions.NonexistentEntityException;
+import jwt.JwtUtil;
 import org.mindrot.jbcrypt.BCrypt;
 
 /**
@@ -44,29 +46,71 @@ public class ServiceRestUsuario {
     @Path("login")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    public Response getOne(UsuarioRecord usuario) {
+    public Response getOne(UsuarioRecord usuario, @Context ContainerRequestContext requestContext) {
         Response response;
         Status statusResul;
+        HashMap<String, String> mensaje = new HashMap<>();
 
         try {
-            // Se busca el usuario en la base de datos usando el correo y la contraseña
-            Usuario usuarioEncontrado = dao.findUsuario( usuario);
+            String token = requestContext.getHeaderString("Authorization");
 
-            if (usuarioEncontrado == null) {
-                // Si no se encuentra el usuario, se devuelve un booleano para avisar a la aplicación
-                statusResul = Response.Status.NOT_FOUND;
-                response = Response
-                        .status(statusResul)
-                        .build();
+            if (token.isEmpty()) {
+                // Se busca el usuario en la base de datos usando el correo y la contraseña
+                Usuario usuarioEncontrado = dao.findUsuario(usuario);
+
+                if (usuarioEncontrado == null) {
+                    // Si no se encuentra el usuario, se devuelve un booleano para avisar a la aplicación
+                    statusResul = Response.Status.UNAUTHORIZED;
+                    response = Response
+                            .status(statusResul)
+                            .build();
+                } else {
+                    // Si el usuario existe, se devuelve un valor booleano y el saldo
+                    // Update: Devolver también el token para las peticiones y mantener sesión iniciada
+                    statusResul = Response.Status.OK;
+
+                    // Generar un token para JWT
+                    token = JwtUtil.generarToken(usuarioEncontrado.getCorreo());
+
+                    mensaje.put("saldo", usuarioEncontrado.getSaldo().toString());
+                    mensaje.put("token", token);
+
+                    response = Response
+                            .status(statusResul)
+                            .entity(mensaje)
+                            .build();
+                }
             } else {
-                // Si el usuario existe, se devuelve un valor booleano y el saldo
-                statusResul = Response.Status.OK;
-                response = Response
-                        .status(statusResul)
-                        .build();
+                // Generar un token para JWT
+                String correo = JwtUtil.getCorreoFromToken(
+                        token.substring(7)
+                ); // Eliminar "Bearer " del inicio del token
+
+                Usuario usuarioEncontrado = dao.findUsuario(
+                        new UsuarioRecord(
+                                correo,
+                                null, null
+                        )
+                );
+
+                if (usuarioEncontrado == null) {
+                    statusResul = Response.Status.UNAUTHORIZED;
+                    response = Response
+                            .status(statusResul)
+                            .build();
+                } else {
+                    statusResul = Response.Status.OK;
+
+                    mensaje.put("saldo", usuarioEncontrado.getSaldo().toString());
+                    mensaje.put("token", usuarioEncontrado.getCorreo());
+
+                    response = Response
+                            .status(statusResul)
+                            .entity(mensaje)
+                            .build();
+                }
             }
         } catch (Exception ex) {
-            // Manejo de errores en el proceso
             statusResul = Response.Status.BAD_REQUEST;
             response = Response
                     .status(statusResul)
@@ -121,7 +165,7 @@ public class ServiceRestUsuario {
     @Produces({MediaType.APPLICATION_JSON})
     public Response crearUsuario(Usuario usuario) {
         Response response;
-        
+
         try {
             // Se verifica si el correo ya está registrado
             Usuario usuarioEncontrado = dao.findUsuario(

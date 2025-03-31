@@ -12,5 +12,4 @@ import java.math.BigDecimal;
  */
 public record UsuarioRecord(
         String correo, String contrasenya, BigDecimal saldo) {
-   
 }

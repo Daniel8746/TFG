@@ -35,8 +35,7 @@ fun CasinoScreen(
     onBlackJackEvent: (correo: String, saldo: BigDecimal) -> Unit,
     onRuletaEvent: (correo: String, saldo: BigDecimal) -> Unit,
     onTragaMonedas: (correo: String, saldo: BigDecimal) -> Unit,
-    onAbrirAyuda: (descripcion: String) -> Unit,
-    onCerrarAyuda: () -> Unit,
+    onAyudaEvent: () -> Unit,
     isAyudaAbierta: Boolean
 ) {
     Column {
@@ -58,52 +57,58 @@ fun CasinoScreen(
             )
         })
 
-        LazyRow {
-            items(juegosUiState) {
-                ElevatedCard(
-                    onClick = {
-                        when (it.nombre) {
-                            "BlackJack" -> {
-                                onCasinoEvent(CasinoEvent.OnBlackJack(onBlackJackEvent))
-                            }
+        if (juegosUiState.isEmpty()) {
+            Text(modifier = Modifier.align(
+                Alignment.CenterHorizontally,
+            ), textAlign = TextAlign.Center, text = "No se han podido encontrar juegos, perdone las molestias.")
+        } else {
+            LazyRow {
+                items(juegosUiState) {
+                    ElevatedCard(
+                        onClick = {
+                            when (it.nombre) {
+                                "BlackJack" -> {
+                                    onCasinoEvent(CasinoEvent.OnBlackJack(onBlackJackEvent))
+                                }
 
-                            "Ruleta" -> {
-                                onCasinoEvent(CasinoEvent.OnRuleta(onRuletaEvent))
-                            }
+                                "Ruleta" -> {
+                                    onCasinoEvent(CasinoEvent.OnRuleta(onRuletaEvent))
+                                }
 
-                            "Traga monedas" -> {
-                                onCasinoEvent(CasinoEvent.OnTragaMonedas(onTragaMonedas))
+                                "Traga monedas" -> {
+                                    onCasinoEvent(CasinoEvent.OnTragaMonedas(onTragaMonedas))
+                                }
                             }
-                        }
-                    },
-                    elevation = CardDefaults.elevatedCardElevation(
-                        defaultElevation = 4.dp,
-                        pressedElevation = 8.dp,
-                        hoveredElevation = 6.dp
-                    )
-                ) {
-                    Column {
-                        Text(text = it.nombre, textAlign = TextAlign.Left)
-                        Text(text = it.tipo, textAlign = TextAlign.Right)
-
-                        Image(
-                            painter = painterResource(R.drawable.login),
-                            contentDescription = "Descripción tarjeta"
+                        },
+                        elevation = CardDefaults.elevatedCardElevation(
+                            defaultElevation = 4.dp,
+                            pressedElevation = 8.dp,
+                            hoveredElevation = 6.dp
                         )
+                    ) {
+                        Column {
+                            Text(text = it.nombre, textAlign = TextAlign.Left)
+                            Text(text = it.tipo, textAlign = TextAlign.Right)
 
-                        IconButton(
-                            onClick = {onAbrirAyuda(it.reglas)}
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Info,
-                                contentDescription = "Ayuda"
+                            Image(
+                                painter = painterResource(R.drawable.login),
+                                contentDescription = "Descripción tarjeta"
                             )
+
+                            IconButton(
+                                onClick = onAyudaEvent
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Info,
+                                    contentDescription = "Ayuda"
+                                )
+                            }
                         }
                     }
-                }
 
-                if (isAyudaAbierta) {
-                    AyudaScreen(it.reglas, onCerrarAyuda)
+                    if (isAyudaAbierta) {
+                        AyudaScreen(it.reglas, onAyudaEvent)
+                    }
                 }
             }
         }

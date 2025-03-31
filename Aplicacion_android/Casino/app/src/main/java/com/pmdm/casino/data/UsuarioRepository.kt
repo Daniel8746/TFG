@@ -12,11 +12,7 @@ import javax.inject.Inject
 class UsuarioRepository @Inject constructor(
     private val usuarioService: UsuarioServiceImplementation
 ) {
-    suspend fun getSaldo(correo: String): Flow<BigDecimal> = flow {
-        emit(usuarioService.getSaldo(correo))
-    }.flowOn(Dispatchers.IO)
-
-    suspend fun login(usuario: Usuario): Flow<Boolean> = flow {
+    suspend fun login(usuario: Usuario): Flow<Triple<Boolean, BigDecimal, String>> = flow {
         emit(usuarioService.login(usuario.toUsuarioApiRecord()))
     }.flowOn(Dispatchers.IO)
 

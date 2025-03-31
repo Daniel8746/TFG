@@ -206,9 +206,13 @@ public class UsuarioJpaController implements Serializable {
         try (EntityManager em = getEntityManager()) {
             Usuario usuarioEncontrado = consultaUsuario(em, usuarioRecord.correo());
 
-            return comprobarUsuarioExistente(
-                    usuarioEncontrado, usuarioRecord
-            ) ? usuarioEncontrado : null;
+            if (usuarioRecord.contrasenya() == null || usuarioRecord.contrasenya().isEmpty()) {
+                return usuarioEncontrado;
+            } else {
+                return comprobarUsuarioExistente(
+                        usuarioEncontrado, usuarioRecord
+                ) ? usuarioEncontrado : null;
+            }
         }
     }
 
@@ -231,6 +235,13 @@ public class UsuarioJpaController implements Serializable {
         } catch (NoResultException ex) {
             return null;
         }
+    }
 
+    public UsuarioRecord findUsuario(String correo) {
+        try (EntityManager em = getEntityManager()) {
+            Usuario usuarioEncontrado = consultaUsuario(em, correo);
+
+            return new UsuarioRecord(usuarioEncontrado.getCorreo(), null, usuarioEncontrado.getSaldo());
+        }
     }
 }

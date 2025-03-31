@@ -18,6 +18,8 @@ class CasinoViewModel @Inject constructor(
 ): ViewModel() {
     var usuarioUiState by mutableStateOf(UsuarioCasinoUiState())
     var juegosUiState: List<CasinoUiState> = listOf()
+    var isAyudaAbierta = false
+
 
     init {
         viewModelScope.launch {
@@ -46,5 +48,9 @@ class CasinoViewModel @Inject constructor(
         usuarioUiState = usuarioUiState.copy(
             correo = usuario.correo, saldo = usuario.saldo
         )
+    }
+
+    fun onAbrirAyuda() {
+        isAyudaAbierta = !isAyudaAbierta
     }
 }

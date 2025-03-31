@@ -1,31 +1,33 @@
 [versions]
-agp = "8.6.0"
+agp = "8.6.1"
+datastorePreferences = "1.1.4"
 kotlin = "2.0.20"
-coreKtx = "1.13.1"
+coreKtx = "1.15.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
-lifecycleRuntimeKtx = "2.8.6"
-activityCompose = "1.9.2"
-composeBom = "2024.09.02"
+lifecycleRuntimeKtx = "2.8.7"
+activityCompose = "1.10.1"
+composeBom = "2025.03.01"
 
+lottieCompose = "6.3.0"
 pmdmIesBalmisVersion = "24.1"
 ksp = "2.0.20-1.0.25"
 hilt = "2.52"
 hiltNavigationCompose = "1.2.0"
-composeNavigation = "2.8.5"
+composeNavigation = "2.8.9"
 kolinxSerializationJson = "1.7.3"
 room = "2.6.1"
 kolinxDateTime = "0.6.1"
 coil = "2.7.0"
 
-core-splashscreen="1.0.1"
-
 retorfit = "2.11.0"
 okhttp3 = "4.12.0"
+appcompat = "1.7.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -50,19 +52,19 @@ dagger-hilt-android-compiler = { group = "com.google.dagger", name = "hilt-andro
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 
+lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieCompose" }
 pmdm-ies-balmis-components = { group = "com.github.pmdmiesbalmis", name = "components", version.ref = "pmdmIesBalmisVersion" }
 pmdm-ies-balmis-utilities = { group = "com.github.pmdmiesbalmis", name = "utilities", version.ref = "pmdmIesBalmisVersion" }
 
 kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kolinxDateTime" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 
-core-splashscreen={group= "androidx.core",name="core-splashscreen",version.ref="core-splashscreen"}
-
 com-squareup-retrofit2-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retorfit" }
 com-squareup-retrofit2-retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retorfit" }
 com-squareup-okhttp3-okhttp-bom = { group = "com.squareup.okhttp3", name = "okhttp-bom", version.ref = "okhttp3" }
 com-squareup-okhttp3-okhttp = { group = "com.squareup.okhttp3", name = "okhttp" }
 com-squareup-okhttp3-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

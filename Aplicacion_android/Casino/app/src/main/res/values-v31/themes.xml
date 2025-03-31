@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Tema principal para la app -->
+    <style name="Theme.Casino" parent="android:Theme.DeviceDefault.DayNight">
+        <!-- Barra de estado de color negro -->
+        <item name="android:statusBarColor">@color/black</item>
 
-    <style name="Theme.Casino" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/black</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ruleta_icono</item>
-        <item name="postSplashScreenTheme">@android:style/Theme.Material.NoActionBar</item>
+        <!-- Fondo de la ventana negro -->
+        <item name="android:windowBackground">@color/black</item>
+
+        <!-- Barra de navegación de color negro -->
+        <item name="android:navigationBarColor">@color/black</item>
+
+        <!-- No queremos íconos claros en la barra de estado (si el fondo es oscuro) -->
+        <item name="android:windowLightStatusBar">false</item>
+
+        <!-- No queremos íconos claros en la barra de navegación -->
+        <item name="android:windowLightNavigationBar">false</item>
     </style>
 </resources>

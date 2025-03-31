@@ -10,7 +10,6 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowInsetsCompat
 import com.pmdm.casino.ui.navigation.CasinoNavHost
 import com.pmdm.casino.ui.theme.CasinoTheme
@@ -22,15 +21,8 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Initialize the splash screen
-        installSplashScreen().apply {
-            setKeepOnScreenCondition{
-                // Keeps the splash screen visible while loading (optional logic can be applied here)
-                //true
-                false
-            }
-        }
+        // Quitar action bar
+        actionBar?.hide()
 
         // `WindowInsetsController` gestiona la visibilidad de las barras del sistema e insets en API 30+.
 

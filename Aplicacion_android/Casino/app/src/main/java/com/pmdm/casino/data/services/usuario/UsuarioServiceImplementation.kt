@@ -11,29 +11,7 @@ class UsuarioServiceImplementation @Inject constructor(
 ) {
     private val logTag: String = "OkHttp"
 
-    suspend fun getSaldo(correo: String): BigDecimal {
-        val mensajeError = "No se ha podido obtener el usuario"
-
-        try {
-            val response = usuarioService.getSaldo(correo)
-
-            if (response.isSuccessful) {
-                Log.d(logTag, response.toString())
-
-                Log.d(logTag, response.body()?.toString() ?: "No hay respuesta")
-            } else {
-                val body = response.errorBody()?.toString()
-                Log.e(logTag, "$mensajeError (código ${response.code()}): $this\n${body}")
-            }
-
-            return response.body()?.saldo ?: BigDecimal(0)
-        } catch (e: Exception) {
-            Log.e(logTag, "Error: ${e.localizedMessage}")
-            return BigDecimal(0)
-        }
-    }
-
-    suspend fun login(usuario: UsuarioApiRecord): Boolean {
+    suspend fun login(usuario: UsuarioApiRecord): Triple<Boolean, BigDecimal, String> {
         val mensajeError = "No se ha podido obtener el usuario"
 
         try {
@@ -48,10 +26,14 @@ class UsuarioServiceImplementation @Inject constructor(
                 Log.e(logTag, "$mensajeError (código ${response.code()}): $this\n${body}")
             }
 
-            return response.isSuccessful
+            return Triple(
+                response.isSuccessful,
+                response.body()?.saldo ?: BigDecimal(0),
+                response.body()?.token ?: ""
+            )
         } catch (e: Exception) {
             Log.e(logTag, "Error: ${e.localizedMessage}")
-            return false
+            return Triple(false, BigDecimal(0), "")
         }
     }
 

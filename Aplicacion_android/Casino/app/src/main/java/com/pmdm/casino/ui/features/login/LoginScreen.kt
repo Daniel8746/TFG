@@ -24,6 +24,7 @@ import com.pmdm.casino.ui.features.login.components.TextNewAccount
 import com.pmdm.casino.ui.theme.CasinoTheme
 import com.pmdm.casino.ui.theme.Purple40
 import com.pmdm.casino.ui.features.login.components.UsuarioPassword
+import java.math.BigDecimal
 
 
 @Composable
@@ -33,89 +34,86 @@ fun LoginScreen(
     loginErroneo: Boolean,
     isLoading: Boolean,
     onLoginEvent: (LoginEvent) -> Unit,
-    onNavigateToCasino: ((correo: String) -> Unit)? = null,
+    onNavigateToCasino: ((correo: String, saldo: BigDecimal) -> Unit)? = null,
     onNavigateToNuevaCuenta: () -> Unit
 ) {
     var recordarmeState by remember { mutableStateOf(false) }
 
-    Box() {
-        if (isLoading) {
-            CircularProgressIndicator()
-        }
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(20.dp)
+    ) {
+        CircularImageFromResource(
+            idImageResource = R.drawable.login, contentDescription = "Imagen Login"
+        )
 
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(20.dp)
-        ) {
-            CircularImageFromResource(
-                idImageResource = R.drawable.login, contentDescription = "Imagen Login"
-            )
-
-            Text(
-                text = if(loginErroneo) {
-                    """
+        Text(
+            text = if (loginErroneo) {
+                """
                     No hemos podido encontrar una cuenta con esos datos. 
                     Verifica tu correo electrónico o contraseña e inténtalo nuevamente.
                 """.trimIndent()
-                } else {
-                    ""
-                },
-                color = Color.Red,
-                fontSize = 18.sp,
-                fontFamily = FontFamily.SansSerif,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 1.sp
-            )
+            } else {
+                ""
+            },
+            color = Color.Red,
+            fontSize = 18.sp,
+            fontFamily = FontFamily.SansSerif,
+            fontWeight = FontWeight.Bold,
+            letterSpacing = 1.sp
+        )
 
-            UsuarioPassword(modifier = Modifier.fillMaxWidth(),
-                loginState = usuarioUiState.login,
-                passwordState = usuarioUiState.password,
-                validacionLogin = validacionLoginUiState.validacionLogin,
-                validacionPassword = validacionLoginUiState.validacionPassword,
-                recordarmeState = recordarmeState,
-                onValueChangeLogin = {
-                    onLoginEvent(LoginEvent.LoginChanged(it))
-                },
-                onValueChangePassword = {
-                    onLoginEvent(LoginEvent.PasswordChanged(it))
-                },
-                onCheckedChanged = { recordarmeState = it },
-                onClickLogearse = {
-                    onLoginEvent(LoginEvent.OnClickLogearse(onNavigateToCasino))
-                })
-            Spacer(modifier = Modifier.fillMaxHeight(0.1f))
-            Text(
-                "Olvidaste Password?",
-                fontSize = 15.sp,
-                fontStyle = FontStyle.Italic,
-                color = Purple40
-            )
-            Text("ó")
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.facebook),
-                    contentDescription = "Facebook",
-                    alignment = Alignment.Center,
-                    modifier = Modifier.size(35.dp)
-                )
-                Image(
-                    painter = painterResource(id = R.drawable.gmail),
-                    contentDescription = "Gmail",
-                    alignment = Alignment.Center,
-                    modifier = Modifier
-                        .size(36.dp)
-                        .padding(3.dp)
-
-                )
+        UsuarioPassword(modifier = Modifier.fillMaxWidth(),
+            loginState = usuarioUiState.login,
+            passwordState = usuarioUiState.password,
+            validacionLogin = validacionLoginUiState.validacionLogin,
+            validacionPassword = validacionLoginUiState.validacionPassword,
+            recordarmeState = recordarmeState,
+            isLoading = isLoading,
+            onValueChangeLogin = {
+                onLoginEvent(LoginEvent.LoginChanged(it))
+            },
+            onValueChangePassword = {
+                onLoginEvent(LoginEvent.PasswordChanged(it))
+            },
+            onCheckedChanged = { recordarmeState = it },
+            onClickLogearse = {
+                onLoginEvent(LoginEvent.OnClickLogearse(onNavigateToCasino))
             }
-            TextNewAccount(onClick = onNavigateToNuevaCuenta)
+        )
+
+        Spacer(modifier = Modifier.fillMaxHeight(0.1f))
+        Text(
+            "Olvidaste Password?",
+            fontSize = 15.sp,
+            fontStyle = FontStyle.Italic,
+            color = Purple40
+        )
+        Text("ó")
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.facebook),
+                contentDescription = "Facebook",
+                alignment = Alignment.Center,
+                modifier = Modifier.size(35.dp)
+            )
+            Image(
+                painter = painterResource(id = R.drawable.gmail),
+                contentDescription = "Gmail",
+                alignment = Alignment.Center,
+                modifier = Modifier
+                    .size(36.dp)
+                    .padding(3.dp)
+
+            )
         }
+        TextNewAccount(onClick = onNavigateToNuevaCuenta)
     }
 }
 
@@ -134,7 +132,6 @@ fun LoginScreenPreview() {
                 loginErroneo = false,
                 isLoading = false,
                 onLoginEvent = loginViewModel::onLoginEvent,
-                onNavigateToCasino = {},
                 onNavigateToNuevaCuenta = {})
         }
     }
