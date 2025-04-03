@@ -23,9 +23,11 @@ fun NavGraphBuilder.loginDestination(
             validacionLoginUiState = vm.validacionLoginUiState,
             loginErroneo = vm.usuarioLogin.collectAsState().value,
             isLoading = vm.isLoading.collectAsState().value,
+            recordarmeState = vm.recordarmeState,
             onLoginEvent = { vm.onLoginEvent(it) },
             onNavigateToCasino = onNavegarCasino,
-            onNavigateToNuevaCuenta = onNavegarNuevaCuenta
+            onNavigateToNuevaCuenta = onNavegarNuevaCuenta,
+            onRecordarmeState = { vm.onRecordarmeState(it) }
         )
     }
 }

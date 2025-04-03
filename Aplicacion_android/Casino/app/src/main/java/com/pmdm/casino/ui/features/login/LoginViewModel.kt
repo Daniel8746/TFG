@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -29,7 +30,7 @@ class LoginViewModel @Inject constructor(
     private val validadorLogin: ValidadorLogin,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
-    private val _usuarioLogin = MutableStateFlow(false)  // Estado inicial false
+    private val _usuarioLogin = MutableStateFlow(true)  // Estado inicial true
     val usuarioLogin: StateFlow<Boolean> = _usuarioLogin.asStateFlow()
 
     private val _isLoading = MutableStateFlow(false)
@@ -44,6 +45,12 @@ class LoginViewModel @Inject constructor(
 
     private var _saldo = MutableStateFlow(BigDecimal(0))
     private var _token = MutableStateFlow("")
+
+    var recordarmeState by mutableStateOf(false)
+
+    fun onRecordarmeState(recordarme: Boolean) {
+        recordarmeState = recordarme;
+    }
 
     fun onLoginEvent(loginEvent: LoginEvent) {
         when (loginEvent) {
@@ -73,10 +80,13 @@ class LoginViewModel @Inject constructor(
 
                         if (_usuarioLogin.value) {
                             if (_token.value.isNotEmpty()) {
-                                TokenManager.saveToken(
-                                    getApplication(context),
-                                    _token.value
-                                )
+                                if (recordarmeState) {
+                                    TokenManager.saveToken(
+                                        getApplication(context),
+                                        _token.value
+                                    )
+                                }
+
                                 delay(1000)
                                 loginEvent.onNavigateJuego?.let { it(usuarioUiState.login, _saldo.value) }
                                 mostrarSnackBar(
@@ -102,9 +112,11 @@ class LoginViewModel @Inject constructor(
         _isLoading.value = true
 
         usuarioRepository.login(usuarioUiState.toUsuario()).collect{
+            delay(2500)
             _usuarioLogin.value = it.first
             _saldo.value = it.second
             _token.value = it.third
+
             _isLoading.value = false
         }
     }

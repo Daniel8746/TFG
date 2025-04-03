@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import java.math.BigDecimal
 
 @Composable
 fun CasinoNavHost() {
@@ -16,12 +15,13 @@ fun CasinoNavHost() {
         splashDestination(
             onNavegarLogin = {
                 navController.navigate(LoginRoute) {
-                    popUpTo(LoginRoute) { inclusive = false }
+                    popUpTo(LoginRoute) { inclusive = true }
                 }
             },
             onNavegarJuegos = { correo, saldo ->
-                navController.navigate(CasinoRoute(correo, saldo)) {
-                    popUpTo(CasinoRoute) { inclusive = false }
+                navController.navigate("casino/$correo/$saldo") {
+                    popUpTo("casino/$correo/$saldo") { inclusive = true }
+                    launchSingleTop = true
                 }
             }
         )
@@ -32,8 +32,9 @@ fun CasinoNavHost() {
             },
 
             onNavegarCasino = { correo, saldo ->
-                navController.navigate(CasinoRoute(correo, saldo)) {
-                    popUpTo(CasinoRoute) { inclusive = false }
+                navController.navigate("casino/$correo/$saldo") {
+                    popUpTo("casino/$correo/$saldo") { inclusive = false }
+                    launchSingleTop = true
                 }
             }
         )
@@ -45,14 +46,38 @@ fun CasinoNavHost() {
         )
 
         casinoDestination(
-            onNavegarBlackJack = { corrreo, saldo ->
-
+            onNavegarBlackJack = { correo, saldo ->
+                navController.navigate("black_jack/$correo/$saldo") {
+                    launchSingleTop = true
+                }
             },
             onNavegarTragaMonedas = { correo, saldo ->
-
+                navController.navigate("traga_monedas/$correo/$saldo") {
+                    launchSingleTop = true
+                }
             },
             onNavegarRuleta = { correo, saldo ->
+                navController.navigate("ruleta/$correo/$saldo") {
+                    launchSingleTop = true
+                }
+            }
+        )
 
+        blackDestination(
+            onNavegarCasino = { correo, saldo ->
+                navController.navigate("casino/$correo/$saldo")
+            }
+        )
+
+        ruletaDestination(
+            onNavegarCasino = { correo, saldo ->
+                navController.navigate("casino/$correo/$saldo")
+            }
+        )
+
+        tragaDestination(
+            onNavegarCasino = { correo, saldo ->
+                navController.navigate("casino/$correo/$saldo")
             }
         )
     }

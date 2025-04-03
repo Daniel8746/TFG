@@ -1,6 +1,7 @@
 package com.pmdm.casino.data.services.interceptors
 
 import android.content.Context
+import android.util.Log
 import com.pmdm.casino.model.TokenManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -22,11 +23,17 @@ class AuthInterceptor @Inject constructor(
             }
         }
 
+        Log.d("AuthInterceptor", "Token: $token")  // Log para verificar si se ejecuta el interceptor
+
         // Si el token es válido, agregarlo al encabezado
         val requestBuilder = chain.request().newBuilder()
+
         token.let {
             requestBuilder.addHeader("Authorization", "Bearer $it")
         }
+
+        // Mostrar el encabezado en el log
+        Log.d("Request", "Authorization Header: " + requestBuilder.build().header("Authorization"))
 
         // Continuar con la solicitud
         return chain.proceed(requestBuilder.build())

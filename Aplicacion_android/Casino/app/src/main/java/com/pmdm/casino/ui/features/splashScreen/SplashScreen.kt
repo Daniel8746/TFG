@@ -29,8 +29,10 @@ fun SplashScreen(
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        Column(modifier = Modifier
-            .align(Alignment.Center)) {
+        Column(
+            modifier = Modifier
+                .align(Alignment.Center)
+        ) {
             val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.ruleta_girando))
             val logoAnimationState =
                 animateLottieCompositionAsState(composition = composition)
@@ -47,13 +49,11 @@ fun SplashScreen(
                 }
             )
 
-            LaunchedEffect(Unit) {
-                if (logoAnimationState.isAtEnd && logoAnimationState.isPlaying) {
-                    if (correo.isNotEmpty()) {
-                        onNavegarJuegos(correo, saldo)
-                    } else {
-                        onNavegarLogin()
-                    }
+            if (logoAnimationState.isAtEnd && logoAnimationState.isPlaying) {
+                if (correo.isNotEmpty()) {
+                    onNavegarJuegos(correo, saldo)
+                } else {
+                    onNavegarLogin()
                 }
             }
         }

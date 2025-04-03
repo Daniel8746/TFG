@@ -9,8 +9,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.pmdm.casino.ui.features.nuevousuario.components.NuevoUsuarioCreacion
 
 @Composable
@@ -28,14 +32,19 @@ fun NuevoUsuarioScreen(
         modifier = Modifier.padding(20.dp)
     ) {
         Text(
-            text = if (nuevoUsuarioError) {
+            text = if (!nuevoUsuarioError) {
                 """
                 No se ha podido crear una cuenta con ese correo.
                 Ese correo ya está registrado.
             """.trimIndent()
             } else {
                 ""
-            }, textAlign = TextAlign.Center
+            },
+            color = Color.Red,
+            fontSize = 18.sp,
+            fontFamily = FontFamily.SansSerif,
+            fontWeight = FontWeight.Bold,
+            letterSpacing = 1.sp
         )
         NuevoUsuarioCreacion(
             modifier = Modifier.fillMaxWidth(),

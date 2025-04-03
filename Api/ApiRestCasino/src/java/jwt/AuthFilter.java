@@ -23,27 +23,35 @@ public class AuthFilter implements ContainerRequestFilter {
         // Obtener el token del header Authorization
         String authorizationHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
 
-        // Extraer el token
-        String token = authorizationHeader.substring("Bearer".length()).trim();
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ") 
+                && !authorizationHeader.equals("Bearer null")) {
+            // Extraer el token
+            String token = authorizationHeader.substring("Bearer".length()).trim();
 
-        try {
-            // Validar el token
-            String correo = JwtUtil.getCorreoFromToken(token);
+            try {
+                // Validar el token
+                String correo = JwtUtil.getCorreoFromToken(token);
 
-            if (correo == null) {
-                // Si el token no es válido o ha expirado
+                if (correo == null) {
+                    // Si el token no es válido o ha expirado
+                    requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
+                            .entity("Token inválido o expirado")
+                            .build());
+                } else {
+                    // Si el token es válido, puedes agregar el usuario al contexto
+                    requestContext.setProperty("usuarioCorreo", correo);
+                }
+            } catch (Exception e) {
+                // Si ocurre un error durante la validación del token
                 requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
-                        .entity("Token inválido o expirado")
+                        .entity("Token no válido")
                         .build());
-            } else {
-                // Si el token es válido, puedes agregar el usuario al contexto
-                requestContext.setProperty("usuarioCorreo", correo);
+
             }
-        } catch (Exception e) {
-            // Si ocurre un error durante la validación del token
-            requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
-                    .entity("Token no válido")
-                    .build());
+        } else {
+            // Si no hay token, continuar la solicitud
+            // Puedes permitir la creación de usuarios sin token
+            requestContext.setProperty("usuarioCorreo", "sin-token");
         }
     }
 }

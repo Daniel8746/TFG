@@ -13,6 +13,8 @@ public class ApplicationConfig extends Application {
     public Set<Class<?>> getClasses() {
         Set<Class<?>> classes = new HashSet<>();
         classes.add(AuthFilter.class); // Registrar el filtro de autenticación
+        classes.add(ServiceRestUsuario.class);
+        classes.add(ServiceRestJuegos.class);
         return classes;
     }
 } 

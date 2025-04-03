@@ -33,11 +33,12 @@ fun LoginScreen(
     validacionLoginUiState: ValidacionLoginUiState,
     loginErroneo: Boolean,
     isLoading: Boolean,
+    recordarmeState: Boolean,
     onLoginEvent: (LoginEvent) -> Unit,
     onNavigateToCasino: ((correo: String, saldo: BigDecimal) -> Unit)? = null,
-    onNavigateToNuevaCuenta: () -> Unit
+    onNavigateToNuevaCuenta: () -> Unit,
+    onRecordarmeState: ((Boolean) -> Unit)? = null
 ) {
-    var recordarmeState by remember { mutableStateOf(false) }
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -49,7 +50,7 @@ fun LoginScreen(
         )
 
         Text(
-            text = if (loginErroneo) {
+            text = if (!loginErroneo) {
                 """
                     No hemos podido encontrar una cuenta con esos datos. 
                     Verifica tu correo electrónico o contraseña e inténtalo nuevamente.
@@ -77,7 +78,7 @@ fun LoginScreen(
             onValueChangePassword = {
                 onLoginEvent(LoginEvent.PasswordChanged(it))
             },
-            onCheckedChanged = { recordarmeState = it },
+            onCheckedChanged = onRecordarmeState!!,
             onClickLogearse = {
                 onLoginEvent(LoginEvent.OnClickLogearse(onNavigateToCasino))
             }
@@ -131,6 +132,7 @@ fun LoginScreenPreview() {
                 validacionLoginUiState = loginViewModel.validacionLoginUiState,
                 loginErroneo = false,
                 isLoading = false,
+                recordarmeState = false,
                 onLoginEvent = loginViewModel::onLoginEvent,
                 onNavigateToNuevaCuenta = {})
         }

@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pmdm.casino.data.JuegosRepository
+import com.pmdm.casino.ui.features.UsuarioCasinoUiState
 import com.pmdm.casino.ui.features.toCasinoUiStates
 import com.pmdm.casino.ui.navigation.CasinoRoute
 import dagger.hilt.android.lifecycle.HiltViewModel

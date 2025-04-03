@@ -22,7 +22,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.pmdm.casino.R
+import com.pmdm.casino.ui.features.UsuarioCasinoUiState
 import com.pmdm.casino.ui.features.casino.components.AyudaScreen
+import com.pmdm.casino.ui.features.components.TopBar
 import java.math.BigDecimal
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,23 +41,7 @@ fun CasinoScreen(
     isAyudaAbierta: Boolean
 ) {
     Column {
-        TopAppBar(title = {}, actions = {
-            // Nombre del usuario
-            Text(
-                text = usuarioUiState.correo,
-                modifier = Modifier.align(Alignment.CenterVertically),
-                textAlign = TextAlign.Start
-            )
-
-            Spacer(modifier = Modifier.width(16.dp)) // Espaciado entre los elementos
-
-            // Saldo del usuario
-            Text(
-                text = "Saldo: ${usuarioUiState.saldo}",
-                modifier = Modifier.align(Alignment.CenterVertically),
-                textAlign = TextAlign.End // Alineado a la derecha
-            )
-        })
+        TopBar(usuarioUiState)
 
         if (juegosUiState.isEmpty()) {
             Text(modifier = Modifier.align(

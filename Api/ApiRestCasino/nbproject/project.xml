@@ -267,7 +267,7 @@
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${file.reference.jjwt-jackson-0.12.3.jar}</file>
+                    <file>${file.reference.jjwt-gson-0.12.6.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
             </web-module-libraries>

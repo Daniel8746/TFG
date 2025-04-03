@@ -8,15 +8,15 @@ import retrofit2.http.Headers
 import retrofit2.http.POST
 
 interface UsuarioService {
-    @POST("/usuario/crear-usuario")
+    @POST("usuario/crear-usuario")
     @Headers("Accept: application/json", "Content-Type: application/json")
     suspend fun crearUsuario(@Body usuario: UsuarioApi): Response<Unit>
 
-    @POST("/usuario/login")
+    @POST("usuario/login")
     @Headers("Accept: application/json", "Content-Type: application/json")
     suspend fun login(@Body usuario: UsuarioApiRecord): Response<RespuestaApi>
 
-    @DELETE("/usuario/eliminar")
+    @DELETE("usuario/eliminar")
     @Headers("Accept: application/json", "Content-Type: application/json")
     suspend fun eliminarUsuario(@Body usuario: UsuarioApi): Response<Unit>
 }

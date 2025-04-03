@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowInsetsCompat
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.pmdm.casino.ui.features.musicaFondo.MusicaViewModel
 import com.pmdm.casino.ui.navigation.CasinoNavHost
 import com.pmdm.casino.ui.theme.CasinoTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -42,6 +44,9 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             CasinoTheme {
+                // Musica fondo
+                hiltViewModel<MusicaViewModel>()
+
                 Surface(modifier = Modifier.fillMaxSize()) {
                     CasinoNavHost()
                 }

@@ -16,6 +16,7 @@ import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
+import java.lang.System.Logger;
 import java.util.HashMap;
 import jpacasino.JPAUtil;
 import jpacasino.Usuario;
@@ -36,6 +37,8 @@ public class ServiceRestUsuario {
     private static final EntityManagerFactory emf;
     private static final UsuarioJpaController dao;
 
+    private static final Logger LOG = System.getLogger(ServiceRestUsuario.class.getName());
+
     static {
         emf = JPAUtil.getEntityManagerFactory();
         dao = new UsuarioJpaController(emf);
@@ -52,9 +55,11 @@ public class ServiceRestUsuario {
         HashMap<String, String> mensaje = new HashMap<>();
 
         try {
-            String token = requestContext.getHeaderString("Authorization");
+            // Obtener el correo desde el contexto
+            String correo = (String) requestContext.getProperty("usuarioCorreo");
 
-            if (token.isEmpty()) {
+            // Si no hay correo en el contexto, significa que no se envió un token o el token es inválido
+            if ("sin-token".equals(correo)) {
                 // Se busca el usuario en la base de datos usando el correo y la contraseña
                 Usuario usuarioEncontrado = dao.findUsuario(usuario);
 
@@ -65,14 +70,15 @@ public class ServiceRestUsuario {
                             .status(statusResul)
                             .build();
                 } else {
-                    // Si el usuario existe, se devuelve un valor booleano y el saldo
-                    // Update: Devolver también el token para las peticiones y mantener sesión iniciada
+                    // Si el usuario existe, generamos un token para este usuario
                     statusResul = Response.Status.OK;
 
                     // Generar un token para JWT
-                    token = JwtUtil.generarToken(usuarioEncontrado.getCorreo());
+                    String token = JwtUtil.generarToken(usuarioEncontrado.getCorreo());
 
-                    mensaje.put("saldo", usuarioEncontrado.getSaldo().toString());
+                    mensaje.put("saldo",
+                            (usuarioEncontrado.getSaldo() == null ? "0"
+                            : usuarioEncontrado.getSaldo().toString()));
                     mensaje.put("token", token);
 
                     response = Response
@@ -81,11 +87,8 @@ public class ServiceRestUsuario {
                             .build();
                 }
             } else {
-                // Generar un token para JWT
-                String correo = JwtUtil.getCorreoFromToken(
-                        token.substring(7)
-                ); // Eliminar "Bearer " del inicio del token
-
+                // Si el correo es válido, ya tenemos un usuario autenticado gracias al token
+                // Buscar el usuario con el correo ya validado
                 Usuario usuarioEncontrado = dao.findUsuario(
                         new UsuarioRecord(
                                 correo,
@@ -99,9 +102,13 @@ public class ServiceRestUsuario {
                             .status(statusResul)
                             .build();
                 } else {
+                    // Si el usuario existe, devolvemos su saldo y el token
                     statusResul = Response.Status.OK;
 
-                    mensaje.put("saldo", usuarioEncontrado.getSaldo().toString());
+                    mensaje.put("saldo",
+                            (usuarioEncontrado.getSaldo() == null ? "0"
+                            : usuarioEncontrado.getSaldo().toString())
+                    );
                     mensaje.put("token", usuarioEncontrado.getCorreo());
 
                     response = Response
@@ -111,7 +118,8 @@ public class ServiceRestUsuario {
                 }
             }
         } catch (Exception ex) {
-            statusResul = Response.Status.BAD_REQUEST;
+            statusResul = Response.Status.INTERNAL_SERVER_ERROR;
+            LOG.log(Logger.Level.ERROR, ex.getLocalizedMessage());
             response = Response
                     .status(statusResul)
                     .build();
@@ -150,6 +158,7 @@ public class ServiceRestUsuario {
         } catch (NonexistentEntityException | IllegalOrphanException ex) {
             // Si el usuario no existe, se maneja el error
             statusResul = Response.Status.BAD_REQUEST;
+            LOG.log(Logger.Level.ERROR, ex.getLocalizedMessage());
             response = Response
                     .status(statusResul)
                     .build();
@@ -195,6 +204,7 @@ public class ServiceRestUsuario {
             }
         } catch (Exception e) {
             // Si ocurre un error en el proceso de creación
+            LOG.log(Logger.Level.ERROR, e.getLocalizedMessage());
             response = Response
                     .status(Response.Status.INTERNAL_SERVER_ERROR)
                     .build();

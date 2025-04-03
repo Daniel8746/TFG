@@ -6,8 +6,6 @@ package jwt;
 
 import io.jsonwebtoken.Jwts;
 import java.security.NoSuchAlgorithmException;
-
-import java.util.Date;
 import javax.crypto.SecretKey;
 import javax.crypto.KeyGenerator;
 
@@ -36,7 +34,6 @@ public class JwtUtil {
     public static String generarToken(String username) {
         return Jwts.builder()
                 .subject(username)
-                .issuedAt(new Date())
                 .signWith(SECRET_KEY, Jwts.SIG.HS256)
                 .compact();
     }

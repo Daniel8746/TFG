@@ -21,7 +21,7 @@ class NuevoUsuarioViewModel @Inject constructor(
     private val usuarioRepository: UsuarioRepository,
     private val validadorNuevoUsuario: ValidadorNuevoUsuario
 ): ViewModel() {
-    private val _usuarioCreado = MutableStateFlow(false)  // Estado inicial false
+    private val _usuarioCreado = MutableStateFlow(true)  // Estado inicial true
     val usuarioCreado: StateFlow<Boolean> = _usuarioCreado.asStateFlow()
 
     private val _isLoading = MutableStateFlow(false)
@@ -31,13 +31,6 @@ class NuevoUsuarioViewModel @Inject constructor(
     var validacionNuevoUsuarioUiState by mutableStateOf(ValidacionNuevoUsuarioUiState())
 
     private val snackbarHostState by mutableStateOf(SnackbarHostState())
-
-    init {
-        // Si no valido al principio no sé porque peta la aplicación
-        validacionNuevoUsuarioUiState = validacionNuevoUsuarioUiState.copy(
-            validacionTelefono = validadorNuevoUsuario.validadorTelefono.valida("")
-        )
-    }
 
     fun onNuevoUsuarioEvent(nuevoUsuarioEvent: NuevoUsuarioEvent) {
         when(nuevoUsuarioEvent) {
@@ -77,7 +70,7 @@ class NuevoUsuarioViewModel @Inject constructor(
                         crearCuenta()
                         if (_usuarioCreado.value) {
                             delay(1000)
-                            nuevoUsuarioEvent.onNavigateLogin
+                            nuevoUsuarioEvent.onNavigateLogin?.let { it() }
                             mostrarSnackBar(
                                 snackbarHostState,
                                 "Creado la sesión con el usuario ${nuevoUsuarioUiState.correo}"
@@ -117,6 +110,7 @@ class NuevoUsuarioViewModel @Inject constructor(
     private suspend fun crearCuenta() {
         _isLoading.value = true
         usuarioRepository.crear(nuevoUsuarioUiState.toUsuario()).collect {
+            delay(2500)
             _usuarioCreado.value = it
             _isLoading.value = false
         }

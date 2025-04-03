@@ -5,7 +5,7 @@ import retrofit2.http.GET
 import retrofit2.http.Headers
 
 interface JuegosService {
-    @GET("/juegos/todos-juegos")
+    @GET("juegos/todos-juegos")
     @Headers("Accept: application/json", "Content-Type: application/json")
     suspend fun getJuegos(): Response<List<JuegosApi>>
 }
