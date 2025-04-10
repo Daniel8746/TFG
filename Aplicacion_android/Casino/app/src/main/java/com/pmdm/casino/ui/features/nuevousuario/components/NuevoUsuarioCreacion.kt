@@ -1,7 +1,11 @@
 package com.pmdm.casino.ui.features.nuevousuario.components
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -11,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
@@ -44,59 +49,63 @@ fun NuevoUsuarioCreacion(
     onValueChangeTelefono: (String) -> Unit,
     onClickNuevaCuenta: () -> Unit
 ) {
-    OutlinedTextFieldName(
-        modifier = modifier,
-        nameState = nombreState,
-        validacionState = validacionNombre,
-        onValueChange = onValueChangeNombre
-    )
+    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        OutlinedTextFieldName(
+            modifier = modifier,
+            nameState = nombreState,
+            validacionState = validacionNombre,
+            onValueChange = onValueChangeNombre
+        )
 
-    OutlinedTextFieldName(
-        modifier = modifier,
-        label = "Apellidos",
-        nameState = apellidosState,
-        validacionState = validacionApellidos,
-        onValueChange = onValueChangeApellidos
-    )
+        OutlinedTextFieldName(
+            modifier = modifier,
+            label = "Apellidos",
+            nameState = apellidosState,
+            validacionState = validacionApellidos,
+            onValueChange = onValueChangeApellidos
+        )
 
-    OutlinedTextFieldEmail(
-        modifier = modifier,
-        emailState = emailState,
-        validacionState = validacionEmail,
-        onValueChange = onValueChangeEmail
-    )
+        OutlinedTextFieldEmail(
+            modifier = modifier,
+            label = "Correo electrónico",
+            emailState = emailState,
+            validacionState = validacionEmail,
+            onValueChange = onValueChangeEmail
+        )
 
-    OutlinedTextFieldPassword(
-        modifier = modifier,
-        label = "Contraseña",
-        passwordState = passwordState,
-        validacionState = validacionPassword,
-        onValueChange = onValueChangePassword
-    )
+        OutlinedTextFieldPassword(
+            modifier = modifier,
+            label = "Contraseña",
+            passwordState = passwordState,
+            validacionState = validacionPassword,
+            onValueChange = onValueChangePassword
+        )
 
-    OutlinedTextFieldPhone(
-        modifier = modifier,
-        telefonoState = telefonoState,
-        validacionState = validacionTelefono,
-        onValueChange = onValueChangeTelefono
-    )
+        OutlinedTextFieldPhone(
+            modifier = modifier,
+            telefonoState = telefonoState,
+            validacionState = validacionTelefono,
+            onValueChange = onValueChangeTelefono
+        )
 
-    Button(
-        onClick = onClickNuevaCuenta,
-        modifier = Modifier
-            .fillMaxWidth()
-    ) {
-        Text("Crear cuenta")
-
-        if (isLoading) {
-            val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.fichas_carga))
-            val progress = animateLottieCompositionAsState(composition = composition)
-
-            LottieAnimation(
-                composition = composition,
-                progress = { progress.progress },
-                modifier = Modifier.size(50.dp) // Ajusta el tamaño según lo necesario
-            )
+        Button(
+            onClick = onClickNuevaCuenta,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            if (isLoading) {
+                val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.fichas_carga))
+                val progress by animateLottieCompositionAsState(composition)
+                LottieAnimation(
+                    composition = composition,
+                    progress = { progress },
+                    modifier = Modifier.size(36.dp)
+                )
+            } else {
+                Text("Crear cuenta", fontSize = 16.sp)
+            }
         }
     }
 }

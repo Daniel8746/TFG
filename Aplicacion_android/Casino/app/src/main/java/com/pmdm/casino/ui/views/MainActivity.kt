@@ -9,6 +9,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowInsetsCompat
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -19,6 +20,9 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    // Musica fondo
+    private var musicaVm: MusicaViewModel? = null
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,8 +48,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             CasinoTheme {
-                // Musica fondo
-                hiltViewModel<MusicaViewModel>()
+                musicaVm = hiltViewModel()
 
                 Surface(modifier = Modifier.fillMaxSize()) {
                     CasinoNavHost()
@@ -55,5 +58,17 @@ class MainActivity : ComponentActivity() {
 
         // habilita el diseño de pantalla completa, extendiendo el contenido hasta los bordes.
         enableEdgeToEdge()
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        musicaVm?.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        musicaVm?.onResume()
     }
 }

@@ -24,6 +24,14 @@ class MusicaViewModel @Inject constructor(
         exoPlayer.repeatMode = Player.REPEAT_MODE_ALL
     }
 
+    fun onPause() {
+        exoPlayer.pause()
+    }
+
+    fun onResume() {
+        exoPlayer.playWhenReady = true
+    }
+
     override fun onCleared() {
         super.onCleared()
         exoPlayer.release() // Libera memoria cuando ya no se usa

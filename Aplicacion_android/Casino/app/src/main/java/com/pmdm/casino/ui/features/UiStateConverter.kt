@@ -2,7 +2,7 @@ package com.pmdm.casino.ui.features
 
 import com.pmdm.casino.model.Juegos
 import com.pmdm.casino.model.Usuario
-import com.pmdm.casino.ui.features.casino.CasinoUiState
+import com.pmdm.casino.ui.features.casino.JuegosUiState
 import com.pmdm.casino.ui.features.login.LoginUiState
 import com.pmdm.casino.ui.features.nuevousuario.NuevoUsuarioUiState
 
@@ -17,9 +17,9 @@ fun NuevoUsuarioUiState.toUsuario(): Usuario = Usuario(
 )
 
 // Casino
-fun Juegos.toCasinoUiState(): CasinoUiState = CasinoUiState(
+fun Juegos.toJuegosUiState(): JuegosUiState = JuegosUiState(
     nombre, tipo, reglas
 )
 
-fun List<Juegos>.toCasinoUiStates(): List<CasinoUiState> =
-    map { it.toCasinoUiState() }
+fun List<Juegos>.toJuegosUiStates(): List<JuegosUiState> =
+    map { it.toJuegosUiState() }

@@ -1,5 +1,6 @@
 [versions]
 agp = "8.6.1"
+animation = "1.7.8"
 datastorePreferences = "1.1.4"
 kotlin = "2.0.20"
 coreKtx = "1.15.0"
@@ -27,6 +28,7 @@ okhttp3 = "4.12.0"
 appcompat = "1.7.0"
 
 [libraries]
+androidx-animation = { module = "androidx.compose.animation:animation", version.ref = "animation" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3Exoplayer" }

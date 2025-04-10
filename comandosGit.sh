@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#Ruta
+
+cd D:Proyecto
+
 # Pedir al usuario que ingrese el mensaje del commit
 echo "Introduce el mensaje del commit:"
 read commit_message
