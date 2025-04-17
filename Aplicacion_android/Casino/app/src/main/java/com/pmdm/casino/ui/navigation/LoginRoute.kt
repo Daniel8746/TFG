@@ -21,7 +21,7 @@ fun NavGraphBuilder.loginDestination(
         LoginScreen(
             usuarioUiState = vm.usuarioUiState,
             validacionLoginUiState = vm.validacionLoginUiState,
-            loginErroneo = vm.usuarioLogin.collectAsState().value,
+            loginErroneo = vm.usuarioCorrecto.collectAsState().value,
             isLoading = vm.isLoading.collectAsState().value,
             recordarmeState = vm.recordarmeState,
             onLoginEvent = { vm.onLoginEvent(it) },

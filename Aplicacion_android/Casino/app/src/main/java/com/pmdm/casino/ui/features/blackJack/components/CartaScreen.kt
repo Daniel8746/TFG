@@ -8,7 +8,7 @@ import androidx.compose.ui.res.painterResource
 @Composable
 fun CartaScreen(carta: CartaUiState) {
     val context = LocalContext.current
-    val resourceName = "${carta.palo}_${carta.valor}_${carta.color}" // Construye el nombre de la imagen
+    val resourceName = "${carta.palo}_${carta.valor}" // Construye el nombre de la imagen
 
     val resourceId = context.resources.getIdentifier(resourceName, "drawable", context.packageName)
 

@@ -1,7 +1,6 @@
 package com.pmdm.casino.ui.features.casino
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -11,23 +10,26 @@ import com.pmdm.casino.ui.features.UsuarioCasinoUiState
 import com.pmdm.casino.ui.features.toJuegosUiStates
 import com.pmdm.casino.ui.navigation.CasinoRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class JuegosViewModel @Inject constructor(
     private val casinoRepository: JuegosRepository
-): ViewModel() {
+) : ViewModel() {
     var usuarioUiState by mutableStateOf(UsuarioCasinoUiState())
-    var juegosUiState = mutableStateListOf<JuegosUiState>()
+    private val _juegosUiState = MutableStateFlow<List<JuegosUiState>>(emptyList())
+    val juegosUiState: StateFlow<List<JuegosUiState>> = _juegosUiState.asStateFlow()
+
     var isAyudaAbierta by mutableStateOf(false)
 
     init {
         viewModelScope.launch {
             casinoRepository.getJuegos().collect {
-                it?.toJuegosUiStates()?.forEach { juego ->
-                    juegosUiState.add(juego)
-                }
+                _juegosUiState.value = it?.toJuegosUiStates() ?: emptyList()
             }
         }
     }
@@ -37,9 +39,11 @@ class JuegosViewModel @Inject constructor(
             is JuegosEvent.OnBlackJack -> {
                 casinoEvent.onNavigateBlackJack(usuarioUiState.correo, usuarioUiState.saldo)
             }
+
             is JuegosEvent.OnRuleta -> {
                 casinoEvent.onNavigateRuleta(usuarioUiState.correo, usuarioUiState.saldo)
             }
+
             is JuegosEvent.OnTragaMonedas -> {
                 casinoEvent.onNavigateTragaMonedas(usuarioUiState.correo, usuarioUiState.saldo)
             }

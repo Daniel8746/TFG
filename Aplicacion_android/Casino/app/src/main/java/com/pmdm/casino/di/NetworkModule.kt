@@ -1,5 +1,6 @@
 package com.pmdm.casino.di
 
+import com.pmdm.casino.data.services.blackJack.BlackJackService
 import com.pmdm.casino.data.services.interceptors.AuthInterceptor
 import com.pmdm.casino.data.services.juegos.JuegosService
 import com.pmdm.casino.data.services.usuario.UsuarioService
@@ -37,7 +38,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(
         okHttpClient: OkHttpClient
-    ) : Retrofit = Retrofit.Builder()
+    ): Retrofit = Retrofit.Builder()
         .client(okHttpClient)
         .baseUrl("http://192.168.100.9:8080/casino/api/")
         .addConverterFactory(GsonConverterFactory.create())
@@ -47,11 +48,17 @@ object NetworkModule {
     @Singleton
     fun provideUsuarioService(
         retrofit: Retrofit
-    ) : UsuarioService = retrofit.create(UsuarioService::class.java)
+    ): UsuarioService = retrofit.create(UsuarioService::class.java)
 
     @Provides
     @Singleton
     fun provideJuegosService(
         retrofit: Retrofit
-    ) : JuegosService = retrofit.create(JuegosService::class.java)
+    ): JuegosService = retrofit.create(JuegosService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideBlackJackService(
+        retrofit: Retrofit
+    ): BlackJackService = retrofit.create(BlackJackService::class.java)
 }

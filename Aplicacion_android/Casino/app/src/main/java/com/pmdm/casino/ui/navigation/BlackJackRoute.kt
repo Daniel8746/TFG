@@ -1,5 +1,6 @@
 package com.pmdm.casino.ui.navigation
 
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
@@ -26,13 +27,16 @@ fun NavGraphBuilder.blackDestination(
             navArgument("saldo") { type = BigDecimalNavType() }
         )
     ) {
-        val usuarioCasino : BlackJackRoute = remember { it.toRoute<BlackJackRoute>() }
+        val usuarioCasino: BlackJackRoute = remember { it.toRoute<BlackJackRoute>() }
         val vm = hiltViewModel<BlackJackViewModel>()
 
         vm.crearUsuarioCasino(usuarioCasino)
 
         BlackJackScreen(
-            usuarioUiState = vm.usuarioUiState
+            usuarioUiState = vm.usuarioUiState,
+            listadoCartas = vm.cartasUiState.collectAsState().value,
+            cartaNueva = vm.cartaRecienteUiState.collectAsState().value,
+            onBlackJackEvent = { vm.onBlackJackEvent(it) }
         )
     }
 }

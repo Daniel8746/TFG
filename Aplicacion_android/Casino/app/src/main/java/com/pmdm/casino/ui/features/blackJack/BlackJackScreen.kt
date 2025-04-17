@@ -1,34 +1,72 @@
 package com.pmdm.casino.ui.features.blackJack
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import com.pmdm.casino.R
 import com.pmdm.casino.ui.features.UsuarioCasinoUiState
+import com.pmdm.casino.ui.features.blackJack.components.CartaScreen
+import com.pmdm.casino.ui.features.blackJack.components.CartaUiState
+import com.pmdm.casino.ui.features.components.ButtonWithLottie
 import com.pmdm.casino.ui.features.components.TopBar
 
 @Composable
-fun BlackJackScreen(usuarioUiState: UsuarioCasinoUiState) {
-    Box {
-        TopBar(usuarioUiState)
+fun BlackJackScreen(
+    usuarioUiState: UsuarioCasinoUiState,
+    listadoCartas: List<CartaUiState>,
+    cartaNueva: CartaUiState?,
+    onBlackJackEvent: (BlackJackEvent) -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        TopBar(
+            usuarioUiState = usuarioUiState
+        )
 
-       Row {
-           TextButton(
-               onClick = {}
-           ) {
-               Text(
-                   text = "Pedir carta"
-               )
-           }
+        Image(
+            painter = painterResource(R.drawable.imagenfondojuegos),
+            contentDescription = "Fondo juegos",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.FillBounds
+        )
 
-           TextButton(
-               onClick = {}
-           ) {
-               Text(
-                   text = "Plantarse"
-               )
-           }
-       }
+        Row {
+            ButtonWithLottie(
+                text = "Pedir carta",
+                isLoading = false,
+                onClick = {
+                    onBlackJackEvent(BlackJackEvent.OnPedirCarta)
+                }
+            )
+
+            LazyRow {
+                items(listadoCartas) {
+                    CartaScreen(it)
+                }
+            }
+
+            if (cartaNueva != null) {
+                CartaScreen(
+                    cartaNueva
+                )
+            }
+
+            ButtonWithLottie(
+                text = "Plantarse",
+                isLoading = false,
+                onClick = {
+                    onBlackJackEvent(BlackJackEvent.OnPlantarse)
+                }
+            )
+        }
     }
 }

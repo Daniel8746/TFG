@@ -1,6 +1,7 @@
 package com.pmdm.casino.data.services.usuario
 
 import android.util.Log
+import com.pmdm.casino.data.services.exception.ApiServicesException
 import java.math.BigDecimal
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -31,7 +32,7 @@ class UsuarioServiceImplementation @Inject constructor(
                 response.body()?.saldo ?: BigDecimal(0),
                 response.body()?.token ?: ""
             )
-        } catch (e: Exception) {
+        } catch (e: ApiServicesException) {
             Log.e(logTag, "Error: ${e.localizedMessage}")
             return Triple(false, BigDecimal(0), "")
         }
@@ -53,7 +54,7 @@ class UsuarioServiceImplementation @Inject constructor(
             }
 
             return response.isSuccessful
-        } catch (e: Exception) {
+        } catch (e: ApiServicesException) {
             Log.e(logTag, "Error: ${e.localizedMessage}")
 
             return false
@@ -76,7 +77,7 @@ class UsuarioServiceImplementation @Inject constructor(
             }
 
             return response.isSuccessful
-        } catch (e: Exception) {
+        } catch (e: ApiServicesException) {
             Log.e(logTag, "Error: ${e.localizedMessage}")
 
             return false

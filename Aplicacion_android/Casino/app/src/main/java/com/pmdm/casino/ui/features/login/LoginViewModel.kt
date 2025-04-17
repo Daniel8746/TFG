@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,10 +11,8 @@ import com.pmdm.casino.data.UsuarioRepository
 import com.pmdm.casino.model.TokenManager
 import com.pmdm.casino.ui.features.toUsuario
 import dagger.hilt.android.internal.Contexts.getApplication
-
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,8 +27,8 @@ class LoginViewModel @Inject constructor(
     private val validadorLogin: ValidadorLogin,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
-    private val _usuarioLogin = MutableStateFlow(true)  // Estado inicial true
-    val usuarioLogin: StateFlow<Boolean> = _usuarioLogin.asStateFlow()
+    private val _usuarioCorrecto = MutableStateFlow(true)  // Estado inicial true
+    val usuarioCorrecto: StateFlow<Boolean> = _usuarioCorrecto.asStateFlow()
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
@@ -78,7 +75,7 @@ class LoginViewModel @Inject constructor(
                     if (!validacionLoginUiState.hayError) {
                         logearse()
 
-                        if (_usuarioLogin.value) {
+                        if (_usuarioCorrecto.value) {
                             if (_token.value.isNotEmpty()) {
                                 if (recordarmeState) {
                                     TokenManager.saveToken(
@@ -87,8 +84,12 @@ class LoginViewModel @Inject constructor(
                                     )
                                 }
 
-                                delay(1000)
-                                loginEvent.onNavigateJuego?.let { it(usuarioUiState.login, _saldo.value) }
+                                loginEvent.onNavigateJuego?.let {
+                                    it(
+                                        usuarioUiState.login,
+                                        _saldo.value
+                                    )
+                                }
                                 mostrarSnackBar(
                                     snackbarHostState,
                                     "Iniciando la sesión con el usuario ${usuarioUiState.login}"
@@ -101,9 +102,7 @@ class LoginViewModel @Inject constructor(
             }
 
             is LoginEvent.OnClickNuevoUsuario -> {
-                viewModelScope.launch {
-                    loginEvent.onNavigateNuevoUsuario
-                }
+                loginEvent.onNavigateNuevoUsuario
             }
         }
     }
@@ -111,9 +110,8 @@ class LoginViewModel @Inject constructor(
     private suspend fun logearse() {
         _isLoading.value = true
 
-        usuarioRepository.login(usuarioUiState.toUsuario()).collect{
-            delay(2500)
-            _usuarioLogin.value = it.first
+        usuarioRepository.login(usuarioUiState.toUsuario()).collect {
+            _usuarioCorrecto.value = it.first
             _saldo.value = it.second
             _token.value = it.third
 

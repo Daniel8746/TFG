@@ -15,6 +15,10 @@ public class ApplicationConfig extends Application {
         classes.add(AuthFilter.class); // Registrar el filtro de autenticación
         classes.add(ServiceRestUsuario.class);
         classes.add(ServiceRestJuegos.class);
+        classes.add(ServiceRestApuestas.class);
+        classes.add(ServiceRestBlackJack.class);
+        classes.add(ServiceRestRuleta.class);
+        classes.add(ServiceRestTragaMonedas.class);
         return classes;
     }
 } 

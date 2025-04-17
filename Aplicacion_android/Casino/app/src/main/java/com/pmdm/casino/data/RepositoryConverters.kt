@@ -1,8 +1,10 @@
 package com.pmdm.casino.data
 
+import com.pmdm.casino.data.services.blackJack.CartaApi
 import com.pmdm.casino.data.services.juegos.JuegosApi
 import com.pmdm.casino.data.services.usuario.UsuarioApi
 import com.pmdm.casino.data.services.usuario.UsuarioApiRecord
+import com.pmdm.casino.model.Carta
 import com.pmdm.casino.model.Juegos
 import com.pmdm.casino.model.Usuario
 
@@ -22,4 +24,13 @@ fun JuegosApi.toJuego(): Juegos = Juegos(
 
 fun List<JuegosApi>.toJuegos(): List<Juegos> =
     map { it.toJuego() }
+
+// BlackJack
+
+fun CartaApi.toCarta(): Carta = Carta(
+    palo, valor
+)
+
+fun List<CartaApi>.toCartas(): List<Carta> =
+    map { it.toCarta() }
 
