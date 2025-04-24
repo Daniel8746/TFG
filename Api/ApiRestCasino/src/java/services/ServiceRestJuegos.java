@@ -46,11 +46,9 @@ public class ServiceRestJuegos {
                         .status(Response.Status.BAD_REQUEST)
                         .build();
             } else {
-                String mensaje = new Gson().toJson(listaJuegos);
-
                 response = Response
                         .status(Response.Status.OK)
-                        .entity(mensaje)
+                        .entity(new Gson().toJson(listaJuegos))
                         .build();
             }
         } catch (Exception ex) {

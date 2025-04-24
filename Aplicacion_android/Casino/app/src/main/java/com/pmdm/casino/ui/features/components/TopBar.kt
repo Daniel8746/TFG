@@ -1,45 +1,61 @@
 package com.pmdm.casino.ui.features.components
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.pmdm.casino.ui.features.UsuarioCasinoUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(usuarioUiState: UsuarioCasinoUiState) {
+fun TopBar(usuarioUiState: UsuarioCasinoUiState, volverAtras: (() -> Unit)? = null) {
     TopAppBar(
         title = {},
-        actions = {
-            // Nombre del usuario
-            Text(
-                text = usuarioUiState.correo,
-                textAlign = TextAlign.Start,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-
-            // Saldo del usuario
-            Text(
-                text = "Saldo: ${usuarioUiState.saldo}",
-                textAlign = TextAlign.End,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+        navigationIcon = {
+            if (volverAtras != null) {
+                IconButton(
+                    onClick = volverAtras
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Flecha volver atrás"
+                    )
+                }
+            }
         },
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(20.dp),
+        actions = {
+            Box(modifier = Modifier.fillMaxWidth()) {
+                // Nombre del usuario
+                Text(
+                    text = usuarioUiState.correo,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+
+                // Saldo del usuario
+                Text(
+                    text = "Saldo: ${usuarioUiState.saldo}",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                )
+            }
+        },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer // Fondo suave
-        )
+        ),
+        expandedHeight = 35.dp
     )
 }

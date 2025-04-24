@@ -94,8 +94,7 @@ fun CasinoNavHost() {
             },
             onNavegarJuegos = { correo, saldo ->
                 navController.navigate("casino/$correo/$saldo") {
-                    popUpTo("casino/$correo/$saldo") { inclusive = true }
-                    launchSingleTop = true
+                    popUpTo(0) { inclusive = false }
                 }
 
                 esLogin = false
@@ -109,8 +108,7 @@ fun CasinoNavHost() {
 
             onNavegarCasino = { correo, saldo ->
                 navController.navigate("casino/$correo/$saldo") {
-                    popUpTo("casino/$correo/$saldo") { inclusive = false }
-                    launchSingleTop = true
+                    popUpTo(0) { inclusive = false }
                 }
 
                 esLogin = false
@@ -125,19 +123,13 @@ fun CasinoNavHost() {
 
         casinoDestination(
             onNavegarBlackJack = { correo, saldo ->
-                navController.navigate("black_jack/$correo/$saldo") {
-                    launchSingleTop = true
-                }
+                navController.navigate("black_jack/$correo/$saldo")
             },
             onNavegarTragaMonedas = { correo, saldo ->
-                navController.navigate("traga_monedas/$correo/$saldo") {
-                    launchSingleTop = true
-                }
+                navController.navigate("traga_monedas/$correo/$saldo")
             },
             onNavegarRuleta = { correo, saldo ->
-                navController.navigate("ruleta/$correo/$saldo") {
-                    launchSingleTop = true
-                }
+                navController.navigate("ruleta/$correo/$saldo")
             }
         )
 

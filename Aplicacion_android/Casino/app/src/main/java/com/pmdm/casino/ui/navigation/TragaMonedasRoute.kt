@@ -25,9 +25,11 @@ fun NavGraphBuilder.tragaDestination(
             navArgument("correo") { type = NavType.StringType },
             navArgument("saldo") { type = BigDecimalNavType() }
         )
-    ) {
-        val usuarioCasino : TragaMonedasRoute = remember { it.toRoute<TragaMonedasRoute>() }
-        val vm = hiltViewModel<TragaMonedasViewModel>()
+    ) { backStackEntry ->
+        val vm = hiltViewModel<TragaMonedasViewModel>(backStackEntry)
+
+        val usuarioCasino: TragaMonedasRoute =
+            remember { backStackEntry.toRoute<TragaMonedasRoute>() }
 
         vm.crearUsuarioCasino(usuarioCasino)
 

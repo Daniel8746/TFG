@@ -19,12 +19,14 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.pmdm.casino.R
 
 @Composable
-fun ButtonWithLottie(text: String, isLoading: Boolean, onClick: () -> Unit) {
+fun ButtonWithLottie(
+    modifier: Modifier = Modifier
+        .fillMaxWidth()
+        .height(50.dp), text: String, isLoading: Boolean, onClick: () -> Unit
+) {
     Button(
         onClick = onClick,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp),
+        modifier = modifier,
         shape = RoundedCornerShape(12.dp)
     ) {
         if (isLoading) {

@@ -1,7 +1,7 @@
 package com.pmdm.casino.ui.features.login
 
 import android.content.Context
-import androidx.compose.material3.SnackbarHostState
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -13,11 +13,14 @@ import com.pmdm.casino.ui.features.toUsuario
 import dagger.hilt.android.internal.Contexts.getApplication
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
+import java.net.ConnectException
+import java.net.SocketTimeoutException
 import javax.inject.Inject
 
 
@@ -38,8 +41,6 @@ class LoginViewModel @Inject constructor(
     var validacionLoginUiState by mutableStateOf(ValidacionLoginUiState())
         private set
 
-    private val snackbarHostState by mutableStateOf(SnackbarHostState())
-
     private var _saldo = MutableStateFlow(BigDecimal(0))
     private var _token = MutableStateFlow("")
 
@@ -50,60 +51,64 @@ class LoginViewModel @Inject constructor(
     }
 
     fun onLoginEvent(loginEvent: LoginEvent) {
-        when (loginEvent) {
-            is LoginEvent.LoginChanged -> {
-                usuarioUiState = usuarioUiState.copy(
-                    login = loginEvent.login
-                )
-                validacionLoginUiState = validacionLoginUiState.copy(
-                    validacionLogin = validadorLogin.validadorLogin.valida(loginEvent.login)
-                )
-            }
+        try {
 
-            is LoginEvent.PasswordChanged -> {
-                usuarioUiState = usuarioUiState.copy(
-                    password = loginEvent.password
-                )
-                validacionLoginUiState = validacionLoginUiState.copy(
-                    validacionPassword = validadorLogin.validadorPassword.valida(loginEvent.password)
-                )
-            }
 
-            is LoginEvent.OnClickLogearse -> {
-                viewModelScope.launch {
-                    validacionLoginUiState = validadorLogin.valida(usuarioUiState)
-                    if (!validacionLoginUiState.hayError) {
-                        logearse()
+            when (loginEvent) {
+                is LoginEvent.LoginChanged -> {
+                    usuarioUiState = usuarioUiState.copy(
+                        login = loginEvent.login
+                    )
+                    validacionLoginUiState = validacionLoginUiState.copy(
+                        validacionLogin = validadorLogin.validadorLogin.valida(loginEvent.login)
+                    )
+                }
 
-                        if (_usuarioCorrecto.value) {
-                            if (_token.value.isNotEmpty()) {
-                                if (recordarmeState) {
-                                    TokenManager.saveToken(
-                                        getApplication(context),
-                                        _token.value
-                                    )
+                is LoginEvent.PasswordChanged -> {
+                    usuarioUiState = usuarioUiState.copy(
+                        password = loginEvent.password
+                    )
+                    validacionLoginUiState = validacionLoginUiState.copy(
+                        validacionPassword = validadorLogin.validadorPassword.valida(loginEvent.password)
+                    )
+                }
+
+                is LoginEvent.OnClickLogearse -> {
+                    viewModelScope.launch {
+                        validacionLoginUiState = validadorLogin.valida(usuarioUiState)
+                        if (!validacionLoginUiState.hayError) {
+                            logearse()
+
+                            if (_usuarioCorrecto.value) {
+                                if (_token.value.isNotEmpty()) {
+                                    if (recordarmeState) {
+                                        TokenManager.saveToken(
+                                            getApplication(context),
+                                            _token.value
+                                        )
+                                    }
+
+                                    loginEvent.onNavigateJuego?.let {
+                                        it(
+                                            usuarioUiState.login,
+                                            _saldo.value
+                                        )
+                                    }
                                 }
-
-                                loginEvent.onNavigateJuego?.let {
-                                    it(
-                                        usuarioUiState.login,
-                                        _saldo.value
-                                    )
-                                }
-                                mostrarSnackBar(
-                                    snackbarHostState,
-                                    "Iniciando la sesión con el usuario ${usuarioUiState.login}"
-                                )
                             }
                         }
                     }
+
                 }
 
+                is LoginEvent.OnClickNuevoUsuario -> {
+                    loginEvent.onNavigateNuevoUsuario
+                }
             }
-
-            is LoginEvent.OnClickNuevoUsuario -> {
-                loginEvent.onNavigateNuevoUsuario
-            }
+        } catch (e: SocketTimeoutException) {
+            Log.e("SocketTimeOut", "Error: ${e.localizedMessage}")
+        } catch (e: ConnectException) {
+            Log.e("Connect fail", "Error: ${e.localizedMessage}")
         }
     }
 
@@ -114,15 +119,8 @@ class LoginViewModel @Inject constructor(
             _usuarioCorrecto.value = it.first
             _saldo.value = it.second
             _token.value = it.third
-
+            delay(2500)
             _isLoading.value = false
         }
-    }
-
-    private suspend fun mostrarSnackBar(snackbarHostState: SnackbarHostState, mensaje: String) {
-        snackbarHostState.currentSnackbarData?.dismiss()
-        snackbarHostState.showSnackbar(
-            message = mensaje,
-        )
     }
 }

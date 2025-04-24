@@ -28,9 +28,10 @@ fun NavGraphBuilder.casinoDestination(
             navArgument("correo") { type = NavType.StringType },
             navArgument("saldo") { type = BigDecimalNavType() }
         )
-    ) {
-        val usuarioCasino: CasinoRoute = remember { it.toRoute<CasinoRoute>() }
-        val vm = hiltViewModel<JuegosViewModel>()
+    ) { backStackEntry ->
+        val vm = hiltViewModel<JuegosViewModel>(backStackEntry)
+
+        val usuarioCasino: CasinoRoute = remember { backStackEntry.toRoute<CasinoRoute>() }
 
         vm.crearUsuarioCasino(usuarioCasino)
 

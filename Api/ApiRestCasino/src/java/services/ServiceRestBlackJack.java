@@ -14,7 +14,6 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -42,7 +41,6 @@ public class ServiceRestBlackJack {
     public Response getCarta() {
         Response response;
         Status statusResul;
-        HashMap<String, String> mensaje = new HashMap<>();
         CartaRecord cartaAzar;
         int posicion;
 
@@ -57,12 +55,9 @@ public class ServiceRestBlackJack {
                 mazo2.remove(posicion);
             }
 
-            statusResul = Status.OK;
-            mensaje.put("carta", new Gson().toJson(cartaAzar));
-
             response = Response
-                    .status(statusResul)
-                    .entity(mensaje)
+                    .status(Status.OK)
+                    .entity(new Gson().toJson(cartaAzar))
                     .build();
         } catch (Exception ex) {
             statusResul = Status.INTERNAL_SERVER_ERROR;
@@ -80,7 +75,6 @@ public class ServiceRestBlackJack {
     public Response getCartas() {
         Response response;
         Status statusResul;
-        HashMap<String, String> mensaje = new HashMap<>();
         List<CartaRecord> cartaAzar = new ArrayList<>();
         int posicion;
 
@@ -97,12 +91,9 @@ public class ServiceRestBlackJack {
                 }
             }
 
-            statusResul = Status.OK;
-            mensaje.put("carta", new Gson().toJson(cartaAzar));
-
             response = Response
-                    .status(statusResul)
-                    .entity(mensaje)
+                    .status(Status.OK)
+                    .entity(new Gson().toJson(cartaAzar))
                     .build();
         } catch (Exception ex) {
             statusResul = Status.INTERNAL_SERVER_ERROR;

@@ -1,6 +1,6 @@
 package com.pmdm.casino.ui.features.nuevousuario
 
-import androidx.compose.material3.SnackbarHostState
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -9,10 +9,13 @@ import androidx.lifecycle.viewModelScope
 import com.pmdm.casino.data.UsuarioRepository
 import com.pmdm.casino.ui.features.toUsuario
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.net.ConnectException
+import java.net.SocketTimeoutException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,101 +32,95 @@ class NuevoUsuarioViewModel @Inject constructor(
     var nuevoUsuarioUiState by mutableStateOf(NuevoUsuarioUiState())
     var validacionNuevoUsuarioUiState by mutableStateOf(ValidacionNuevoUsuarioUiState())
 
-    private val snackbarHostState by mutableStateOf(SnackbarHostState())
-
     fun onNuevoUsuarioEvent(nuevoUsuarioEvent: NuevoUsuarioEvent) {
-        when (nuevoUsuarioEvent) {
-            is NuevoUsuarioEvent.ApellidosChanged -> {
-                nuevoUsuarioUiState = nuevoUsuarioUiState.copy(
-                    apellidos = nuevoUsuarioEvent.apellidos
-                )
-
-                validacionNuevoUsuarioUiState = validacionNuevoUsuarioUiState.copy(
-                    validacionApellidos = validadorNuevoUsuario.validadorApellidos.valida(
-                        nuevoUsuarioEvent.apellidos
+        try {
+            when (nuevoUsuarioEvent) {
+                is NuevoUsuarioEvent.ApellidosChanged -> {
+                    nuevoUsuarioUiState = nuevoUsuarioUiState.copy(
+                        apellidos = nuevoUsuarioEvent.apellidos
                     )
-                )
-            }
 
-            is NuevoUsuarioEvent.CorreoChanged -> {
-                nuevoUsuarioUiState = nuevoUsuarioUiState.copy(
-                    correo = nuevoUsuarioEvent.correo
-                )
-
-                validacionNuevoUsuarioUiState = validacionNuevoUsuarioUiState.copy(
-                    validacionCorreo = validadorNuevoUsuario.validadorCorreo.valida(
-                        nuevoUsuarioEvent.correo
+                    validacionNuevoUsuarioUiState = validacionNuevoUsuarioUiState.copy(
+                        validacionApellidos = validadorNuevoUsuario.validadorApellidos.valida(
+                            nuevoUsuarioEvent.apellidos
+                        )
                     )
-                )
-            }
-
-            is NuevoUsuarioEvent.NombreChanged -> {
-                nuevoUsuarioUiState = nuevoUsuarioUiState.copy(
-                    nombre = nuevoUsuarioEvent.nombre
-                )
-
-                validacionNuevoUsuarioUiState = validacionNuevoUsuarioUiState.copy(
-                    validacionNombre = validadorNuevoUsuario.validadorNombre.valida(
-                        nuevoUsuarioEvent.nombre
-                    )
-                )
-            }
-
-            is NuevoUsuarioEvent.OnClickNuevoUsuario -> {
-                viewModelScope.launch {
-                    validacionNuevoUsuarioUiState =
-                        validadorNuevoUsuario.valida(nuevoUsuarioUiState)
-
-                    if (!validacionNuevoUsuarioUiState.hayError) {
-                        crearCuenta()
-                        if (_usuarioCreado.value) {
-                            nuevoUsuarioEvent.onNavigateLogin?.let { it() }
-                            mostrarSnackBar(
-                                snackbarHostState,
-                                "Creado la sesión con el usuario ${nuevoUsuarioUiState.correo}"
-                            )
-                        }
-                    }
                 }
 
-
-            }
-
-            is NuevoUsuarioEvent.PasswordChanged -> {
-                nuevoUsuarioUiState = nuevoUsuarioUiState.copy(
-                    password = nuevoUsuarioEvent.password
-                )
-                validacionNuevoUsuarioUiState = validacionNuevoUsuarioUiState.copy(
-                    validacionPassword = validadorNuevoUsuario.validadorPassword.valida(
-                        nuevoUsuarioEvent.password
+                is NuevoUsuarioEvent.CorreoChanged -> {
+                    nuevoUsuarioUiState = nuevoUsuarioUiState.copy(
+                        correo = nuevoUsuarioEvent.correo
                     )
-                )
-            }
 
-            is NuevoUsuarioEvent.TelefonoChanged -> {
-                nuevoUsuarioUiState = nuevoUsuarioUiState.copy(
-                    telefono = nuevoUsuarioEvent.telefono
-                )
-                validacionNuevoUsuarioUiState = validacionNuevoUsuarioUiState.copy(
-                    validacionTelefono = validadorNuevoUsuario.validadorTelefono.valida(
-                        nuevoUsuarioEvent.telefono
+                    validacionNuevoUsuarioUiState = validacionNuevoUsuarioUiState.copy(
+                        validacionCorreo = validadorNuevoUsuario.validadorCorreo.valida(
+                            nuevoUsuarioEvent.correo
+                        )
                     )
-                )
+                }
+
+                is NuevoUsuarioEvent.NombreChanged -> {
+                    nuevoUsuarioUiState = nuevoUsuarioUiState.copy(
+                        nombre = nuevoUsuarioEvent.nombre
+                    )
+
+                    validacionNuevoUsuarioUiState = validacionNuevoUsuarioUiState.copy(
+                        validacionNombre = validadorNuevoUsuario.validadorNombre.valida(
+                            nuevoUsuarioEvent.nombre
+                        )
+                    )
+                }
+
+                is NuevoUsuarioEvent.OnClickNuevoUsuario -> {
+                    viewModelScope.launch {
+                        validacionNuevoUsuarioUiState =
+                            validadorNuevoUsuario.valida(nuevoUsuarioUiState)
+
+                        if (!validacionNuevoUsuarioUiState.hayError) {
+                            crearCuenta()
+                            if (_usuarioCreado.value) {
+                                nuevoUsuarioEvent.onNavigateLogin?.let { it() }
+                            }
+                        }
+                    }
+
+
+                }
+
+                is NuevoUsuarioEvent.PasswordChanged -> {
+                    nuevoUsuarioUiState = nuevoUsuarioUiState.copy(
+                        password = nuevoUsuarioEvent.password
+                    )
+                    validacionNuevoUsuarioUiState = validacionNuevoUsuarioUiState.copy(
+                        validacionPassword = validadorNuevoUsuario.validadorPassword.valida(
+                            nuevoUsuarioEvent.password
+                        )
+                    )
+                }
+
+                is NuevoUsuarioEvent.TelefonoChanged -> {
+                    nuevoUsuarioUiState = nuevoUsuarioUiState.copy(
+                        telefono = nuevoUsuarioEvent.telefono
+                    )
+                    validacionNuevoUsuarioUiState = validacionNuevoUsuarioUiState.copy(
+                        validacionTelefono = validadorNuevoUsuario.validadorTelefono.valida(
+                            nuevoUsuarioEvent.telefono
+                        )
+                    )
+                }
             }
+        } catch (e: SocketTimeoutException) {
+            Log.e("SocketTimeOut", "Error: ${e.localizedMessage}")
+        } catch (e: ConnectException) {
+            Log.e("Connect fail", "Error: ${e.localizedMessage}")
         }
-    }
-
-    private suspend fun mostrarSnackBar(snackbarHostState: SnackbarHostState, mensaje: String) {
-        snackbarHostState.currentSnackbarData?.dismiss()
-        snackbarHostState.showSnackbar(
-            message = mensaje,
-        )
     }
 
     private suspend fun crearCuenta() {
         _isLoading.value = true
         usuarioRepository.crear(nuevoUsuarioUiState.toUsuario()).collect {
             _usuarioCreado.value = it
+            delay(2500)
             _isLoading.value = false
         }
     }

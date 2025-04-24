@@ -54,18 +54,16 @@ fun CasinoScreen(
     isAyudaAbierta: Boolean
 ) {
     var ayudaJuego by remember { mutableStateOf("") }
-
     Scaffold(
         topBar = {
             TopBar(
                 usuarioUiState = usuarioUiState
             )
-        },
-        content = {
+        }, content = { padding ->
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(it)
+                    .padding(padding)
             ) {
                 Image(
                     painter = painterResource(R.drawable.imagenfondojuegos),
