@@ -14,18 +14,25 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.pmdm.casino.ui.features.UsuarioCasinoUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(usuarioUiState: UsuarioCasinoUiState, volverAtras: (() -> Unit)? = null) {
+fun TopBar(
+    usuarioUiState: UsuarioCasinoUiState,
+    volverAtras: (() -> Unit)? = null,
+    onFinalizar: (() -> Unit)? = null
+) {
     TopAppBar(
         title = {},
         navigationIcon = {
-            if (volverAtras != null) {
+            if (volverAtras != null && onFinalizar != null) {
                 IconButton(
-                    onClick = volverAtras
+                    onClick = {
+                        volverAtras()
+                        onFinalizar()
+                    }
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -41,7 +48,8 @@ fun TopBar(usuarioUiState: UsuarioCasinoUiState, volverAtras: (() -> Unit)? = nu
                     text = usuarioUiState.correo,
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier.align(Alignment.Center),
+                    fontSize = 20.sp
                 )
 
                 // Saldo del usuario
@@ -49,13 +57,13 @@ fun TopBar(usuarioUiState: UsuarioCasinoUiState, volverAtras: (() -> Unit)? = nu
                     text = "Saldo: ${usuarioUiState.saldo}",
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.align(Alignment.CenterEnd)
+                    modifier = Modifier.align(Alignment.CenterEnd),
+                    fontSize = 16.sp
                 )
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer // Fondo suave
-        ),
-        expandedHeight = 35.dp
+        )
     )
 }

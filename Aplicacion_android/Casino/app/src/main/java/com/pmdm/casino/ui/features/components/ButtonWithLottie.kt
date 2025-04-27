@@ -22,10 +22,15 @@ import com.pmdm.casino.R
 fun ButtonWithLottie(
     modifier: Modifier = Modifier
         .fillMaxWidth()
-        .height(50.dp), text: String, isLoading: Boolean, onClick: () -> Unit
+        .height(50.dp),
+    text: String,
+    isLoading: Boolean,
+    onClick: () -> Unit,
 ) {
     Button(
-        onClick = onClick,
+        onClick = {
+            onClick()
+        },
         modifier = modifier,
         shape = RoundedCornerShape(12.dp)
     ) {

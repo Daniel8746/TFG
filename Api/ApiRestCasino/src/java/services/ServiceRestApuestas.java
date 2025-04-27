@@ -24,6 +24,6 @@ public class ServiceRestApuestas {
     public Response finalizarBlackJack() {
         
        ServiceRestBlackJack.inicializarCartas();
-        return null;
+       return null;
     }
 }

@@ -9,6 +9,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.toRoute
+import com.pmdm.casino.ui.features.apuestas.ApuestasViewModel
 import com.pmdm.casino.ui.features.blackJack.BlackJackScreen
 import com.pmdm.casino.ui.features.blackJack.BlackJackViewModel
 import com.pmdm.casino.ui.features.blackJack.MaquinaViewModel
@@ -31,6 +32,7 @@ fun NavGraphBuilder.blackDestination(
     ) { backStackEntry ->
         val vm = hiltViewModel<BlackJackViewModel>(backStackEntry)
         val vmMaquina = hiltViewModel<MaquinaViewModel>(backStackEntry)
+        val vmApuestas = hiltViewModel<ApuestasViewModel>(backStackEntry)
 
         val usuarioCasino: BlackJackRoute = remember { backStackEntry.toRoute<BlackJackRoute>() }
 
@@ -54,6 +56,7 @@ fun NavGraphBuilder.blackDestination(
             listadoCartasMaquina = vmMaquina.cartasUiState.collectAsState().value,
             cartaNueva = vm.cartaRecienteUiState.collectAsState().value,
             onBlackJackEvent = { vm.onBlackJackEvent(it) },
+            onFinalizarBlackJack = { vmApuestas.finalizarBlackJack() },
             volverAtras = { onNavegarCasino(vm.usuarioUiState.correo, vm.usuarioUiState.saldo) },
             reiniciarPartida = {
                 vm.reiniciarPartida()

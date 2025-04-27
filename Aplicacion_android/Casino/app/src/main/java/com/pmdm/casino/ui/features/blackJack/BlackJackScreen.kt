@@ -1,6 +1,7 @@
 package com.pmdm.casino.ui.features.blackJack
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,14 +9,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -25,6 +26,7 @@ import com.pmdm.casino.R
 import com.pmdm.casino.ui.features.UsuarioCasinoUiState
 import com.pmdm.casino.ui.features.blackJack.components.CartaScreen
 import com.pmdm.casino.ui.features.blackJack.components.CartaUiState
+import com.pmdm.casino.ui.features.blackJack.components.CartasMesa
 import com.pmdm.casino.ui.features.components.ButtonWithLottie
 import com.pmdm.casino.ui.features.components.TopBar
 
@@ -39,15 +41,25 @@ fun BlackJackScreen(
     listadoCartasMaquina: List<CartaUiState>,
     cartaNueva: CartaUiState?,
     onBlackJackEvent: (BlackJackEvent) -> Unit,
+    onFinalizarBlackJack: () -> Unit,
     volverAtras: () -> Unit,
     reiniciarPartida: () -> Unit
 ) {
     Scaffold(
         topBar = {
-            TopBar(
-                usuarioUiState = usuarioUiState,
-                volverAtras = volverAtras
-            )
+            Box(
+                modifier = Modifier
+                    .height(100.dp)
+            ) {
+                TopBar(
+                    usuarioUiState = usuarioUiState,
+                    volverAtras = volverAtras,
+                    onFinalizar = onFinalizarBlackJack
+                )
+            }
+        },
+        bottomBar = {
+            Box(modifier = Modifier.height(0.dp))
         },
         content = { padding ->
             Box(
@@ -73,11 +85,7 @@ fun BlackJackScreen(
                                 .fillMaxWidth()
                                 .padding(16.dp)
                         ) {
-                            LazyRow {
-                                items(listadoCartasMaquina) { cartaMaquina ->
-                                    CartaScreen(cartaMaquina)
-                                }
-                            }
+                            CartasMesa(listadoCartasMaquina)
 
                             Text(
                                 text = "Puntos: $puntosMaquina",
@@ -107,16 +115,18 @@ fun BlackJackScreen(
                                 modifier = Modifier.align(Alignment.End)
                             )
 
-                            LazyRow {
-                                items(listadoCartas, key = { "${it.palo}_${it.valor}" }) { carta ->
-                                    CartaScreen(carta)
-                                }
-                            }
+                            CartasMesa(listadoCartas)
 
                             if (cartaNueva != null) {
-                                CartaScreen(
-                                    cartaNueva
-                                )
+                                Box(modifier = Modifier.fillMaxWidth()) {
+                                    CartaScreen(
+                                        cartaNueva,
+                                        Modifier
+                                            .size(200.dp)
+                                            .align(Alignment.Center)
+                                    )
+                                }
+
                             }
                         }
                     }
@@ -124,7 +134,7 @@ fun BlackJackScreen(
                         ButtonWithLottie(
                             modifier = Modifier
                                 .align(Alignment.BottomStart)
-                                .padding(5.dp),
+                                .padding(20.dp),
                             text = "Pedir carta",
                             isLoading = false,
                             onClick = {
@@ -135,7 +145,7 @@ fun BlackJackScreen(
                         ButtonWithLottie(
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
-                                .padding(5.dp),
+                                .padding(20.dp),
                             text = "Plantarse",
                             isLoading = false,
                             onClick = {
@@ -144,40 +154,62 @@ fun BlackJackScreen(
                         )
                     }
                 } else {
-                    Column {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
                         Text(
-                            if ((puntosMaquina in (puntosUsuario + 1)..21) || puntosUsuario > 21) {
+                            if (puntosUsuario > 21 || (puntosMaquina in puntosUsuario..21)) {
                                 "Has perdido"
                             } else {
                                 "Has ganado"
-                            }
+                            },
+                            fontSize = 16.sp,
+                            color = Color.White,
+                            modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
                         )
 
                         Text(
-                            "Puntos Jugador: $puntosUsuario"
+                            "Puntos Jugador: $puntosUsuario",
+                            fontSize = 16.sp,
+                            color = Color.White,
+                            modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
                         )
 
                         Text(
-                            "Puntos Cruppier: $puntosMaquina"
+                            "Puntos Cruppier: $puntosMaquina",
+                            fontSize = 16.sp,
+                            color = Color.White,
+                            modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
                         )
 
-                        Row {
+                        Row(modifier = Modifier.fillMaxWidth()) {
                             ButtonWithLottie(
                                 modifier = Modifier
                                     .height(50.dp)
-                                    .weight(1f),
+                                    .weight(1f)
+                                    .padding(5.dp),
                                 text = "Salir",
                                 isLoading = false,
-                                onClick = volverAtras
+                                onClick = {
+                                    onFinalizarBlackJack()
+                                    volverAtras()
+                                }
                             )
 
                             ButtonWithLottie(
                                 modifier = Modifier
                                     .height(50.dp)
-                                    .weight(1f),
+                                    .weight(1f)
+                                    .padding(5.dp),
                                 text = "Reiniciar",
                                 isLoading = false,
-                                onClick = reiniciarPartida
+                                onClick = {
+                                    onFinalizarBlackJack()
+                                    reiniciarPartida()
+                                }
                             )
                         }
                     }

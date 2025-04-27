@@ -23,7 +23,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MaquinaViewModel @Inject constructor(
-    private val blackJackRepository: BlackJackRepository
+    private val blackJackRepository: BlackJackRepository,
 ) : ViewModel() {
     var puntosTotalesMaquina by mutableIntStateOf(0)
 
@@ -64,7 +64,7 @@ class MaquinaViewModel @Inject constructor(
 
         viewModelScope.launch {
             while (continuar) {
-                if (puntosTotalesMaquina >= puntosUsuario || puntosTotalesMaquina >= 21) {
+                if (puntosUsuario > 21 || puntosTotalesMaquina >= puntosUsuario || puntosTotalesMaquina >= 21) {
                     plantarse()
                     continuar = false
                 } else {

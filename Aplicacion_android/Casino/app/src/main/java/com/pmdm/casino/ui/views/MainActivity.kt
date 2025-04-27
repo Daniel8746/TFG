@@ -7,9 +7,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.systemBarsIgnoringVisibility
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowInsetsCompat
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -27,6 +28,9 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // habilita el diseño de pantalla completa, extendiendo el contenido hasta los bordes.
+        enableEdgeToEdge()
+
         // Quitar action bar
         actionBar?.hide()
 
@@ -39,11 +43,9 @@ class MainActivity : ComponentActivity() {
             val windowInsetsController = window.insetsController
 
             // Configura el comportamiento de las barras del sistema
-            if (windowInsetsController != null) {
-                windowInsetsController.systemBarsBehavior =
-                    WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-                windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
-            }
+            windowInsetsController?.systemBarsBehavior =
+                WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            windowInsetsController?.hide(WindowInsetsCompat.Type.systemBars())
         }
 
         setContent {
@@ -55,9 +57,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-
-        // habilita el diseño de pantalla completa, extendiendo el contenido hasta los bordes.
-        enableEdgeToEdge()
     }
 
     override fun onPause() {
