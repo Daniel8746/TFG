@@ -1,5 +1,6 @@
 package com.pmdm.casino.di
 
+import com.pmdm.casino.data.services.apuestas.ApuestasService
 import com.pmdm.casino.data.services.blackJack.BlackJackService
 import com.pmdm.casino.data.services.interceptors.AuthInterceptor
 import com.pmdm.casino.data.services.juegos.JuegosService
@@ -61,4 +62,10 @@ object NetworkModule {
     fun provideBlackJackService(
         retrofit: Retrofit
     ): BlackJackService = retrofit.create(BlackJackService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideApuestasService(
+        retrofit: Retrofit
+    ): ApuestasService = retrofit.create(ApuestasService::class.java)
 }

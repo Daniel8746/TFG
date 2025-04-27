@@ -1,6 +1,7 @@
 package com.pmdm.casino.ui.features.components
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -14,6 +15,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pmdm.casino.ui.features.UsuarioCasinoUiState
 
@@ -25,6 +27,7 @@ fun TopBar(
     onFinalizar: (() -> Unit)? = null
 ) {
     TopAppBar(
+        windowInsets = WindowInsets(0, 0, 0, 0),
         title = {},
         navigationIcon = {
             if (volverAtras != null && onFinalizar != null) {
@@ -64,6 +67,7 @@ fun TopBar(
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer // Fondo suave
-        )
+        ),
+        expandedHeight = 80.dp
     )
 }

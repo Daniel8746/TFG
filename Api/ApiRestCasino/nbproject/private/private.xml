@@ -5,6 +5,7 @@
         <group>
             <file>file:/D:/Proyecto/Api/ApiRestCasino/src/java/services/ServiceRestBlackJack.java</file>
             <file>file:/D:/Proyecto/Api/ApiRestCasino/src/java/services/ServiceRestJuegos.java</file>
+            <file>file:/D:/Proyecto/Api/ApiRestCasino/src/java/services/ServiceRestApuestas.java</file>
         </group>
     </open-files>
 </project-private>

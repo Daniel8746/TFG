@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -46,20 +47,13 @@ fun BlackJackScreen(
     reiniciarPartida: () -> Unit
 ) {
     Scaffold(
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
-            Box(
-                modifier = Modifier
-                    .height(100.dp)
-            ) {
-                TopBar(
-                    usuarioUiState = usuarioUiState,
-                    volverAtras = volverAtras,
-                    onFinalizar = onFinalizarBlackJack
-                )
-            }
-        },
-        bottomBar = {
-            Box(modifier = Modifier.height(0.dp))
+            TopBar(
+                usuarioUiState = usuarioUiState,
+                volverAtras = volverAtras,
+                onFinalizar = onFinalizarBlackJack
+            )
         },
         content = { padding ->
             Box(

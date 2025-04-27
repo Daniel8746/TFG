@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsIgnoringVisibility
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -45,7 +43,6 @@ import com.pmdm.casino.ui.features.casino.components.AyudaScreen
 import com.pmdm.casino.ui.features.components.TopBar
 import java.math.BigDecimal
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun CasinoScreen(
     juegosUiState: List<JuegosUiState>,
@@ -59,16 +56,12 @@ fun CasinoScreen(
 ) {
     var ayudaJuego by remember { mutableStateOf("") }
 
-    WindowInsets.Companion.systemBarsIgnoringVisibility
-
     Scaffold(
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             TopBar(
                 usuarioUiState = usuarioUiState
             )
-        },
-        bottomBar = {
-            Box(modifier = Modifier.height(0.dp))
         },
         content = { padding ->
             Box(
