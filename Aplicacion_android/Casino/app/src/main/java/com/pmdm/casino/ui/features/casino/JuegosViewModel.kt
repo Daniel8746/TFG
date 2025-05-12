@@ -17,6 +17,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import java.net.ConnectException
 import java.net.SocketTimeoutException
@@ -39,44 +40,42 @@ class JuegosViewModel @Inject constructor(
     }
 
     init {
-        try {
-            viewModelScope.launch {
-                casinoRepository.getJuegos().collect {
+        viewModelScope.launch {
+            casinoRepository.getJuegos()
+                .catch { e ->
+                    when (e) {
+                        is NoNetworkException -> {
+                            Log.e("NoNetworkException", "Error: ${e.localizedMessage}")
+                            reintentarConexion = true
+                        }
+
+                        is SocketTimeoutException -> {
+                            Log.e("SocketTimeOut", "Error: ${e.localizedMessage}")
+                        }
+
+                        is ConnectException -> {
+                            Log.e("Connect fail", "Error: ${e.localizedMessage}")
+                        }
+                    }
+                }.collect {
                     _juegosUiState.value = it?.toJuegosUiStates() ?: emptyList()
                 }
-            }
-        } catch (e: NoNetworkException) {
-            Log.e("NoNetworkException", "Error: ${e.localizedMessage}")
-            reintentarConexion = true
-        } catch (e: SocketTimeoutException) {
-            Log.e("SocketTimeOut", "Error: ${e.localizedMessage}")
-        } catch (e: ConnectException) {
-            Log.e("Connect fail", "Error: ${e.localizedMessage}")
         }
     }
 
     fun onCasinoEvent(casinoEvent: JuegosEvent) {
-        try {
-            when (casinoEvent) {
-                is JuegosEvent.OnBlackJack -> {
-                    casinoEvent.onNavigateBlackJack(usuarioUiState.correo, usuarioUiState.saldo)
-                }
-
-                is JuegosEvent.OnRuleta -> {
-                    casinoEvent.onNavigateRuleta(usuarioUiState.correo, usuarioUiState.saldo)
-                }
-
-                is JuegosEvent.OnTragaMonedas -> {
-                    casinoEvent.onNavigateTragaMonedas(usuarioUiState.correo, usuarioUiState.saldo)
-                }
+        when (casinoEvent) {
+            is JuegosEvent.OnBlackJack -> {
+                casinoEvent.onNavigateBlackJack(usuarioUiState.correo, usuarioUiState.saldo)
             }
-        } catch (e: NoNetworkException) {
-            Log.e("NoNetworkException", "Error: ${e.localizedMessage}")
-            reintentarConexion = true
-        } catch (e: SocketTimeoutException) {
-            Log.e("SocketTimeOut", "Error: ${e.localizedMessage}")
-        } catch (e: ConnectException) {
-            Log.e("Connect fail", "Error: ${e.localizedMessage}")
+
+            is JuegosEvent.OnRuleta -> {
+                casinoEvent.onNavigateRuleta(usuarioUiState.correo, usuarioUiState.saldo)
+            }
+
+            is JuegosEvent.OnTragaMonedas -> {
+                casinoEvent.onNavigateTragaMonedas(usuarioUiState.correo, usuarioUiState.saldo)
+            }
         }
     }
 

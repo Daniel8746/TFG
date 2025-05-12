@@ -34,6 +34,7 @@ fun BlackJackScreen(
     reintentarConexion: Boolean,
     finalizarTurnoUsuario: Boolean,
     finalizarTurnoMaquina: Boolean,
+    poderPulsarBoton: Boolean,
     listadoCartas: List<CartaUiState>,
     listadoCartasMaquina: List<CartaUiState>,
     cartaNueva: CartaUiState?,
@@ -41,8 +42,7 @@ fun BlackJackScreen(
     onFinalizarBlackJack: () -> Unit,
     volverAtras: () -> Unit,
     reiniciarPartida: () -> Unit,
-    reiniciar: () -> Unit,
-    poderPulsarBoton: Boolean
+    reiniciar: () -> Unit
 ) {
     FondoBarraCasinoUI(
         usuarioUiState = usuarioUiState,

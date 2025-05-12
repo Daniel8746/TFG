@@ -18,12 +18,10 @@ import jakarta.ws.rs.core.Response;
 @Path("apuestas")
 public class ServiceRestApuestas {
     @POST
-    @Path("finalizar/black-jack")
+    @Path("finalizar")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    public Response finalizarBlackJack() {
-        
-       ServiceRestBlackJack.inicializarCartas();
+    public Response finalizarJuego() {
        return null;
     }
 }

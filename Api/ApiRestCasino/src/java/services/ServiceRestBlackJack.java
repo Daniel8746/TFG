@@ -8,7 +8,9 @@ import classRecord.CartaRecord;
 import com.google.gson.Gson;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
@@ -105,12 +107,39 @@ public class ServiceRestBlackJack {
         return response;
     }
 
-    public static void inicializarCartas() {
+    @POST
+    @Path("reiniciar-cartas")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response finalizar() {
+        Response response;
+
+        try {
+            inicializarCartas();
+
+            response = Response
+                    .status(Status.OK)
+                    .build();
+        } catch (Exception ex) {
+            response = Response
+                    .status(Status.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
+
+        return response;
+
+    }
+
+    private static void inicializarCartas() {
+        mazo1.clear();
+
         for (String palo : palos) {
             for (String valor : valores) {
                 mazo1.add(new CartaRecord(palo, valor));
-                mazo2.add(new CartaRecord(palo, valor));
             }
         }
+
+        mazo2.clear();
+        mazo2.addAll(mazo1);
     }
 }

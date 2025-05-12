@@ -21,6 +21,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import java.net.ConnectException
 import java.net.SocketTimeoutException
@@ -53,25 +54,31 @@ class BlackJackViewModel @Inject constructor(
     var poderPulsarBoton by mutableStateOf(true)
 
     init {
-        try {
-            empezarPartida()
-        } catch (e: NoNetworkException) {
-            Log.e("NoNetworkException", "Error: ${e.localizedMessage}")
-            reintentarConexion = true
-        } catch (e: SocketTimeoutException) {
-            Log.e("SocketTimeOut", "Error: ${e.localizedMessage}")
-        } catch (e: ConnectException) {
-            Log.e("Connect fail", "Error: ${e.localizedMessage}")
-        }
+        empezarPartida()
     }
 
     fun onBlackJackEvent(event: BlackJackEvent) {
-        try {
-            poderPulsarBoton = false
-            when (event) {
-                is BlackJackEvent.OnPedirCarta -> {
-                    viewModelScope.launch {
-                        blackJackRepository.getCarta().collect {
+        poderPulsarBoton = false
+        when (event) {
+            is BlackJackEvent.OnPedirCarta -> {
+                viewModelScope.launch {
+                    blackJackRepository.getCarta()
+                        .catch { e ->
+                            when (e) {
+                                is NoNetworkException -> {
+                                    Log.e("NoNetworkException", "Error: ${e.localizedMessage}")
+                                    reintentarConexion = true
+                                }
+
+                                is SocketTimeoutException -> {
+                                    Log.e("SocketTimeOut", "Error: ${e.localizedMessage}")
+                                }
+
+                                is ConnectException -> {
+                                    Log.e("Connect fail", "Error: ${e.localizedMessage}")
+                                }
+                            }
+                        }.collect {
                             val nuevaCartaUi = it?.toCartaUiState()
 
                             _cartaRecienteUiState.value.let { it1 ->
@@ -85,42 +92,54 @@ class BlackJackViewModel @Inject constructor(
                             }
                         }
 
-                        val resultado =
-                            sumarPuntos(
-                                puntosTotalesUsuario,
-                                _cartasUiState.value,
-                                _cartaRecienteUiState.value
-                            )
+                    val resultado =
+                        sumarPuntos(
+                            puntosTotalesUsuario,
+                            _cartasUiState.value,
+                            _cartaRecienteUiState.value
+                        )
 
-                        puntosTotalesUsuario = resultado.first
-                        finalizarPartida = resultado.second
-                    }
-                }
-
-                is BlackJackEvent.OnPlantarse -> {
-                    finalizarPartida = true
+                    puntosTotalesUsuario = resultado.first
+                    finalizarPartida = resultado.second
                 }
             }
-            poderPulsarBoton = true
-        } catch (e: NoNetworkException) {
-            Log.e("NoNetworkException", "Error: ${e.localizedMessage}")
-            reintentarConexion = true
-        } catch (e: SocketTimeoutException) {
-            Log.e("SocketTimeOut", "Error: ${e.localizedMessage}")
-        } catch (e: ConnectException) {
-            Log.e("Connect fail", "Error: ${e.localizedMessage}")
+
+            is BlackJackEvent.OnPlantarse -> {
+                finalizarPartida = true
+            }
         }
+        poderPulsarBoton = true
     }
 
     private fun empezarPartida() {
         viewModelScope.launch {
-            blackJackRepository.iniciarJuego().collect {
-                _cartasUiState.value =
-                    it?.toMutableList()?.toCartasUiState() ?: mutableListOf()
-            }
+            blackJackRepository.iniciarJuego()
+                .catch { e ->
+                    when (e) {
+                        is NoNetworkException -> {
+                            Log.e("NoNetworkException", "Error: ${e.localizedMessage}")
+                            reintentarConexion = true
+                        }
+
+                        is SocketTimeoutException -> {
+                            Log.e("SocketTimeOut", "Error: ${e.localizedMessage}")
+                        }
+
+                        is ConnectException -> {
+                            Log.e("Connect fail", "Error: ${e.localizedMessage}")
+                        }
+                    }
+                }.collect {
+                    _cartasUiState.value =
+                        it?.toMutableList()?.toCartasUiState() ?: mutableListOf()
+                }
 
             val resultado =
-                sumarPuntos(puntosTotalesUsuario, _cartasUiState.value, _cartaRecienteUiState.value)
+                sumarPuntos(
+                    puntosTotalesUsuario,
+                    _cartasUiState.value,
+                    _cartaRecienteUiState.value
+                )
 
             puntosTotalesUsuario = resultado.first
         }
@@ -133,6 +152,12 @@ class BlackJackViewModel @Inject constructor(
         _cartasUiState.value = mutableListOf()
 
         empezarPartida()
+    }
+
+    fun reiniciarCartas() {
+        viewModelScope.launch {
+            blackJackRepository.reiniciarCartas()
+        }
     }
 
     fun crearUsuarioCasino(usuario: BlackJackRoute) {

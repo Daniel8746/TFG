@@ -51,6 +51,7 @@ fun NavGraphBuilder.blackDestination(
             usuarioUiState = vm.usuarioUiState,
             puntosUsuario = vm.puntosTotalesUsuario,
             puntosMaquina = vmMaquina.puntosTotalesMaquina,
+            reintentarConexion = vm.reintentarConexion,
             finalizarTurnoUsuario = vm.finalizarPartida,
             finalizarTurnoMaquina = vmMaquina.finalizarPartida,
             poderPulsarBoton = vm.poderPulsarBoton,
@@ -58,13 +59,15 @@ fun NavGraphBuilder.blackDestination(
             listadoCartasMaquina = vmMaquina.cartasUiState.collectAsState().value.toList(),
             cartaNueva = vm.cartaRecienteUiState.collectAsState().value,
             onBlackJackEvent = { vm.onBlackJackEvent(it) },
-            onFinalizarBlackJack = { vmApuestas.finalizarBlackJack() },
+            onFinalizarBlackJack = {
+                vm.reiniciarCartas()
+                vmApuestas.finalizarBlackJack()
+            },
             volverAtras = { onNavegarCasino(vm.usuarioUiState.correo, vm.usuarioUiState.saldo) },
             reiniciarPartida = {
                 vm.reiniciarPartida()
                 vmMaquina.reiniciarPartida()
             },
-            reintentarConexion = vm.reintentarConexion,
             reiniciar = { vm.reiniciar(context) }
         )
     }

@@ -18,4 +18,6 @@ class BlackJackRepository @Inject constructor(
     suspend fun iniciarJuego(): Flow<List<Carta>?> = flow {
         emit(blackJackService.iniciarJuego()?.toCartas())
     }.flowOn(Dispatchers.IO)
+
+    suspend fun reiniciarCartas() = blackJackService.reiniciarCartas()
 }

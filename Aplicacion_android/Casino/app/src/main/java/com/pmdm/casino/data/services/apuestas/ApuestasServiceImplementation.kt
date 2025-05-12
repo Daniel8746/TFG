@@ -2,6 +2,7 @@ package com.pmdm.casino.data.services.apuestas
 
 import android.util.Log
 import com.pmdm.casino.data.exceptions.ApiServicesException
+import com.pmdm.casino.data.repositorys.validarCodigoResponse
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -16,6 +17,8 @@ class ApuestasServiceImplementation @Inject constructor(
 
         try {
             val response = apuestasService.finalizarBlackJack()
+
+            validarCodigoResponse(response)
 
             if (response.isSuccessful) {
                 Log.d(logTag, response.toString())

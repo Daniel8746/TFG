@@ -2,6 +2,7 @@ package com.pmdm.casino.data.services.usuario
 
 import android.util.Log
 import com.pmdm.casino.data.exceptions.ApiServicesException
+import com.pmdm.casino.data.repositorys.validarCodigoResponse
 import java.math.BigDecimal
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -17,6 +18,8 @@ class UsuarioServiceImplementation @Inject constructor(
 
         try {
             val response = usuarioService.login(usuario)
+
+            validarCodigoResponse(response)
 
             if (response.isSuccessful) {
                 Log.d(logTag, response.toString())
@@ -44,6 +47,8 @@ class UsuarioServiceImplementation @Inject constructor(
         try {
             val response = usuarioService.crearUsuario(usuario)
 
+            validarCodigoResponse(response)
+
             if (response.isSuccessful) {
                 Log.d(logTag, response.toString())
 
@@ -66,6 +71,8 @@ class UsuarioServiceImplementation @Inject constructor(
 
         try {
             val response = usuarioService.eliminarUsuario(usuario)
+
+            validarCodigoResponse(response)
 
             if (response.isSuccessful) {
                 Log.d(logTag, response.toString())

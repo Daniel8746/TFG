@@ -19,6 +19,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.net.ConnectException
@@ -59,77 +60,83 @@ class LoginViewModel @Inject constructor(
     }
 
     fun onLoginEvent(loginEvent: LoginEvent) {
-        try {
-            when (loginEvent) {
-                is LoginEvent.LoginChanged -> {
-                    usuarioUiState = usuarioUiState.copy(
-                        login = loginEvent.login
-                    )
-                    validacionLoginUiState = validacionLoginUiState.copy(
-                        validacionLogin = validadorLogin.validadorLogin.valida(loginEvent.login)
-                    )
-                }
+        when (loginEvent) {
+            is LoginEvent.LoginChanged -> {
+                usuarioUiState = usuarioUiState.copy(
+                    login = loginEvent.login
+                )
+                validacionLoginUiState = validacionLoginUiState.copy(
+                    validacionLogin = validadorLogin.validadorLogin.valida(loginEvent.login)
+                )
+            }
 
-                is LoginEvent.PasswordChanged -> {
-                    usuarioUiState = usuarioUiState.copy(
-                        password = loginEvent.password
-                    )
-                    validacionLoginUiState = validacionLoginUiState.copy(
-                        validacionPassword = validadorLogin.validadorPassword.valida(loginEvent.password)
-                    )
-                }
+            is LoginEvent.PasswordChanged -> {
+                usuarioUiState = usuarioUiState.copy(
+                    password = loginEvent.password
+                )
+                validacionLoginUiState = validacionLoginUiState.copy(
+                    validacionPassword = validadorLogin.validadorPassword.valida(loginEvent.password)
+                )
+            }
 
-                is LoginEvent.OnClickLogearse -> {
-                    viewModelScope.launch {
-                        validacionLoginUiState = validadorLogin.valida(usuarioUiState)
-                        if (!validacionLoginUiState.hayError) {
-                            logearse()
+            is LoginEvent.OnClickLogearse -> {
+                viewModelScope.launch {
+                    validacionLoginUiState = validadorLogin.valida(usuarioUiState)
+                    if (!validacionLoginUiState.hayError) {
+                        logearse()
 
-                            if (_usuarioCorrecto.value) {
-                                if (_token.value.isNotEmpty()) {
-                                    if (recordarmeState) {
-                                        TokenManager.saveToken(
-                                            getApplication(context),
-                                            _token.value
-                                        )
-                                    }
+                        if (_usuarioCorrecto.value) {
+                            if (_token.value.isNotEmpty()) {
+                                if (recordarmeState) {
+                                    TokenManager.saveToken(
+                                        getApplication(context),
+                                        _token.value
+                                    )
+                                }
 
-                                    loginEvent.onNavigateJuego?.let {
-                                        it(
-                                            usuarioUiState.login,
-                                            _saldo.value
-                                        )
-                                    }
+                                loginEvent.onNavigateJuego?.let {
+                                    it(
+                                        usuarioUiState.login,
+                                        _saldo.value
+                                    )
                                 }
                             }
                         }
                     }
-
-                }
-
-                is LoginEvent.OnClickNuevoUsuario -> {
-                    loginEvent.onNavigateNuevoUsuario
                 }
             }
-        } catch (e: NoNetworkException) {
-            Log.e("NoNetworkException", "Error: ${e.localizedMessage}")
-            reintentarConexion = true
-        } catch (e: SocketTimeoutException) {
-            Log.e("SocketTimeOut", "Error: ${e.localizedMessage}")
-        } catch (e: ConnectException) {
-            Log.e("ConnectException", "Error: ${e.localizedMessage}")
+
+            is LoginEvent.OnClickNuevoUsuario -> {
+                loginEvent.onNavigateNuevoUsuario
+            }
         }
     }
 
     private suspend fun logearse() {
         _isLoading.value = true
 
-        usuarioRepository.login(usuarioUiState.toUsuario()).collect {
-            _usuarioCorrecto.value = it.first
-            _saldo.value = it.second
-            _token.value = it.third
-            delay(2500)
-            _isLoading.value = false
-        }
+        usuarioRepository.login(usuarioUiState.toUsuario())
+            .catch { e ->
+                when (e) {
+                    is NoNetworkException -> {
+                        Log.e("NoNetworkException", "Error: ${e.localizedMessage}")
+                        reintentarConexion = true
+                    }
+
+                    is SocketTimeoutException -> {
+                        Log.e("SocketTimeOut", "Error: ${e.localizedMessage}")
+                    }
+
+                    is ConnectException -> {
+                        Log.e("Connect fail", "Error: ${e.localizedMessage}")
+                    }
+                }
+            }.collect {
+                _usuarioCorrecto.value = it.first
+                _saldo.value = it.second
+                _token.value = it.third
+                delay(2500)
+                _isLoading.value = false
+            }
     }
 }
