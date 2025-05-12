@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,6 +38,7 @@ fun RuletaScreen(
     FondoBarraCasinoUI(
         usuarioUiState = usuarioUiState,
         reintentarConexion = reintentarConexion,
+        errorApi = false,
         reiniciar = reiniciar,
         volverAtras = volverAtras,
         onFinalizarJuego = {}
@@ -48,8 +48,7 @@ fun RuletaScreen(
         // Ejemplo ruleta arriba numeros abajo para seleccionar
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             filas.forEach { fila ->
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {

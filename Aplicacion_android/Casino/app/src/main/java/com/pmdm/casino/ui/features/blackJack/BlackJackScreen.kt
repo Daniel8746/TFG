@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -32,6 +31,7 @@ fun BlackJackScreen(
     puntosUsuario: Int,
     puntosMaquina: Int,
     reintentarConexion: Boolean,
+    errorApi: Boolean,
     finalizarTurnoUsuario: Boolean,
     finalizarTurnoMaquina: Boolean,
     poderPulsarBoton: Boolean,
@@ -47,14 +47,13 @@ fun BlackJackScreen(
     FondoBarraCasinoUI(
         usuarioUiState = usuarioUiState,
         reintentarConexion = reintentarConexion,
+        errorApi = errorApi,
         reiniciar = reiniciar,
         volverAtras = volverAtras,
         onFinalizarJuego = onFinalizarBlackJack
     ) {
         if (!finalizarTurnoMaquina) {
-            Column(
-                modifier = Modifier.fillMaxSize()
-            ) {
+            Column {
                 // Parte superior: Máquina
                 Column(
                     modifier = Modifier
@@ -177,8 +176,6 @@ fun BlackJackScreen(
             }
         } else {
             Column(
-                modifier = Modifier
-                    .fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {

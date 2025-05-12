@@ -1,5 +1,6 @@
 package com.pmdm.casino.ui.features.components
 
+import android.app.Activity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -14,15 +15,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 
 @Composable
-fun AbrirDialogoNoConexion(
-    onClick: () -> Unit
-) {
+fun AbrirDialogoNoApiRest() {
+    val context = LocalContext.current
+
     Dialog(
         onDismissRequest = {}
     ) {
@@ -38,7 +40,7 @@ fun AbrirDialogoNoConexion(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "No hay conexión a internet. ¿Quieres reintentar?",
+                    text = "El servidor está en mantenimiento, disculpe las molestias.",
                     fontSize = 20.sp,
                     color = MaterialTheme.colorScheme.onBackground,
                     fontWeight = FontWeight.Normal
@@ -50,9 +52,9 @@ fun AbrirDialogoNoConexion(
                     modifier = Modifier
                         .height(50.dp)
                         .align(Alignment.End),
-                    text = "Reintentar",
+                    text = "Salir",
                     isLoading = false,
-                    onClick = onClick
+                    onClick = { (context as Activity).finishAndRemoveTask() }
                 )
             }
         }

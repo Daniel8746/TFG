@@ -28,11 +28,12 @@ fun NavGraphBuilder.loginDestination(
             loginErroneo = vm.usuarioCorrecto.collectAsState().value,
             isLoading = vm.isLoading.collectAsState().value,
             recordarmeState = vm.recordarmeState,
+            reintentarConexion = vm.reintentarConexion,
+            errorApi = vm.errorApi,
             onLoginEvent = { vm.onLoginEvent(it) },
             onNavigateToCasino = onNavegarCasino,
             onNavigateToNuevaCuenta = onNavegarNuevaCuenta,
             onRecordarmeState = { vm.onRecordarmeState(it) },
-            reintentarConexion = vm.reintentarConexion,
             reiniciar = { vm.reiniciar(context) }
         )
     }

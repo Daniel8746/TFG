@@ -34,6 +34,10 @@ class MaquinaViewModel @Inject constructor(
 
     var finalizarPartida by mutableStateOf(false)
 
+    var errorApi by mutableStateOf(false)
+
+    var reintentarConexion by mutableStateOf(false)
+
     init {
         pedirCarta()
     }
@@ -49,9 +53,10 @@ class MaquinaViewModel @Inject constructor(
     suspend fun empezarTurnoMaquina() {
         while (puntosTotalesMaquina < 17) {
             pedirCarta()
-            delay(700)
+            delay(1500)
         }
 
+        delay(3500)
         plantarse()
     }
 
@@ -62,14 +67,17 @@ class MaquinaViewModel @Inject constructor(
                     when (e) {
                         is NoNetworkException -> {
                             Log.e("NoNetworkException", "Error: ${e.localizedMessage}")
+                            reintentarConexion = true
                         }
 
                         is SocketTimeoutException -> {
                             Log.e("SocketTimeOut", "Error: ${e.localizedMessage}")
+                            errorApi = true
                         }
 
                         is ConnectException -> {
                             Log.e("Connect fail", "Error: ${e.localizedMessage}")
+                            errorApi = true
                         }
                     }
                 }.collect {

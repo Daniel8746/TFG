@@ -22,12 +22,13 @@ fun NavGraphBuilder.splashDestination(
         val context = LocalContext.current
 
         SplashScreen(
-            onNavegarLogin = onNavegarLogin,
-            onNavegarJuegos = onNavegarJuegos,
             correo = vm.correoState.value,
             saldo = vm.saldoState.value,
+            errorApi = vm.errorApi,
             reintentarConexion = vm.reintentarConexion,
-            reiniciar = { vm.reiniciar(context) }
+            reiniciar = { vm.reiniciar(context) },
+            onNavegarLogin = onNavegarLogin,
+            onNavegarJuegos = onNavegarJuegos
         )
     }
 }

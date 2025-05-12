@@ -52,6 +52,7 @@ fun NavGraphBuilder.blackDestination(
             puntosUsuario = vm.puntosTotalesUsuario,
             puntosMaquina = vmMaquina.puntosTotalesMaquina,
             reintentarConexion = vm.reintentarConexion,
+            errorApi = vm.errorApi,
             finalizarTurnoUsuario = vm.finalizarPartida,
             finalizarTurnoMaquina = vmMaquina.finalizarPartida,
             poderPulsarBoton = vm.poderPulsarBoton,

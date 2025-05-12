@@ -35,7 +35,7 @@ object NetworkModule {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.level = HttpLoggingInterceptor.Level.HEADERS
 
-        val timeout = 10L
+        val timeout = 5L
         return OkHttpClient.Builder()
             .addInterceptor(ConnectVerifierInterceptor(networkMonitor))
             .addInterceptor(authInterceptor)

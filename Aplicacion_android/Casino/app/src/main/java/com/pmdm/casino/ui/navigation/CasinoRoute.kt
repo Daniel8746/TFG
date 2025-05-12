@@ -46,6 +46,7 @@ fun NavGraphBuilder.casinoDestination(
             onAyudaEvent = { vm.onAbrirAyuda() },
             isAyudaAbierta = vm.isAyudaAbierta,
             reintentarConexion = vm.reintentarConexion,
+            errorApi = vm.errorApi,
             reiniciar = { vm.reiniciar(context) }
         )
     }

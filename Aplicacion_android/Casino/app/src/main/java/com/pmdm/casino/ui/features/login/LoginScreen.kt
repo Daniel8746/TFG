@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.pmdm.casino.R
+import com.pmdm.casino.ui.features.components.AbrirDialogoNoApiRest
 import com.pmdm.casino.ui.features.components.AbrirDialogoNoConexion
 import com.pmdm.casino.ui.features.login.components.CircularImageFromResource
 import com.pmdm.casino.ui.features.login.components.TextNewAccount
@@ -44,6 +45,7 @@ fun LoginScreen(
     isLoading: Boolean,
     recordarmeState: Boolean,
     reintentarConexion: Boolean,
+    errorApi: Boolean,
     onLoginEvent: (LoginEvent) -> Unit,
     onNavigateToCasino: ((correo: String, saldo: BigDecimal) -> Unit)? = null,
     onNavigateToNuevaCuenta: () -> Unit,
@@ -144,7 +146,9 @@ fun LoginScreen(
             TextNewAccount(onClick = onNavigateToNuevaCuenta, color = Color(0xFFFFD700))
         }
 
-        if (reintentarConexion) {
+        if (errorApi) {
+            AbrirDialogoNoApiRest()
+        } else if (reintentarConexion) {
             AbrirDialogoNoConexion {
                 reiniciar()
             }
@@ -167,9 +171,10 @@ fun LoginScreenPreview() {
                 loginErroneo = false,
                 isLoading = false,
                 recordarmeState = false,
+                reintentarConexion = false,
+                false,
                 onLoginEvent = loginViewModel::onLoginEvent,
                 onNavigateToNuevaCuenta = {},
-                reintentarConexion = false,
                 reiniciar = {})
         }
     }

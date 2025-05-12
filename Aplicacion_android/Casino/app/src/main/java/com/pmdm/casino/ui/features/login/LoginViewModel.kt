@@ -49,6 +49,8 @@ class LoginViewModel @Inject constructor(
 
     var recordarmeState by mutableStateOf(false)
 
+    var errorApi by mutableStateOf(false)
+
     fun onRecordarmeState(recordarme: Boolean) {
         recordarmeState = recordarme
     }
@@ -125,10 +127,12 @@ class LoginViewModel @Inject constructor(
 
                     is SocketTimeoutException -> {
                         Log.e("SocketTimeOut", "Error: ${e.localizedMessage}")
+                        errorApi = true
                     }
 
                     is ConnectException -> {
                         Log.e("Connect fail", "Error: ${e.localizedMessage}")
+                        errorApi = true
                     }
                 }
             }.collect {

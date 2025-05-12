@@ -25,9 +25,10 @@ fun NavGraphBuilder.nuevoUsuarioDestination(
             validacionNuevoUsuarioUiState = vm.validacionNuevoUsuarioUiState,
             nuevoUsuarioError = vm.usuarioCreado.collectAsState().value,
             isLoading = vm.isLoading.collectAsState().value,
+            reintentarConexion = vm.reintentarConexion,
+            errorApi = vm.errorApi,
             onNuevoUsuarioEvent = { vm.onNuevoUsuarioEvent(it) },
             onNavigateToLogin = onNavigateToLogin,
-            reintentarConexion = vm.reintentarConexion,
             reiniciar = { vm.reiniciar(context) }
         )
     }

@@ -34,6 +34,8 @@ class SplashViewModel @Inject constructor(
 
     var reintentarConexion by mutableStateOf(false)
 
+    var errorApi by mutableStateOf(false)
+
     fun reiniciar(context: Context) {
         reintentarConexion = reiniciarApp(context)
     }
@@ -55,10 +57,12 @@ class SplashViewModel @Inject constructor(
 
                     is SocketTimeoutException -> {
                         Log.e("SocketTimeOut", "Error: ${e.localizedMessage}")
+                        errorApi = true
                     }
 
                     is ConnectException -> {
                         Log.e("Connect fail", "Error: ${e.localizedMessage}")
+                        errorApi = true
                     }
                 }
             }.collect {

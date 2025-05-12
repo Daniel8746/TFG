@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pmdm.casino.R
+import com.pmdm.casino.ui.features.components.AbrirDialogoNoApiRest
 import com.pmdm.casino.ui.features.components.AbrirDialogoNoConexion
 import com.pmdm.casino.ui.features.nuevousuario.components.NuevoUsuarioCreacion
 
@@ -32,6 +33,7 @@ fun NuevoUsuarioScreen(
     nuevoUsuarioError: Boolean,
     isLoading: Boolean,
     reintentarConexion: Boolean,
+    errorApi: Boolean,
     onNuevoUsuarioEvent: (NuevoUsuarioEvent) -> Unit,
     onNavigateToLogin: () -> Unit,
     reiniciar: () -> Unit
@@ -93,7 +95,9 @@ fun NuevoUsuarioScreen(
             TextLogin(onClick = onNavigateToLogin, color = Color.Yellow)
         }
 
-        if (reintentarConexion) {
+        if (errorApi) {
+            AbrirDialogoNoApiRest()
+        } else if (reintentarConexion) {
             AbrirDialogoNoConexion {
                 reiniciar()
             }

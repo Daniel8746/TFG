@@ -47,6 +47,8 @@ class BlackJackViewModel @Inject constructor(
 
     var reintentarConexion by mutableStateOf(false)
 
+    var errorApi by mutableStateOf(false)
+
     fun reiniciar(context: Context) {
         reintentarConexion = reiniciarApp(context)
     }
@@ -72,10 +74,12 @@ class BlackJackViewModel @Inject constructor(
 
                                 is SocketTimeoutException -> {
                                     Log.e("SocketTimeOut", "Error: ${e.localizedMessage}")
+                                    errorApi = true
                                 }
 
                                 is ConnectException -> {
                                     Log.e("Connect fail", "Error: ${e.localizedMessage}")
+                                    errorApi = true
                                 }
                             }
                         }.collect {
@@ -123,10 +127,12 @@ class BlackJackViewModel @Inject constructor(
 
                         is SocketTimeoutException -> {
                             Log.e("SocketTimeOut", "Error: ${e.localizedMessage}")
+                            errorApi = true
                         }
 
                         is ConnectException -> {
                             Log.e("Connect fail", "Error: ${e.localizedMessage}")
+                            errorApi = true
                         }
                     }
                 }.collect {

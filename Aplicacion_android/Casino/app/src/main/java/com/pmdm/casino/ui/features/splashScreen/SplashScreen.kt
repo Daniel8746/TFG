@@ -21,6 +21,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.pmdm.casino.R
+import com.pmdm.casino.ui.features.components.AbrirDialogoNoApiRest
 import com.pmdm.casino.ui.features.components.AbrirDialogoNoConexion
 import java.math.BigDecimal
 
@@ -28,6 +29,7 @@ import java.math.BigDecimal
 fun SplashScreen(
     correo: String,
     saldo: BigDecimal,
+    errorApi: Boolean,
     reintentarConexion: Boolean,
     reiniciar: () -> Unit,
     onNavegarLogin: () -> Unit,
@@ -44,7 +46,7 @@ fun SplashScreen(
             val logoAnimationState =
                 animateLottieCompositionAsState(
                     composition = composition,
-                    isPlaying = !reintentarConexion
+                    isPlaying = !reintentarConexion && !errorApi
                 )
             LottieAnimation(
                 composition = composition,
@@ -62,7 +64,7 @@ fun SplashScreen(
                 trackColor = Color.Gray.copy(alpha = 0.3f)
             )
 
-            if (logoAnimationState.isAtEnd && logoAnimationState.isPlaying && !reintentarConexion) {
+            if (logoAnimationState.isAtEnd && logoAnimationState.isPlaying && !reintentarConexion && !errorApi) {
                 LaunchedEffect(Unit) {
                     if (correo.isNotEmpty()) {
                         onNavegarJuegos(correo, saldo)
@@ -73,7 +75,9 @@ fun SplashScreen(
             }
         }
 
-        if (reintentarConexion) {
+        if (errorApi) {
+            AbrirDialogoNoApiRest()
+        } else if (reintentarConexion) {
             AbrirDialogoNoConexion {
                 reiniciar()
             }

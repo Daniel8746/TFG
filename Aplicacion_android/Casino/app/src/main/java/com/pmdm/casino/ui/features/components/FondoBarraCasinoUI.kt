@@ -18,10 +18,11 @@ import com.pmdm.casino.ui.features.UsuarioCasinoUiState
 fun FondoBarraCasinoUI(
     usuarioUiState: UsuarioCasinoUiState,
     reintentarConexion: Boolean,
+    errorApi: Boolean,
     reiniciar: () -> Unit,
     volverAtras: (() -> Unit)? = null,
     onFinalizarJuego: (() -> Unit)? = null,
-    composable: @Composable BoxScope.() -> Unit
+    composable: @Composable() (BoxScope.() -> Unit)
 ) {
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -45,7 +46,9 @@ fun FondoBarraCasinoUI(
                     contentScale = ContentScale.FillBounds
                 )
 
-                if (reintentarConexion) {
+                if (errorApi) {
+                    AbrirDialogoNoApiRest()
+                } else if (reintentarConexion) {
                     AbrirDialogoNoConexion {
                         reiniciar()
                     }

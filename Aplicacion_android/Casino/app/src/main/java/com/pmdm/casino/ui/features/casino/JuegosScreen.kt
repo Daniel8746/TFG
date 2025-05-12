@@ -44,6 +44,7 @@ fun CasinoScreen(
     usuarioUiState: UsuarioCasinoUiState,
     isAyudaAbierta: Boolean,
     reintentarConexion: Boolean,
+    errorApi: Boolean,
     onCasinoEvent: (JuegosEvent) -> Unit,
     onBlackJackEvent: (correo: String, saldo: BigDecimal) -> Unit,
     onRuletaEvent: (correo: String, saldo: BigDecimal) -> Unit,
@@ -56,6 +57,7 @@ fun CasinoScreen(
     FondoBarraCasinoUI(
         usuarioUiState = usuarioUiState,
         reintentarConexion = reintentarConexion,
+        errorApi = errorApi,
         reiniciar = reiniciar
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -103,7 +105,6 @@ fun CasinoScreen(
                             )
                         ) {
                             Column(
-                                modifier = Modifier.padding(10.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
