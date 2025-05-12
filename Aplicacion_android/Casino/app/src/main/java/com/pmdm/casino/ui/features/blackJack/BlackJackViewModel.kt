@@ -1,16 +1,19 @@
 package com.pmdm.casino.ui.features.blackJack
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.util.fastSumBy
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.pmdm.casino.data.BlackJackRepository
+import com.pmdm.casino.data.exceptions.NoNetworkException
+import com.pmdm.casino.data.repositorys.BlackJackRepository
 import com.pmdm.casino.ui.features.UsuarioCasinoUiState
 import com.pmdm.casino.ui.features.blackJack.components.CartaUiState
+import com.pmdm.casino.ui.features.reiniciarApp
+import com.pmdm.casino.ui.features.sumarPuntos
 import com.pmdm.casino.ui.features.toCartaUiState
 import com.pmdm.casino.ui.features.toCartasUiState
 import com.pmdm.casino.ui.navigation.BlackJackRoute
@@ -41,16 +44,30 @@ class BlackJackViewModel @Inject constructor(
 
     var finalizarPartida by mutableStateOf(false)
 
+    var reintentarConexion by mutableStateOf(false)
+
+    fun reiniciar(context: Context) {
+        reintentarConexion = reiniciarApp(context)
+    }
+
+    var poderPulsarBoton by mutableStateOf(true)
+
     init {
         try {
             empezarPartida()
+        } catch (e: NoNetworkException) {
+            Log.e("NoNetworkException", "Error: ${e.localizedMessage}")
+            reintentarConexion = true
         } catch (e: SocketTimeoutException) {
             Log.e("SocketTimeOut", "Error: ${e.localizedMessage}")
+        } catch (e: ConnectException) {
+            Log.e("Connect fail", "Error: ${e.localizedMessage}")
         }
     }
 
     fun onBlackJackEvent(event: BlackJackEvent) {
         try {
+            poderPulsarBoton = false
             when (event) {
                 is BlackJackEvent.OnPedirCarta -> {
                     viewModelScope.launch {
@@ -68,7 +85,15 @@ class BlackJackViewModel @Inject constructor(
                             }
                         }
 
-                        sumarPuntos()
+                        val resultado =
+                            sumarPuntos(
+                                puntosTotalesUsuario,
+                                _cartasUiState.value,
+                                _cartaRecienteUiState.value
+                            )
+
+                        puntosTotalesUsuario = resultado.first
+                        finalizarPartida = resultado.second
                     }
                 }
 
@@ -76,31 +101,14 @@ class BlackJackViewModel @Inject constructor(
                     finalizarPartida = true
                 }
             }
+            poderPulsarBoton = true
+        } catch (e: NoNetworkException) {
+            Log.e("NoNetworkException", "Error: ${e.localizedMessage}")
+            reintentarConexion = true
         } catch (e: SocketTimeoutException) {
             Log.e("SocketTimeOut", "Error: ${e.localizedMessage}")
         } catch (e: ConnectException) {
             Log.e("Connect fail", "Error: ${e.localizedMessage}")
-        }
-    }
-
-    private fun sumarPuntos() {
-        puntosTotalesUsuario = _cartasUiState.value.fastSumBy { suma ->
-            getValorCarta(suma)
-        }
-
-        puntosTotalesUsuario += _cartaRecienteUiState.value?.let { getValorCarta(it) } ?: 0
-
-        if (puntosTotalesUsuario >= 21) {
-            finalizarPartida = true
-        }
-    }
-
-    // Función que convierte una carta en su valor correspondiente
-    private fun getValorCarta(carta: CartaUiState): Int {
-        return when (carta.valor) {
-            "J", "Q", "K" -> 10
-            "A" -> if (puntosTotalesUsuario + 11 > 21) 1 else 11
-            else -> carta.valor.toInt()
         }
     }
 
@@ -111,7 +119,10 @@ class BlackJackViewModel @Inject constructor(
                     it?.toMutableList()?.toCartasUiState() ?: mutableListOf()
             }
 
-            sumarPuntos()
+            val resultado =
+                sumarPuntos(puntosTotalesUsuario, _cartasUiState.value, _cartaRecienteUiState.value)
+
+            puntosTotalesUsuario = resultado.first
         }
     }
 

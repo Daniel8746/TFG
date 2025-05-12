@@ -2,7 +2,7 @@ package com.pmdm.casino.ui.navigation
 
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
@@ -20,7 +20,8 @@ data class CasinoRoute(val correo: String, val saldo: @Contextual BigDecimal)
 fun NavGraphBuilder.casinoDestination(
     onNavegarBlackJack: (correo: String, saldo: BigDecimal) -> Unit,
     onNavegarRuleta: (correo: String, saldo: BigDecimal) -> Unit,
-    onNavegarTragaMonedas: (correo: String, saldo: BigDecimal) -> Unit
+    onNavegarTragaMonedas: (correo: String, saldo: BigDecimal) -> Unit,
+    vm: JuegosViewModel
 ) {
     composable(
         route = "casino/{correo}/{saldo}",
@@ -29,11 +30,11 @@ fun NavGraphBuilder.casinoDestination(
             navArgument("saldo") { type = BigDecimalNavType() }
         )
     ) { backStackEntry ->
-        val vm = hiltViewModel<JuegosViewModel>(backStackEntry)
-
         val usuarioCasino: CasinoRoute = remember { backStackEntry.toRoute<CasinoRoute>() }
 
         vm.crearUsuarioCasino(usuarioCasino)
+
+        val context = LocalContext.current
 
         CasinoScreen(
             juegosUiState = vm.juegosUiState.collectAsState().value,
@@ -43,7 +44,9 @@ fun NavGraphBuilder.casinoDestination(
             onRuletaEvent = onNavegarRuleta,
             onTragaMonedas = onNavegarTragaMonedas,
             onAyudaEvent = { vm.onAbrirAyuda() },
-            isAyudaAbierta = vm.isAyudaAbierta
+            isAyudaAbierta = vm.isAyudaAbierta,
+            reintentarConexion = vm.reintentarConexion,
+            reiniciar = { vm.reiniciar(context) }
         )
     }
 }

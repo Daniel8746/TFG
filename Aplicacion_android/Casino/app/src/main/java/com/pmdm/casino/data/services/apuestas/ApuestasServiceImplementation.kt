@@ -1,7 +1,7 @@
 package com.pmdm.casino.data.services.apuestas
 
 import android.util.Log
-import com.pmdm.casino.data.services.exception.ApiServicesException
+import com.pmdm.casino.data.exceptions.ApiServicesException
 import javax.inject.Inject
 import javax.inject.Singleton
 

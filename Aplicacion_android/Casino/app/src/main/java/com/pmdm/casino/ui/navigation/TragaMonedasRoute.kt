@@ -1,7 +1,6 @@
 package com.pmdm.casino.ui.navigation
 
 import androidx.compose.runtime.remember
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
@@ -17,7 +16,8 @@ import java.math.BigDecimal
 data class TragaMonedasRoute(val correo: String, val saldo: @Contextual BigDecimal)
 
 fun NavGraphBuilder.tragaDestination(
-    onNavegarCasino: (correo: String, saldo: BigDecimal) -> Unit
+    onNavegarCasino: (correo: String, saldo: BigDecimal) -> Unit,
+    vm: TragaMonedasViewModel
 ) {
     composable(
         route = "traga_monedas/{correo}/{saldo}",
@@ -26,8 +26,6 @@ fun NavGraphBuilder.tragaDestination(
             navArgument("saldo") { type = BigDecimalNavType() }
         )
     ) { backStackEntry ->
-        val vm = hiltViewModel<TragaMonedasViewModel>(backStackEntry)
-
         val usuarioCasino: TragaMonedasRoute =
             remember { backStackEntry.toRoute<TragaMonedasRoute>() }
 

@@ -7,8 +7,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.pmdm.casino.data.UsuarioRepository
+import com.pmdm.casino.data.exceptions.NoNetworkException
+import com.pmdm.casino.data.repositorys.UsuarioRepository
 import com.pmdm.casino.model.TokenManager
+import com.pmdm.casino.ui.features.reiniciarApp
 import com.pmdm.casino.ui.features.toUsuario
 import dagger.hilt.android.internal.Contexts.getApplication
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -47,13 +49,17 @@ class LoginViewModel @Inject constructor(
     var recordarmeState by mutableStateOf(false)
 
     fun onRecordarmeState(recordarme: Boolean) {
-        recordarmeState = recordarme;
+        recordarmeState = recordarme
+    }
+
+    var reintentarConexion by mutableStateOf(false)
+
+    fun reiniciar(context: Context) {
+        reintentarConexion = reiniciarApp(context)
     }
 
     fun onLoginEvent(loginEvent: LoginEvent) {
         try {
-
-
             when (loginEvent) {
                 is LoginEvent.LoginChanged -> {
                     usuarioUiState = usuarioUiState.copy(
@@ -105,10 +111,13 @@ class LoginViewModel @Inject constructor(
                     loginEvent.onNavigateNuevoUsuario
                 }
             }
+        } catch (e: NoNetworkException) {
+            Log.e("NoNetworkException", "Error: ${e.localizedMessage}")
+            reintentarConexion = true
         } catch (e: SocketTimeoutException) {
             Log.e("SocketTimeOut", "Error: ${e.localizedMessage}")
         } catch (e: ConnectException) {
-            Log.e("Connect fail", "Error: ${e.localizedMessage}")
+            Log.e("ConnectException", "Error: ${e.localizedMessage}")
         }
     }
 

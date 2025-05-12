@@ -23,7 +23,7 @@ import java.util.List;
 @Path("black-jack")
 public class ServiceRestBlackJack {
 
-    private final static String[] palos = {"Corazones", "Diamantes", "Treboles", "Picas"};
+    private final static String[] palos = {"Corazon", "Diamante", "Trebol", "Pica"};
     private final static String[] valores = {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};
 
     private final static List<CartaRecord> mazo1 = new ArrayList<>();

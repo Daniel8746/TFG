@@ -5,13 +5,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.util.fastSumBy
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.pmdm.casino.data.BlackJackRepository
+import com.pmdm.casino.data.repositorys.BlackJackRepository
 import com.pmdm.casino.ui.features.blackJack.components.CartaUiState
+import com.pmdm.casino.ui.features.sumarPuntos
 import com.pmdm.casino.ui.features.toCartaUiState
-import com.pmdm.casino.ui.features.toCartasUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,20 +33,9 @@ class MaquinaViewModel @Inject constructor(
 
     init {
         try {
-            empezarPartida()
+            pedirCarta()
         } catch (e: SocketTimeoutException) {
             Log.e("SocketTimeOut", "Error: ${e.localizedMessage}")
-        }
-    }
-
-    private fun empezarPartida() {
-        viewModelScope.launch {
-            blackJackRepository.iniciarJuego().collect {
-                _cartasUiState.value =
-                    it?.toMutableList()?.toCartasUiState() ?: mutableListOf()
-            }
-
-            sumarPuntos()
         }
     }
 
@@ -56,24 +44,16 @@ class MaquinaViewModel @Inject constructor(
         finalizarPartida = false
         _cartasUiState.value = mutableListOf()
 
-        empezarPartida()
+        pedirCarta()
     }
 
-    fun empezarTurnoMaquina(puntosUsuario: Int) {
-        var continuar = true
-
-        viewModelScope.launch {
-            while (continuar) {
-                if (puntosUsuario > 21 || puntosTotalesMaquina >= puntosUsuario || puntosTotalesMaquina >= 21) {
-                    plantarse()
-                    continuar = false
-                } else {
-                    pedirCarta()
-
-                    delay(700)
-                }
-            }
+    suspend fun empezarTurnoMaquina() {
+        while (puntosTotalesMaquina < 17) {
+            pedirCarta()
+            delay(700)
         }
+
+        plantarse()
     }
 
     private fun pedirCarta() {
@@ -84,37 +64,14 @@ class MaquinaViewModel @Inject constructor(
                 }
             }
 
-            sumarPuntos()
+            val resultado = sumarPuntos(puntosTotalesMaquina, _cartasUiState.value)
+
+            puntosTotalesMaquina = resultado.first
+            finalizarPartida = resultado.second
         }
     }
 
     private fun plantarse() {
         finalizarPartida = true
-    }
-
-    private fun sumarPuntos() {
-        puntosTotalesMaquina = _cartasUiState.value.fastSumBy { suma ->
-            when (suma.valor) {
-                "J", "Q", "K" -> {
-                    10
-                }
-
-                "A" -> {
-                    if (puntosTotalesMaquina + 11 > 21) {
-                        1
-                    } else {
-                        11
-                    }
-                }
-
-                else -> {
-                    suma.valor.toInt()
-                }
-            }
-        }
-
-        if (puntosTotalesMaquina >= 21) {
-            finalizarPartida = true
-        }
     }
 }

@@ -13,14 +13,28 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.pmdm.casino.ui.features.apuestas.ApuestasViewModel
+import com.pmdm.casino.ui.features.blackJack.BlackJackViewModel
+import com.pmdm.casino.ui.features.blackJack.MaquinaViewModel
+import com.pmdm.casino.ui.features.casino.JuegosViewModel
+import com.pmdm.casino.ui.features.ruleta.RuletaViewModel
+import com.pmdm.casino.ui.features.tragaMonedas.TragaMonedasViewModel
 
 @Composable
 fun CasinoNavHost() {
     val navController: NavHostController = rememberNavController()
     var esLogin by remember { mutableStateOf(true) }
+
+    val vmBJ = hiltViewModel<BlackJackViewModel>()
+    val vmMaquina = hiltViewModel<MaquinaViewModel>()
+    val vmApuestas = hiltViewModel<ApuestasViewModel>()
+    val vmC = hiltViewModel<JuegosViewModel>()
+    val vmR = hiltViewModel<RuletaViewModel>()
+    val vmT = hiltViewModel<TragaMonedasViewModel>()
 
     NavHost(
         navController = navController,
@@ -89,7 +103,7 @@ fun CasinoNavHost() {
         splashDestination(
             onNavegarLogin = {
                 navController.navigate(LoginRoute) {
-                    popUpTo(LoginRoute) { inclusive = true }
+                    popUpTo(LoginRoute) { inclusive = false }
                 }
             },
             onNavegarJuegos = { correo, saldo ->
@@ -130,25 +144,31 @@ fun CasinoNavHost() {
             },
             onNavegarRuleta = { correo, saldo ->
                 navController.navigate("ruleta/$correo/$saldo")
-            }
+            },
+            vm = vmC
         )
 
         blackDestination(
             onNavegarCasino = { correo, saldo ->
                 navController.navigate("casino/$correo/$saldo")
-            }
+            },
+            vm = vmBJ,
+            vmMaquina = vmMaquina,
+            vmApuestas = vmApuestas
         )
 
         ruletaDestination(
             onNavegarCasino = { correo, saldo ->
                 navController.navigate("casino/$correo/$saldo")
-            }
+            },
+            vm = vmR
         )
 
         tragaDestination(
             onNavegarCasino = { correo, saldo ->
                 navController.navigate("casino/$correo/$saldo")
-            }
+            },
+            vm = vmT
         )
     }
 }

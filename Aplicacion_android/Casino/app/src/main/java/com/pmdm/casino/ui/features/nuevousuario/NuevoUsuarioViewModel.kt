@@ -1,12 +1,15 @@
 package com.pmdm.casino.ui.features.nuevousuario
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.pmdm.casino.data.UsuarioRepository
+import com.pmdm.casino.data.exceptions.NoNetworkException
+import com.pmdm.casino.data.repositorys.UsuarioRepository
+import com.pmdm.casino.ui.features.reiniciarApp
 import com.pmdm.casino.ui.features.toUsuario
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -31,6 +34,12 @@ class NuevoUsuarioViewModel @Inject constructor(
 
     var nuevoUsuarioUiState by mutableStateOf(NuevoUsuarioUiState())
     var validacionNuevoUsuarioUiState by mutableStateOf(ValidacionNuevoUsuarioUiState())
+
+    var reintentarConexion by mutableStateOf(false)
+
+    fun reiniciar(context: Context) {
+        reintentarConexion = reiniciarApp(context)
+    }
 
     fun onNuevoUsuarioEvent(nuevoUsuarioEvent: NuevoUsuarioEvent) {
         try {
@@ -109,6 +118,9 @@ class NuevoUsuarioViewModel @Inject constructor(
                     )
                 }
             }
+        } catch (e: NoNetworkException) {
+            Log.e("NoNetworkException", "Error: ${e.localizedMessage}")
+            reintentarConexion = true
         } catch (e: SocketTimeoutException) {
             Log.e("SocketTimeOut", "Error: ${e.localizedMessage}")
         } catch (e: ConnectException) {

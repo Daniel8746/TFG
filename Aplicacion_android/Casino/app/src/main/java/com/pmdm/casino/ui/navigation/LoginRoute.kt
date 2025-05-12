@@ -1,6 +1,7 @@
 package com.pmdm.casino.ui.navigation
 
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -18,6 +19,9 @@ fun NavGraphBuilder.loginDestination(
 ) {
     composable<LoginRoute> {
         val vm = hiltViewModel<LoginViewModel>()
+
+        val context = LocalContext.current
+
         LoginScreen(
             usuarioUiState = vm.usuarioUiState,
             validacionLoginUiState = vm.validacionLoginUiState,
@@ -27,7 +31,9 @@ fun NavGraphBuilder.loginDestination(
             onLoginEvent = { vm.onLoginEvent(it) },
             onNavigateToCasino = onNavegarCasino,
             onNavigateToNuevaCuenta = onNavegarNuevaCuenta,
-            onRecordarmeState = { vm.onRecordarmeState(it) }
+            onRecordarmeState = { vm.onRecordarmeState(it) },
+            reintentarConexion = vm.reintentarConexion,
+            reiniciar = { vm.reiniciar(context) }
         )
     }
 }

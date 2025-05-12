@@ -26,13 +26,15 @@ fun ButtonWithLottie(
     text: String,
     isLoading: Boolean,
     onClick: () -> Unit,
+    enabled: Boolean = true
 ) {
     Button(
         onClick = {
             onClick()
         },
         modifier = modifier,
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        enabled = enabled
     ) {
         if (isLoading) {
             val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.fichas_carga))

@@ -1,10 +1,12 @@
 package com.pmdm.casino.ui.features.ruleta
 
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.pmdm.casino.ui.features.UsuarioCasinoUiState
+import com.pmdm.casino.ui.features.reiniciarApp
 import com.pmdm.casino.ui.navigation.RuletaRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -12,8 +14,14 @@ import javax.inject.Inject
 @HiltViewModel
 class RuletaViewModel @Inject constructor(
 
-): ViewModel() {
+) : ViewModel() {
     var usuarioUiState by mutableStateOf(UsuarioCasinoUiState())
+
+    var reintentarConexion by mutableStateOf(false)
+
+    fun reiniciar(context: Context) {
+        reintentarConexion = reiniciarApp(context)
+    }
 
     fun crearUsuarioCasino(usuario: RuletaRoute) {
         usuarioUiState = usuarioUiState.copy(

@@ -17,13 +17,16 @@ class AuthInterceptor @Inject constructor(
 
     override fun intercept(chain: Interceptor.Chain): Response {
         // Obtener el token desde DataStore
-        val token = runBlocking {
+        val token: String? = runBlocking {
             withContext(Dispatchers.IO) {
                 TokenManager.getToken(context)
             }
         }
 
-        Log.d("AuthInterceptor", "Token: $token")  // Log para verificar si se ejecuta el interceptor
+        Log.d(
+            "AuthInterceptor",
+            "Token: $token"
+        )  // Log para verificar si se ejecuta el interceptor
 
         // Si el token es válido, agregarlo al encabezado
         val requestBuilder = chain.request().newBuilder()

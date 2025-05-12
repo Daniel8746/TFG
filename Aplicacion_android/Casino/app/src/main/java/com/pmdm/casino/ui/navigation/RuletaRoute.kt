@@ -1,7 +1,7 @@
 package com.pmdm.casino.ui.navigation
 
 import androidx.compose.runtime.remember
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
@@ -17,7 +17,8 @@ import java.math.BigDecimal
 data class RuletaRoute(val correo: String, val saldo: @Contextual BigDecimal)
 
 fun NavGraphBuilder.ruletaDestination(
-    onNavegarCasino: (correo: String, saldo: BigDecimal) -> Unit
+    onNavegarCasino: (correo: String, saldo: BigDecimal) -> Unit,
+    vm: RuletaViewModel
 ) {
     composable(
         route = "ruleta/{correo}/{saldo}",
@@ -26,14 +27,17 @@ fun NavGraphBuilder.ruletaDestination(
             navArgument("saldo") { type = BigDecimalNavType() }
         )
     ) { backStackEntry ->
-        val vm = hiltViewModel<RuletaViewModel>(backStackEntry)
-
         val usuarioCasino: RuletaRoute = remember { backStackEntry.toRoute<RuletaRoute>() }
 
         vm.crearUsuarioCasino(usuarioCasino)
 
-        RuletaScreen(
+        val context = LocalContext.current
 
+        RuletaScreen(
+            usuarioUiState = vm.usuarioUiState,
+            reintentarConexion = vm.reintentarConexion,
+            reiniciar = { vm.reiniciar(context) },
+            volverAtras = { onNavegarCasino(vm.usuarioUiState.correo, vm.usuarioUiState.saldo) }
         )
     }
 }

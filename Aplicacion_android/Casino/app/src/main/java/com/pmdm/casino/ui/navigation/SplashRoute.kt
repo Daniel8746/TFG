@@ -1,5 +1,6 @@
 package com.pmdm.casino.ui.navigation
 
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -18,13 +19,15 @@ fun NavGraphBuilder.splashDestination(
     composable<SplashRoute> {
         val vm = hiltViewModel<SplashViewModel>()
 
-        vm.comprobarToken()
+        val context = LocalContext.current
 
         SplashScreen(
-            onNavegarLogin,
-            onNavegarJuegos,
-            vm.correoState.value,
-            vm.saldoState.value
+            onNavegarLogin = onNavegarLogin,
+            onNavegarJuegos = onNavegarJuegos,
+            correo = vm.correoState.value,
+            saldo = vm.saldoState.value,
+            reintentarConexion = vm.reintentarConexion,
+            reiniciar = { vm.reiniciar(context) }
         )
     }
 }

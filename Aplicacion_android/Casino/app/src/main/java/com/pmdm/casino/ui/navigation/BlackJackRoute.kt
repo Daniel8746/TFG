@@ -3,7 +3,7 @@ package com.pmdm.casino.ui.navigation
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
@@ -21,7 +21,10 @@ import java.math.BigDecimal
 data class BlackJackRoute(val correo: String, val saldo: @Contextual BigDecimal)
 
 fun NavGraphBuilder.blackDestination(
-    onNavegarCasino: (correo: String, saldo: BigDecimal) -> Unit
+    onNavegarCasino: (correo: String, saldo: BigDecimal) -> Unit,
+    vm: BlackJackViewModel,
+    vmMaquina: MaquinaViewModel,
+    vmApuestas: ApuestasViewModel
 ) {
     composable(
         route = "black_jack/{correo}/{saldo}",
@@ -30,10 +33,6 @@ fun NavGraphBuilder.blackDestination(
             navArgument("saldo") { type = BigDecimalNavType() }
         )
     ) { backStackEntry ->
-        val vm = hiltViewModel<BlackJackViewModel>(backStackEntry)
-        val vmMaquina = hiltViewModel<MaquinaViewModel>(backStackEntry)
-        val vmApuestas = hiltViewModel<ApuestasViewModel>(backStackEntry)
-
         val usuarioCasino: BlackJackRoute = remember { backStackEntry.toRoute<BlackJackRoute>() }
 
         vm.crearUsuarioCasino(usuarioCasino)
@@ -42,9 +41,11 @@ fun NavGraphBuilder.blackDestination(
 
         LaunchedEffect(finalizarTurnoUsuario) {
             if (finalizarTurnoUsuario) {
-                vmMaquina.empezarTurnoMaquina(vm.puntosTotalesUsuario)
+                vmMaquina.empezarTurnoMaquina()
             }
         }
+
+        val context = LocalContext.current
 
         BlackJackScreen(
             usuarioUiState = vm.usuarioUiState,
@@ -52,8 +53,9 @@ fun NavGraphBuilder.blackDestination(
             puntosMaquina = vmMaquina.puntosTotalesMaquina,
             finalizarTurnoUsuario = vm.finalizarPartida,
             finalizarTurnoMaquina = vmMaquina.finalizarPartida,
-            listadoCartas = vm.cartasUiState.collectAsState().value,
-            listadoCartasMaquina = vmMaquina.cartasUiState.collectAsState().value,
+            poderPulsarBoton = vm.poderPulsarBoton,
+            listadoCartas = vm.cartasUiState.collectAsState().value.toList(),
+            listadoCartasMaquina = vmMaquina.cartasUiState.collectAsState().value.toList(),
             cartaNueva = vm.cartaRecienteUiState.collectAsState().value,
             onBlackJackEvent = { vm.onBlackJackEvent(it) },
             onFinalizarBlackJack = { vmApuestas.finalizarBlackJack() },
@@ -61,7 +63,9 @@ fun NavGraphBuilder.blackDestination(
             reiniciarPartida = {
                 vm.reiniciarPartida()
                 vmMaquina.reiniciarPartida()
-            }
+            },
+            reintentarConexion = vm.reintentarConexion,
+            reiniciar = { vm.reiniciar(context) }
         )
     }
 }

@@ -1,13 +1,18 @@
 package com.pmdm.casino.di
 
+import android.content.Context
 import com.pmdm.casino.data.services.apuestas.ApuestasService
 import com.pmdm.casino.data.services.blackJack.BlackJackService
 import com.pmdm.casino.data.services.interceptors.AuthInterceptor
+import com.pmdm.casino.data.services.interceptors.connectVerifier.ConnectVerifierInterceptor
+import com.pmdm.casino.data.services.interceptors.connectVerifier.NetworkMonitorService
+import com.pmdm.casino.data.services.interceptors.connectVerifier.NetworkMonitorServiceImplementation
 import com.pmdm.casino.data.services.juegos.JuegosService
 import com.pmdm.casino.data.services.usuario.UsuarioService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -19,14 +24,20 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
+
+    // RETROFIT
     @Provides
     @Singleton
-    fun provideOkHttpClient(authInterceptor: AuthInterceptor): OkHttpClient {
+    fun provideOkHttpClient(
+        authInterceptor: AuthInterceptor,
+        networkMonitor: NetworkMonitorService
+    ): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.level = HttpLoggingInterceptor.Level.HEADERS
 
         val timeout = 10L
         return OkHttpClient.Builder()
+            .addInterceptor(ConnectVerifierInterceptor(networkMonitor))
             .addInterceptor(authInterceptor)
             .addInterceptor(loggingInterceptor)
             .connectTimeout(timeout, TimeUnit.SECONDS)
@@ -45,6 +56,7 @@ object NetworkModule {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
+    // SERVICES
     @Provides
     @Singleton
     fun provideUsuarioService(
@@ -68,4 +80,11 @@ object NetworkModule {
     fun provideApuestasService(
         retrofit: Retrofit
     ): ApuestasService = retrofit.create(ApuestasService::class.java)
+
+    @Provides
+    fun provideNetworkMonitor(
+        @ApplicationContext appContext: Context
+    ): NetworkMonitorService {
+        return NetworkMonitorServiceImplementation(appContext)
+    }
 }
