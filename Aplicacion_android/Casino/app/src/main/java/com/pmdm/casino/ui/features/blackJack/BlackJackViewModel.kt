@@ -10,13 +10,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pmdm.casino.data.exceptions.NoNetworkException
 import com.pmdm.casino.data.repositorys.BlackJackRepository
-import com.pmdm.casino.ui.features.UsuarioCasinoUiState
 import com.pmdm.casino.ui.features.blackJack.components.CartaUiState
 import com.pmdm.casino.ui.features.reiniciarApp
 import com.pmdm.casino.ui.features.sumarPuntos
 import com.pmdm.casino.ui.features.toCartaUiState
 import com.pmdm.casino.ui.features.toCartasUiState
-import com.pmdm.casino.ui.navigation.BlackJackRoute
+import com.pmdm.casino.ui.features.usuarioCasino.UsuarioCasinoUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -164,11 +163,5 @@ class BlackJackViewModel @Inject constructor(
         viewModelScope.launch {
             blackJackRepository.reiniciarCartas()
         }
-    }
-
-    fun crearUsuarioCasino(usuario: BlackJackRoute) {
-        usuarioUiState = usuarioUiState.copy(
-            correo = usuario.correo, saldo = usuario.saldo
-        )
     }
 }

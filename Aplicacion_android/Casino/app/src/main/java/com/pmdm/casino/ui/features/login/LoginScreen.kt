@@ -34,7 +34,6 @@ import com.pmdm.casino.ui.features.login.components.CircularImageFromResource
 import com.pmdm.casino.ui.features.login.components.TextNewAccount
 import com.pmdm.casino.ui.features.login.components.UsuarioPassword
 import com.pmdm.casino.ui.theme.CasinoTheme
-import java.math.BigDecimal
 
 
 @Composable
@@ -47,9 +46,9 @@ fun LoginScreen(
     reintentarConexion: Boolean,
     errorApi: Boolean,
     onLoginEvent: (LoginEvent) -> Unit,
-    onNavigateToCasino: ((correo: String, saldo: BigDecimal) -> Unit)? = null,
+    onNavigateToCasino: () -> Unit,
     onNavigateToNuevaCuenta: () -> Unit,
-    onRecordarmeState: ((Boolean) -> Unit)? = null,
+    onRecordarmeState: (Boolean) -> Unit,
     reiniciar: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -100,7 +99,7 @@ fun LoginScreen(
                 onValueChangePassword = {
                     onLoginEvent(LoginEvent.PasswordChanged(it))
                 },
-                onCheckedChanged = onRecordarmeState!!,
+                onCheckedChanged = onRecordarmeState,
                 onClickLogearse = {
                     onLoginEvent(LoginEvent.OnClickLogearse(onNavigateToCasino))
                 }
@@ -175,7 +174,9 @@ fun LoginScreenPreview() {
                 false,
                 onLoginEvent = loginViewModel::onLoginEvent,
                 onNavigateToNuevaCuenta = {},
-                reiniciar = {})
+                reiniciar = {},
+                onNavigateToCasino = {},
+                onRecordarmeState = {})
         }
     }
 }

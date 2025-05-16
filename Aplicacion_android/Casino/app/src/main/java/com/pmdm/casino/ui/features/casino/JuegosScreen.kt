@@ -33,10 +33,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pmdm.casino.R
-import com.pmdm.casino.ui.features.UsuarioCasinoUiState
 import com.pmdm.casino.ui.features.casino.components.AyudaScreen
 import com.pmdm.casino.ui.features.components.FondoBarraCasinoUI
-import java.math.BigDecimal
+import com.pmdm.casino.ui.features.usuarioCasino.UsuarioCasinoUiState
 
 @Composable
 fun CasinoScreen(
@@ -46,13 +45,32 @@ fun CasinoScreen(
     reintentarConexion: Boolean,
     errorApi: Boolean,
     onCasinoEvent: (JuegosEvent) -> Unit,
-    onBlackJackEvent: (correo: String, saldo: BigDecimal) -> Unit,
-    onRuletaEvent: (correo: String, saldo: BigDecimal) -> Unit,
-    onTragaMonedas: (correo: String, saldo: BigDecimal) -> Unit,
+    onBlackJackEvent: () -> Unit,
+    onRuletaEvent: () -> Unit,
+    onTragaMonedas: () -> Unit,
     onAyudaEvent: () -> Unit,
     reiniciar: () -> Unit
 ) {
     var ayudaJuego by remember { mutableStateOf("") }
+    val accionesJuegos: Map<String, () -> Unit> = remember {
+        mapOf(
+            JuegosCasinoEnum.BLACKJACK.clave to {
+                onCasinoEvent(
+                    JuegosEvent.OnBlackJack(
+                        onBlackJackEvent
+                    )
+                )
+            },
+            JuegosCasinoEnum.RULETA.clave to { onCasinoEvent(JuegosEvent.OnRuleta(onRuletaEvent)) },
+            JuegosCasinoEnum.TRAGAMONEDAS.clave to {
+                onCasinoEvent(
+                    JuegosEvent.OnTragaMonedas(
+                        onTragaMonedas
+                    )
+                )
+            }
+        )
+    }
 
     FondoBarraCasinoUI(
         usuarioUiState = usuarioUiState,
@@ -76,27 +94,7 @@ fun CasinoScreen(
                     items(juegosUiState, key = { it.nombre }) {
                         ElevatedCard(
                             onClick = {
-                                when (it.nombre.split(" ")[0]) {
-                                    "Blackjack" -> {
-                                        onCasinoEvent(
-                                            JuegosEvent.OnBlackJack(
-                                                onBlackJackEvent
-                                            )
-                                        )
-                                    }
-
-                                    "Ruleta" -> {
-                                        onCasinoEvent(JuegosEvent.OnRuleta(onRuletaEvent))
-                                    }
-
-                                    "Traga monedas" -> {
-                                        onCasinoEvent(
-                                            JuegosEvent.OnTragaMonedas(
-                                                onTragaMonedas
-                                            )
-                                        )
-                                    }
-                                }
+                                accionesJuegos[it.nombre.toJuegoEnum()?.clave]?.invoke()
                             },
                             elevation = CardDefaults.elevatedCardElevation(
                                 defaultElevation = 4.dp,
@@ -129,7 +127,9 @@ fun CasinoScreen(
                                 }
 
                                 Image(
-                                    painter = painterResource(R.drawable.imagenlogin),
+                                    painter = painterResource(
+                                        it.nombre.toJuegoEnum()?.imagen ?: R.drawable.imagenlogin
+                                    ),
                                     contentDescription = "Descripción tarjeta",
                                     modifier = Modifier
                                         .fillMaxWidth()

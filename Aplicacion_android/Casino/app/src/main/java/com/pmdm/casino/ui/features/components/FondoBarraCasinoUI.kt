@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.pmdm.casino.R
-import com.pmdm.casino.ui.features.UsuarioCasinoUiState
+import com.pmdm.casino.ui.features.usuarioCasino.UsuarioCasinoUiState
 
 @Composable
 fun FondoBarraCasinoUI(

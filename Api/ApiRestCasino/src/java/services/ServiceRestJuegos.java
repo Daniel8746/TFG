@@ -12,7 +12,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
-import jpacasino.JPAUtil;
+import utils.JPAUtil;
 import jpacasino.Juego;
 import jpacasino.JuegoJpaController;
 

@@ -6,7 +6,6 @@ package jpacasino;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,8 +17,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import java.time.LocalDateTime;
 
 /**
  *
@@ -47,8 +45,7 @@ public class Apuesta implements Serializable {
     private BigDecimal montoApostado;
     @Basic(optional = false)
     @Column(name = "fecha")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date fecha;
+    private LocalDateTime fecha;
     @Basic(optional = false)
     @Column(name = "resultado")
     private String resultado;
@@ -66,7 +63,7 @@ public class Apuesta implements Serializable {
         this.id = id;
     }
 
-    public Apuesta(Integer id, BigDecimal montoApostado, Date fecha, String resultado) {
+    public Apuesta(Integer id, BigDecimal montoApostado, LocalDateTime fecha, String resultado) {
         this.id = id;
         this.montoApostado = montoApostado;
         this.fecha = fecha;
@@ -89,11 +86,11 @@ public class Apuesta implements Serializable {
         this.montoApostado = montoApostado;
     }
 
-    public Date getFecha() {
+    public LocalDateTime getFecha() {
         return fecha;
     }
 
-    public void setFecha(Date fecha) {
+    public void setFecha(LocalDateTime fecha) {
         this.fecha = fecha;
     }
 

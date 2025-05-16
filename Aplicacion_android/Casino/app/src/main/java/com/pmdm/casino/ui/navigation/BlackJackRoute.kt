@@ -2,41 +2,27 @@ package com.pmdm.casino.ui.navigation
 
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
-import androidx.navigation.toRoute
 import com.pmdm.casino.ui.features.apuestas.ApuestasViewModel
 import com.pmdm.casino.ui.features.blackJack.BlackJackScreen
 import com.pmdm.casino.ui.features.blackJack.BlackJackViewModel
 import com.pmdm.casino.ui.features.blackJack.MaquinaViewModel
-import kotlinx.serialization.Contextual
+import com.pmdm.casino.ui.features.usuarioCasino.UsuarioCasinoViewModel
 import kotlinx.serialization.Serializable
-import java.math.BigDecimal
 
 @Serializable
-data class BlackJackRoute(val correo: String, val saldo: @Contextual BigDecimal)
+object BlackJackRoute
 
 fun NavGraphBuilder.blackDestination(
-    onNavegarCasino: (correo: String, saldo: BigDecimal) -> Unit,
+    onNavegarCasino: () -> Unit,
     vm: BlackJackViewModel,
     vmMaquina: MaquinaViewModel,
-    vmApuestas: ApuestasViewModel
+    vmApuestas: ApuestasViewModel,
+    vmUsuarioCasino: UsuarioCasinoViewModel
 ) {
-    composable(
-        route = "black_jack/{correo}/{saldo}",
-        arguments = listOf(
-            navArgument("correo") { type = NavType.StringType },
-            navArgument("saldo") { type = BigDecimalNavType() }
-        )
-    ) { backStackEntry ->
-        val usuarioCasino: BlackJackRoute = remember { backStackEntry.toRoute<BlackJackRoute>() }
-
-        vm.crearUsuarioCasino(usuarioCasino)
-
+    composable<BlackJackRoute> {
         val finalizarTurnoUsuario = vm.finalizarPartida
 
         LaunchedEffect(finalizarTurnoUsuario) {
@@ -64,7 +50,13 @@ fun NavGraphBuilder.blackDestination(
                 vm.reiniciarCartas()
                 vmApuestas.finalizarBlackJack()
             },
-            volverAtras = { onNavegarCasino(vm.usuarioUiState.correo, vm.usuarioUiState.saldo) },
+            volverAtras = {
+                vmUsuarioCasino.actualizarUsuarioCasino(
+                    correo = vm.usuarioUiState.correo,
+                    saldo = vm.usuarioUiState.saldo
+                )
+                onNavegarCasino()
+            },
             reiniciarPartida = {
                 vm.reiniciarPartida()
                 vmMaquina.reiniciarPartida()

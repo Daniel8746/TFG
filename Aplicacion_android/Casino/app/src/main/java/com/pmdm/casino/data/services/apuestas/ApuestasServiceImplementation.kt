@@ -1,14 +1,13 @@
 package com.pmdm.casino.data.services.apuestas
 
 import android.util.Log
-import com.pmdm.casino.data.exceptions.ApiServicesException
 import com.pmdm.casino.data.repositorys.validarCodigoResponse
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class ApuestasServiceImplementation @Inject constructor(
-    val apuestasService: ApuestasService
+    private val apuestasService: ApuestasService
 ) {
     private val logTag: String = "OkHttp"
 
@@ -30,9 +29,8 @@ class ApuestasServiceImplementation @Inject constructor(
             }
 
             return response.isSuccessful
-        } catch (e: ApiServicesException) {
+        } catch (e: Exception) {
             Log.e(logTag, "Error: ${e.localizedMessage}")
-
             return true
         }
     }

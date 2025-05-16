@@ -42,7 +42,6 @@ public class ServiceRestBlackJack {
     @Consumes({MediaType.APPLICATION_JSON})
     public Response getCarta() {
         Response response;
-        Status statusResul;
         CartaRecord cartaAzar;
         int posicion;
 
@@ -62,9 +61,8 @@ public class ServiceRestBlackJack {
                     .entity(new Gson().toJson(cartaAzar))
                     .build();
         } catch (Exception ex) {
-            statusResul = Status.INTERNAL_SERVER_ERROR;
             response = Response
-                    .status(statusResul)
+                    .status(Status.INTERNAL_SERVER_ERROR)
                     .build();
         }
 
@@ -76,7 +74,6 @@ public class ServiceRestBlackJack {
     @Consumes({MediaType.APPLICATION_JSON})
     public Response getCartas() {
         Response response;
-        Status statusResul;
         List<CartaRecord> cartaAzar = new ArrayList<>();
         int posicion;
 
@@ -98,9 +95,8 @@ public class ServiceRestBlackJack {
                     .entity(new Gson().toJson(cartaAzar))
                     .build();
         } catch (Exception ex) {
-            statusResul = Status.INTERNAL_SERVER_ERROR;
             response = Response
-                    .status(statusResul)
+                    .status(Status.INTERNAL_SERVER_ERROR)
                     .build();
         }
 

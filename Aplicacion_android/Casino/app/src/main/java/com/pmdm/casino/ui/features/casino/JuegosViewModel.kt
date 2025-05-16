@@ -9,10 +9,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pmdm.casino.data.exceptions.NoNetworkException
 import com.pmdm.casino.data.repositorys.JuegosRepository
-import com.pmdm.casino.ui.features.UsuarioCasinoUiState
 import com.pmdm.casino.ui.features.reiniciarApp
 import com.pmdm.casino.ui.features.toJuegosUiStates
-import com.pmdm.casino.ui.navigation.CasinoRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,7 +25,6 @@ import javax.inject.Inject
 class JuegosViewModel @Inject constructor(
     private val casinoRepository: JuegosRepository
 ) : ViewModel() {
-    var usuarioUiState by mutableStateOf(UsuarioCasinoUiState())
     private val _juegosUiState = MutableStateFlow<List<JuegosUiState>>(emptyList())
     val juegosUiState: StateFlow<List<JuegosUiState>> = _juegosUiState.asStateFlow()
 
@@ -69,24 +66,10 @@ class JuegosViewModel @Inject constructor(
 
     fun onCasinoEvent(casinoEvent: JuegosEvent) {
         when (casinoEvent) {
-            is JuegosEvent.OnBlackJack -> {
-                casinoEvent.onNavigateBlackJack(usuarioUiState.correo, usuarioUiState.saldo)
-            }
-
-            is JuegosEvent.OnRuleta -> {
-                casinoEvent.onNavigateRuleta(usuarioUiState.correo, usuarioUiState.saldo)
-            }
-
-            is JuegosEvent.OnTragaMonedas -> {
-                casinoEvent.onNavigateTragaMonedas(usuarioUiState.correo, usuarioUiState.saldo)
-            }
+            is JuegosEvent.OnBlackJack -> casinoEvent.onNavigateBlackJack()
+            is JuegosEvent.OnRuleta -> casinoEvent.onNavigateRuleta()
+            is JuegosEvent.OnTragaMonedas -> casinoEvent.onNavigateTragaMonedas()
         }
-    }
-
-    fun crearUsuarioCasino(usuario: CasinoRoute) {
-        usuarioUiState = usuarioUiState.copy(
-            correo = usuario.correo, saldo = usuario.saldo
-        )
     }
 
     fun onAbrirAyuda() {

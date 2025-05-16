@@ -1,7 +1,6 @@
 package com.pmdm.casino.data.services.usuario
 
 import android.util.Log
-import com.pmdm.casino.data.exceptions.ApiServicesException
 import com.pmdm.casino.data.repositorys.validarCodigoResponse
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -35,13 +34,13 @@ class UsuarioServiceImplementation @Inject constructor(
                 response.body()?.saldo ?: BigDecimal(0),
                 response.body()?.token ?: ""
             )
-        } catch (e: ApiServicesException) {
+        } catch (e: Exception) {
             Log.e(logTag, "Error: ${e.localizedMessage}")
             return Triple(false, BigDecimal(0), "")
         }
     }
 
-    suspend fun crearUsuario(usuario: UsuarioApi): Boolean {
+    suspend fun crearUsuario(usuario: NuevoUsuarioApi): Boolean {
         val mensajeError = "No se ha podido crear el usuario"
 
         try {
@@ -59,14 +58,13 @@ class UsuarioServiceImplementation @Inject constructor(
             }
 
             return response.isSuccessful
-        } catch (e: ApiServicesException) {
+        } catch (e: Exception) {
             Log.e(logTag, "Error: ${e.localizedMessage}")
-
             return false
         }
     }
 
-    suspend fun eliminarUsuario(usuario: UsuarioApi): Boolean {
+    suspend fun eliminarUsuario(usuario: NuevoUsuarioApi): Boolean {
         val mensajeError = "No se ha podido eliminar el usuario"
 
         try {
@@ -76,7 +74,6 @@ class UsuarioServiceImplementation @Inject constructor(
 
             if (response.isSuccessful) {
                 Log.d(logTag, response.toString())
-
                 Log.d(logTag, response.body()?.toString() ?: "No hay respuesta")
             } else {
                 val body = response.errorBody()?.toString()
@@ -84,9 +81,8 @@ class UsuarioServiceImplementation @Inject constructor(
             }
 
             return response.isSuccessful
-        } catch (e: ApiServicesException) {
+        } catch (e: Exception) {
             Log.e(logTag, "Error: ${e.localizedMessage}")
-
             return false
         }
     }

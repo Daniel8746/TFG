@@ -1,7 +1,6 @@
 package com.pmdm.casino.data.services.blackJack
 
 import android.util.Log
-import com.pmdm.casino.data.exceptions.ApiServicesException
 import com.pmdm.casino.data.repositorys.validarCodigoResponse
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -22,15 +21,17 @@ class BlackJackServiceImplementation @Inject constructor(
 
             if (response.isSuccessful) {
                 Log.d(logTag, response.toString())
-
-                Log.d(logTag, response.body()?.toString() ?: "No hay respuesta")
+                Log.d(
+                    logTag,
+                    response.body()?.toString() ?: "No hay respuesta"
+                )
             } else {
                 val body = response.errorBody()?.toString()
                 Log.e(logTag, "$mensajeError (código ${response.code()}): $this\n${body}")
             }
 
             return response.body()
-        } catch (e: ApiServicesException) {
+        } catch (e: Exception) {
             Log.e(logTag, "Error: ${e.localizedMessage}")
             return null
         }
@@ -54,7 +55,7 @@ class BlackJackServiceImplementation @Inject constructor(
             }
 
             return response.body()
-        } catch (e: ApiServicesException) {
+        } catch (e: Exception) {
             Log.e(logTag, "Error: ${e.localizedMessage}")
             return null
         }
@@ -76,7 +77,7 @@ class BlackJackServiceImplementation @Inject constructor(
                 val body = response.errorBody()?.toString()
                 Log.e(logTag, "$mensajeError (código ${response.code()}): $this\n${body}")
             }
-        } catch (e: ApiServicesException) {
+        } catch (e: Exception) {
             Log.e(logTag, "Error: ${e.localizedMessage}")
         }
     }

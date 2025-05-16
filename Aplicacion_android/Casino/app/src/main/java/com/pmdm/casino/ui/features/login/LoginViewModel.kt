@@ -45,6 +45,8 @@ class LoginViewModel @Inject constructor(
         private set
 
     private var _saldo = MutableStateFlow(BigDecimal(0))
+    val saldo: StateFlow<BigDecimal> = _saldo.asStateFlow()
+
     private var _token = MutableStateFlow("")
 
     var recordarmeState by mutableStateOf(false)
@@ -96,12 +98,7 @@ class LoginViewModel @Inject constructor(
                                     )
                                 }
 
-                                loginEvent.onNavigateJuego?.let {
-                                    it(
-                                        usuarioUiState.login,
-                                        _saldo.value
-                                    )
-                                }
+                                loginEvent.onNavigateJuego()
                             }
                         }
                     }

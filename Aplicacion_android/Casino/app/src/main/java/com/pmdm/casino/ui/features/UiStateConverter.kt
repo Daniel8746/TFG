@@ -15,7 +15,7 @@ fun LoginUiState.toUsuario(): Usuario = Usuario(
 
 // Nuevo Usuario
 fun NuevoUsuarioUiState.toUsuario(): Usuario = Usuario(
-    nombre, apellidos, correo, password, telefono.toString()
+    nombre, apellidos, correo, password, telefono
 )
 
 // Casino

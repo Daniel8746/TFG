@@ -4,6 +4,7 @@
  */
 package jpacasino;
 
+import utils.UsuarioUtils;
 import classRecord.UsuarioRecord;
 import java.io.Serializable;
 import jakarta.persistence.Query;
@@ -202,36 +203,53 @@ public class UsuarioJpaController implements Serializable {
         }
     }
 
-    public Usuario findUsuario(UsuarioRecord usuarioRecord) {
+    public UsuarioRecord findUsuario(UsuarioRecord usuarioRecord) {
         try (EntityManager em = getEntityManager()) {
-            Usuario usuarioEncontrado = consultaUsuario(em, usuarioRecord.correo());
+            UsuarioRecord usuarioEncontrado = consultaUsuario(em, usuarioRecord.correo());
 
-            if (usuarioRecord.contrasenya() == null || usuarioRecord.contrasenya().isEmpty()) {
-                return usuarioEncontrado;
-            } else {
-                return comprobarUsuarioExistente(
-                        usuarioEncontrado, usuarioRecord
-                ) ? usuarioEncontrado : null;
-            }
+            return usuarioEncontrado != null && comprobarContrasenyaUsuarioExistente(
+                    usuarioEncontrado.contrasenya(),
+                    usuarioRecord.contrasenya()
+            ) ? usuarioEncontrado : null;
         }
     }
 
-    public boolean comprobarUsuarioExistente(Usuario usuarioEncontrado, UsuarioRecord usuario) {
-        return usuarioEncontrado != null
-                && BCrypt.checkpw(
-                        usuario.contrasenya(), usuarioEncontrado.getContrasenya()
-                );
+    public Usuario findUsuarioEliminar(UsuarioRecord usuarioRecord) {
+        try (EntityManager em = getEntityManager()) {
+            Usuario usuarioEncontrado = consultaUsuario(em, usuarioRecord.correo(), true);
+
+            return usuarioEncontrado != null && comprobarContrasenyaUsuarioExistente(
+                    usuarioEncontrado.getContrasenya(),
+                    usuarioRecord.contrasenya()
+            ) ? usuarioEncontrado : null;
+        }
     }
 
-    public Usuario consultaUsuario(EntityManager em, String correo) {
+    public boolean comprobarContrasenyaUsuarioExistente(String contrasenyaEncriptada, String contrasenyaPlano) {
+        return BCrypt.checkpw(
+                contrasenyaPlano, contrasenyaEncriptada
+        );
+    }
+
+    public <T> T consultaUsuario(EntityManager em, String correo) {
+        return consultaUsuario(em, correo, false);
+    }
+
+    public <T> T consultaUsuario(EntityManager em, String correo, Boolean isEliminar) {
         try {
             TypedQuery<Usuario> consulta = em.createNamedQuery(
                     "Usuario.findByCorreo", Usuario.class
             );
 
             consulta.setParameter("correo", correo);
+            
+            Usuario encontrado = consulta.getSingleResult();
 
-            return consulta.getSingleResult();
+            if (isEliminar) {
+                return (T) encontrado;
+            }
+
+            return (T) UsuarioUtils.toUsuarioRecord(encontrado);
         } catch (NoResultException ex) {
             return null;
         }
@@ -239,9 +257,7 @@ public class UsuarioJpaController implements Serializable {
 
     public UsuarioRecord findUsuario(String correo) {
         try (EntityManager em = getEntityManager()) {
-            Usuario usuarioEncontrado = consultaUsuario(em, correo);
-
-            return new UsuarioRecord(usuarioEncontrado.getCorreo(), null, usuarioEncontrado.getSaldo());
+            return consultaUsuario(em, correo);
         }
     }
 }

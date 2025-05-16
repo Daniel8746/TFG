@@ -12,6 +12,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowInsetsCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.pmdm.casino.ui.features.apuestas.ApuestasViewModel
 import com.pmdm.casino.ui.features.musicaFondo.MusicaViewModel
 import com.pmdm.casino.ui.navigation.CasinoNavHost
 import com.pmdm.casino.ui.theme.CasinoTheme
@@ -22,6 +23,7 @@ class MainActivity : ComponentActivity() {
 
     // Musica fondo
     private var musicaVm: MusicaViewModel? = null
+    private var vmApuestas: ApuestasViewModel? = null
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,12 +51,15 @@ class MainActivity : ComponentActivity() {
         setContent {
             CasinoTheme {
                 musicaVm = hiltViewModel()
+                vmApuestas = hiltViewModel()
 
                 Surface(
                     modifier = Modifier
                         .fillMaxSize()
                 ) {
-                    CasinoNavHost()
+                    CasinoNavHost(
+                        vmApuestas = vmApuestas!!
+                    )
                 }
             }
         }

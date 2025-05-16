@@ -1,4 +1,4 @@
-package com.pmdm.casino.ui.features
+package com.pmdm.casino.ui.features.usuarioCasino
 
 import java.math.BigDecimal
 

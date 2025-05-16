@@ -2,19 +2,19 @@ package com.pmdm.casino.data.repositorys
 
 import com.pmdm.casino.data.services.blackJack.CartaApi
 import com.pmdm.casino.data.services.juegos.JuegosApi
-import com.pmdm.casino.data.services.usuario.UsuarioApi
+import com.pmdm.casino.data.services.usuario.NuevoUsuarioApi
 import com.pmdm.casino.data.services.usuario.UsuarioApiRecord
 import com.pmdm.casino.model.Carta
 import com.pmdm.casino.model.Juegos
 import com.pmdm.casino.model.Usuario
 
 // Usuario
-fun Usuario.toUsuarioApi(): UsuarioApi = UsuarioApi(
+fun Usuario.toUsuarioApi(): NuevoUsuarioApi = NuevoUsuarioApi(
     nombre, apellidos, correo, contrasena, telefono, saldo, recordarCuenta
 )
 
 fun Usuario.toUsuarioApiRecord(): UsuarioApiRecord = UsuarioApiRecord(
-    correo, contrasena, saldo
+    correo, contrasena
 )
 
 // Juegos

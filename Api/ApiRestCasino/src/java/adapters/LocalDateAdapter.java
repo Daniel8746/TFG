@@ -15,6 +15,9 @@ import java.time.format.DateTimeFormatter;
  *
  * @author danie
  */
+
+// Solo utilizar cuando en la base de datos tiene Date y no se puede cambiar, utilizar con @JsonAdapter
+@Deprecated
 public class LocalDateAdapter extends TypeAdapter<LocalDate>{
 
     @Override

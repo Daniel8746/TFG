@@ -24,7 +24,7 @@ fun ButtonWithLottie(
         .fillMaxWidth()
         .height(50.dp),
     text: String,
-    isLoading: Boolean,
+    isLoading: Boolean = false,
     onClick: () -> Unit,
     enabled: Boolean = true
 ) {

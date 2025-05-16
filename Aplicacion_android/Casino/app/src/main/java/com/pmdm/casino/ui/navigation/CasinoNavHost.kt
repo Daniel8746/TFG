@@ -23,18 +23,21 @@ import com.pmdm.casino.ui.features.blackJack.MaquinaViewModel
 import com.pmdm.casino.ui.features.casino.JuegosViewModel
 import com.pmdm.casino.ui.features.ruleta.RuletaViewModel
 import com.pmdm.casino.ui.features.tragaMonedas.TragaMonedasViewModel
+import com.pmdm.casino.ui.features.usuarioCasino.UsuarioCasinoViewModel
 
 @Composable
-fun CasinoNavHost() {
+fun CasinoNavHost(
+    vmApuestas: ApuestasViewModel
+) {
     val navController: NavHostController = rememberNavController()
     var esLogin by remember { mutableStateOf(true) }
 
-    val vmBJ = hiltViewModel<BlackJackViewModel>()
+    val vmBlackJ = hiltViewModel<BlackJackViewModel>()
     val vmMaquina = hiltViewModel<MaquinaViewModel>()
-    val vmApuestas = hiltViewModel<ApuestasViewModel>()
-    val vmC = hiltViewModel<JuegosViewModel>()
-    val vmR = hiltViewModel<RuletaViewModel>()
-    val vmT = hiltViewModel<TragaMonedasViewModel>()
+    val vmCasino = hiltViewModel<JuegosViewModel>()
+    val vmRuleta = hiltViewModel<RuletaViewModel>()
+    val vmTragaM = hiltViewModel<TragaMonedasViewModel>()
+    val vmUsuarioC = hiltViewModel<UsuarioCasinoViewModel>()
 
     NavHost(
         navController = navController,
@@ -106,27 +109,28 @@ fun CasinoNavHost() {
                     popUpTo(LoginRoute) { inclusive = false }
                 }
             },
-            onNavegarJuegos = { correo, saldo ->
-                navController.navigate("casino/$correo/$saldo") {
+            onNavegarJuegos = {
+                navController.navigate(CasinoRoute) {
                     popUpTo(0) { inclusive = false }
                 }
 
                 esLogin = false
-            }
+            },
+            vmUsuarioCasino = vmUsuarioC
         )
 
         loginDestination(
             onNavegarNuevaCuenta = {
                 navController.navigate(NuevoUsuarioRoute)
             },
-
-            onNavegarCasino = { correo, saldo ->
-                navController.navigate("casino/$correo/$saldo") {
-                    popUpTo(0) { inclusive = false }
+            onNavegarCasino = {
+                navController.navigate(CasinoRoute) {
+                    popUpTo(CasinoRoute) { inclusive = false }
                 }
 
                 esLogin = false
-            }
+            },
+            vmUsuarioCasino = vmUsuarioC
         )
 
         nuevoUsuarioDestination(
@@ -136,39 +140,55 @@ fun CasinoNavHost() {
         )
 
         casinoDestination(
-            onNavegarBlackJack = { correo, saldo ->
-                navController.navigate("black_jack/$correo/$saldo")
+            onNavegarBlackJack = {
+                navController.navigate(BlackJackRoute) {
+                    popUpTo(BlackJackRoute) { inclusive = false }
+                }
             },
-            onNavegarTragaMonedas = { correo, saldo ->
-                navController.navigate("traga_monedas/$correo/$saldo")
+            onNavegarTragaMonedas = {
+                navController.navigate(TragaMonedasRoute) {
+                    popUpTo(TragaMonedasRoute) { inclusive = false }
+                }
             },
-            onNavegarRuleta = { correo, saldo ->
-                navController.navigate("ruleta/$correo/$saldo")
+            onNavegarRuleta = {
+                navController.navigate(RuletaRoute) {
+                    popUpTo(RuletaRoute) { inclusive = false }
+                }
             },
-            vm = vmC
+            vm = vmCasino,
+            vmUsuarioCasino = vmUsuarioC
         )
 
         blackDestination(
-            onNavegarCasino = { correo, saldo ->
-                navController.navigate("casino/$correo/$saldo")
+            onNavegarCasino = {
+                navController.navigate(CasinoRoute) {
+                    popUpTo(CasinoRoute) { inclusive = false }
+                }
             },
-            vm = vmBJ,
+            vm = vmBlackJ,
             vmMaquina = vmMaquina,
-            vmApuestas = vmApuestas
+            vmApuestas = vmApuestas,
+            vmUsuarioCasino = vmUsuarioC
         )
 
         ruletaDestination(
-            onNavegarCasino = { correo, saldo ->
-                navController.navigate("casino/$correo/$saldo")
+            onNavegarCasino = {
+                navController.navigate(CasinoRoute) {
+                    popUpTo(CasinoRoute) { inclusive = false }
+                }
             },
-            vm = vmR
+            vm = vmRuleta,
+            vmUsuarioCasino = vmUsuarioC
         )
 
         tragaDestination(
-            onNavegarCasino = { correo, saldo ->
-                navController.navigate("casino/$correo/$saldo")
+            onNavegarCasino = {
+                navController.navigate(CasinoRoute) {
+                    popUpTo(CasinoRoute) { inclusive = false }
+                }
             },
-            vm = vmT
+            vm = vmTragaM,
+            vmUsuarioCasino = vmUsuarioC
         )
     }
 }

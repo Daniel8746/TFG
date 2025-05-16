@@ -53,7 +53,6 @@ fun AbrirDialogoNoApiRest() {
                         .height(50.dp)
                         .align(Alignment.End),
                     text = "Salir",
-                    isLoading = false,
                     onClick = { (context as Activity).finishAndRemoveTask() }
                 )
             }

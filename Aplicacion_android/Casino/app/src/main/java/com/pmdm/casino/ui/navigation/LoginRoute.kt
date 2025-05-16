@@ -7,15 +7,16 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.pmdm.casino.ui.features.login.LoginScreen
 import com.pmdm.casino.ui.features.login.LoginViewModel
+import com.pmdm.casino.ui.features.usuarioCasino.UsuarioCasinoViewModel
 import kotlinx.serialization.Serializable
-import java.math.BigDecimal
 
 @Serializable
 object LoginRoute
 
 fun NavGraphBuilder.loginDestination(
     onNavegarNuevaCuenta: () -> Unit,
-    onNavegarCasino: (correo: String, saldo: BigDecimal) -> Unit
+    onNavegarCasino: () -> Unit,
+    vmUsuarioCasino: UsuarioCasinoViewModel
 ) {
     composable<LoginRoute> {
         val vm = hiltViewModel<LoginViewModel>()
@@ -31,7 +32,13 @@ fun NavGraphBuilder.loginDestination(
             reintentarConexion = vm.reintentarConexion,
             errorApi = vm.errorApi,
             onLoginEvent = { vm.onLoginEvent(it) },
-            onNavigateToCasino = onNavegarCasino,
+            onNavigateToCasino = {
+                vmUsuarioCasino.actualizarUsuarioCasino(
+                    correo = vm.usuarioUiState.login,
+                    saldo = vm.saldo.value
+                )
+                onNavegarCasino()
+            },
             onNavigateToNuevaCuenta = onNavegarNuevaCuenta,
             onRecordarmeState = { vm.onRecordarmeState(it) },
             reiniciar = { vm.reiniciar(context) }

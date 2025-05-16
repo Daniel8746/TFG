@@ -18,7 +18,7 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
 import java.lang.System.Logger;
 import java.util.HashMap;
-import jpacasino.JPAUtil;
+import utils.JPAUtil;
 import jpacasino.Usuario;
 import jpacasino.UsuarioJpaController;
 import jpacasino.exceptions.IllegalOrphanException;
@@ -51,7 +51,6 @@ public class ServiceRestUsuario {
     @Produces({MediaType.APPLICATION_JSON})
     public Response getOne(UsuarioRecord usuario, @Context ContainerRequestContext requestContext) {
         Response response;
-        Status statusResul;
         HashMap<String, String> mensaje = new HashMap<>();
 
         try {
@@ -61,71 +60,62 @@ public class ServiceRestUsuario {
             // Si no hay correo en el contexto, significa que no se envió un token o el token es inválido
             if ("sin-token".equals(correo)) {
                 // Se busca el usuario en la base de datos usando el correo y la contraseña
-                Usuario usuarioEncontrado = dao.findUsuario(usuario);
+                UsuarioRecord usuarioEncontrado = dao.findUsuario(usuario);
 
                 if (usuarioEncontrado == null) {
                     // Si no se encuentra el usuario, se devuelve un booleano para avisar a la aplicación
-                    statusResul = Response.Status.UNAUTHORIZED;
                     response = Response
-                            .status(statusResul)
+                            .status(Status.UNAUTHORIZED)
                             .build();
                 } else {
                     // Si el usuario existe, generamos un token para este usuario
-                    statusResul = Response.Status.OK;
-
                     // Generar un token para JWT
-                    String token = JwtUtil.generarToken(usuarioEncontrado.getCorreo());
+                    String token = JwtUtil.generarToken(usuarioEncontrado.correo());
 
-                    mensaje.put("saldo",
-                            (usuarioEncontrado.getSaldo() == null ? "0"
-                            : usuarioEncontrado.getSaldo().toString()));
-                    mensaje.put("token", token);
-
-                    response = Response
-                            .status(statusResul)
-                            .entity(mensaje)
-                            .build();
+                    response = rellenarCamposMensaje(
+                            mensaje, 
+                            token, 
+                            usuarioEncontrado.saldo().toPlainString()
+                    );
                 }
             } else {
                 // Si el correo es válido, ya tenemos un usuario autenticado gracias al token
                 // Buscar el usuario con el correo ya validado
-                Usuario usuarioEncontrado = dao.findUsuario(
-                        new UsuarioRecord(
-                                correo,
-                                null, null
-                        )
-                );
+                UsuarioRecord usuarioEncontrado = dao.findUsuario(correo);
 
                 if (usuarioEncontrado == null) {
-                    statusResul = Response.Status.UNAUTHORIZED;
                     response = Response
-                            .status(statusResul)
+                            .status(Status.UNAUTHORIZED)
                             .build();
                 } else {
                     // Si el usuario existe, devolvemos su saldo y el token
-                    statusResul = Response.Status.OK;
-
-                    mensaje.put("saldo",
-                            (usuarioEncontrado.getSaldo() == null ? "0"
-                            : usuarioEncontrado.getSaldo().toString())
+                    response = rellenarCamposMensaje(
+                            mensaje,
+                            usuarioEncontrado.correo(),
+                            usuarioEncontrado.saldo().toPlainString()
                     );
-                    mensaje.put("token", usuarioEncontrado.getCorreo());
-
-                    response = Response
-                            .status(statusResul)
-                            .entity(mensaje)
-                            .build();
                 }
             }
         } catch (Exception ex) {
-            statusResul = Response.Status.INTERNAL_SERVER_ERROR;
             LOG.log(Logger.Level.ERROR, ex.getLocalizedMessage());
             response = Response
-                    .status(statusResul)
+                    .status(Status.INTERNAL_SERVER_ERROR)
                     .build();
         }
 
         return response;
+    }
+
+    private Response rellenarCamposMensaje(HashMap<String, String> mensaje, String token, String saldo) {
+        mensaje.put("saldo",
+                saldo != null && !saldo.isBlank() ? saldo : "0"
+        );
+        mensaje.put("token", token);
+
+        return Response
+                .status(Status.OK)
+                .entity(mensaje)
+                .build();
     }
 
     // Método para eliminar un usuario: recibe el usuario y lo elimina de la base de datos
@@ -139,7 +129,7 @@ public class ServiceRestUsuario {
 
         try {
             // Se busca al usuario por correo
-            Usuario usuarioEncontrado = dao.findUsuario(usuario);
+            Usuario usuarioEncontrado = dao.findUsuarioEliminar(usuario);
 
             if (usuarioEncontrado == null) {
                 // Si no se encuentra el usuario, se devuelve un mensaje de error
@@ -177,7 +167,7 @@ public class ServiceRestUsuario {
 
         try {
             // Se verifica si el correo ya está registrado
-            Usuario usuarioEncontrado = dao.findUsuario(
+            UsuarioRecord usuarioEncontrado = dao.findUsuario(
                     new UsuarioRecord(
                             usuario.getCorreo(), usuario.getContrasenya(), null
                     )

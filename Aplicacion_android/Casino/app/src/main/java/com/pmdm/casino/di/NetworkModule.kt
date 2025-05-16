@@ -8,6 +8,7 @@ import com.pmdm.casino.data.services.interceptors.connectVerifier.ConnectVerifie
 import com.pmdm.casino.data.services.interceptors.connectVerifier.NetworkMonitorService
 import com.pmdm.casino.data.services.interceptors.connectVerifier.NetworkMonitorServiceImplementation
 import com.pmdm.casino.data.services.juegos.JuegosService
+import com.pmdm.casino.data.services.ruleta.RuletaService
 import com.pmdm.casino.data.services.usuario.UsuarioService
 import dagger.Module
 import dagger.Provides
@@ -35,7 +36,7 @@ object NetworkModule {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.level = HttpLoggingInterceptor.Level.HEADERS
 
-        val timeout = 5L
+        val timeout = 8L
         return OkHttpClient.Builder()
             .addInterceptor(ConnectVerifierInterceptor(networkMonitor))
             .addInterceptor(authInterceptor)
@@ -87,4 +88,10 @@ object NetworkModule {
     ): NetworkMonitorService {
         return NetworkMonitorServiceImplementation(appContext)
     }
+
+    @Provides
+    @Singleton
+    fun provideRuletaService(
+        retrofit: Retrofit
+    ): RuletaService = retrofit.create(RuletaService::class.java)
 }

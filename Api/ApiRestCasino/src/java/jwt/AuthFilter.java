@@ -8,6 +8,7 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.ext.Provider;
 import java.io.IOException;
 
@@ -34,7 +35,7 @@ public class AuthFilter implements ContainerRequestFilter {
 
                 if (correo == null) {
                     // Si el token no es válido o ha expirado
-                    requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
+                    requestContext.abortWith(Response.status(Status.UNAUTHORIZED)
                             .entity("Token inválido o expirado")
                             .build());
                 } else {
@@ -43,7 +44,7 @@ public class AuthFilter implements ContainerRequestFilter {
                 }
             } catch (Exception e) {
                 // Si ocurre un error durante la validación del token
-                requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
+                requestContext.abortWith(Response.status(Status.UNAUTHORIZED)
                         .entity("Token no válido")
                         .build());
 

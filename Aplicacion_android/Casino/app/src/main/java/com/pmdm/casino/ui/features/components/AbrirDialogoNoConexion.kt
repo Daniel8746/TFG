@@ -51,7 +51,6 @@ fun AbrirDialogoNoConexion(
                         .height(50.dp)
                         .align(Alignment.End),
                     text = "Reintentar",
-                    isLoading = false,
                     onClick = onClick
                 )
             }

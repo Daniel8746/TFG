@@ -1,49 +1,35 @@
 package com.pmdm.casino.ui.navigation
 
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
-import androidx.navigation.toRoute
 import com.pmdm.casino.ui.features.casino.CasinoScreen
 import com.pmdm.casino.ui.features.casino.JuegosViewModel
-import kotlinx.serialization.Contextual
+import com.pmdm.casino.ui.features.usuarioCasino.UsuarioCasinoViewModel
 import kotlinx.serialization.Serializable
-import java.math.BigDecimal
 
 @Serializable
-data class CasinoRoute(val correo: String, val saldo: @Contextual BigDecimal)
+object CasinoRoute
 
 fun NavGraphBuilder.casinoDestination(
-    onNavegarBlackJack: (correo: String, saldo: BigDecimal) -> Unit,
-    onNavegarRuleta: (correo: String, saldo: BigDecimal) -> Unit,
-    onNavegarTragaMonedas: (correo: String, saldo: BigDecimal) -> Unit,
-    vm: JuegosViewModel
+    onNavegarBlackJack: () -> Unit,
+    onNavegarRuleta: () -> Unit,
+    onNavegarTragaMonedas: () -> Unit,
+    vm: JuegosViewModel,
+    vmUsuarioCasino: UsuarioCasinoViewModel
 ) {
-    composable(
-        route = "casino/{correo}/{saldo}",
-        arguments = listOf(
-            navArgument("correo") { type = NavType.StringType },
-            navArgument("saldo") { type = BigDecimalNavType() }
-        )
-    ) { backStackEntry ->
-        val usuarioCasino: CasinoRoute = remember { backStackEntry.toRoute<CasinoRoute>() }
-
-        vm.crearUsuarioCasino(usuarioCasino)
-
+    composable<CasinoRoute> {
         val context = LocalContext.current
 
         CasinoScreen(
             juegosUiState = vm.juegosUiState.collectAsState().value,
-            usuarioUiState = vm.usuarioUiState,
+            usuarioUiState = vmUsuarioCasino.usuarioCasinoUiState,
             onCasinoEvent = { vm.onCasinoEvent(it) },
             onBlackJackEvent = onNavegarBlackJack,
             onRuletaEvent = onNavegarRuleta,
             onTragaMonedas = onNavegarTragaMonedas,
-            onAyudaEvent = { vm.onAbrirAyuda() },
+            onAyudaEvent = vm::onAbrirAyuda,
             isAyudaAbierta = vm.isAyudaAbierta,
             reintentarConexion = vm.reintentarConexion,
             errorApi = vm.errorApi,

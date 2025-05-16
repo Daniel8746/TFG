@@ -23,17 +23,15 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.pmdm.casino.R
 import com.pmdm.casino.ui.features.components.AbrirDialogoNoApiRest
 import com.pmdm.casino.ui.features.components.AbrirDialogoNoConexion
-import java.math.BigDecimal
 
 @Composable
 fun SplashScreen(
     correo: String,
-    saldo: BigDecimal,
     errorApi: Boolean,
     reintentarConexion: Boolean,
     reiniciar: () -> Unit,
     onNavegarLogin: () -> Unit,
-    onNavegarJuegos: (correo: String, saldo: BigDecimal) -> Unit
+    onNavegarJuegos: () -> Unit
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -67,7 +65,7 @@ fun SplashScreen(
             if (logoAnimationState.isAtEnd && logoAnimationState.isPlaying && !reintentarConexion && !errorApi) {
                 LaunchedEffect(Unit) {
                     if (correo.isNotEmpty()) {
-                        onNavegarJuegos(correo, saldo)
+                        onNavegarJuegos()
                     } else {
                         onNavegarLogin()
                     }

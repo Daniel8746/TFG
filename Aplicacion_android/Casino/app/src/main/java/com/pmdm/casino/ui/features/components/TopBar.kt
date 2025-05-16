@@ -17,7 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.pmdm.casino.ui.features.UsuarioCasinoUiState
+import com.pmdm.casino.ui.features.usuarioCasino.UsuarioCasinoUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

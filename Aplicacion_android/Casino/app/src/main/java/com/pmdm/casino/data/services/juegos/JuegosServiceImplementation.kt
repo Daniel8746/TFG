@@ -1,7 +1,6 @@
 package com.pmdm.casino.data.services.juegos
 
 import android.util.Log
-import com.pmdm.casino.data.exceptions.ApiServicesException
 import com.pmdm.casino.data.repositorys.validarCodigoResponse
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -30,7 +29,7 @@ class JuegosServiceImplementation @Inject constructor(
             }
 
             return response.body()
-        } catch (e: ApiServicesException) {
+        } catch (e: Exception) {
             Log.e(logTag, "Error: ${e.localizedMessage}")
             return null
         }
