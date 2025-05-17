@@ -20,7 +20,6 @@ import androidx.navigation.compose.rememberNavController
 import com.pmdm.casino.ui.features.apuestas.ApuestasViewModel
 import com.pmdm.casino.ui.features.blackJack.BlackJackViewModel
 import com.pmdm.casino.ui.features.blackJack.MaquinaViewModel
-import com.pmdm.casino.ui.features.casino.JuegosViewModel
 import com.pmdm.casino.ui.features.ruleta.RuletaViewModel
 import com.pmdm.casino.ui.features.tragaMonedas.TragaMonedasViewModel
 import com.pmdm.casino.ui.features.usuarioCasino.UsuarioCasinoViewModel
@@ -34,7 +33,6 @@ fun CasinoNavHost(
 
     val vmBlackJ = hiltViewModel<BlackJackViewModel>()
     val vmMaquina = hiltViewModel<MaquinaViewModel>()
-    val vmCasino = hiltViewModel<JuegosViewModel>()
     val vmRuleta = hiltViewModel<RuletaViewModel>()
     val vmTragaM = hiltViewModel<TragaMonedasViewModel>()
     val vmUsuarioC = hiltViewModel<UsuarioCasinoViewModel>()
@@ -106,12 +104,12 @@ fun CasinoNavHost(
         splashDestination(
             onNavegarLogin = {
                 navController.navigate(LoginRoute) {
-                    popUpTo(LoginRoute) { inclusive = false }
+                    popUpTo(SplashRoute) { inclusive = true }
                 }
             },
             onNavegarJuegos = {
                 navController.navigate(CasinoRoute) {
-                    popUpTo(0) { inclusive = false }
+                    popUpTo(SplashRoute) { inclusive = true }
                 }
 
                 esLogin = false
@@ -125,7 +123,7 @@ fun CasinoNavHost(
             },
             onNavegarCasino = {
                 navController.navigate(CasinoRoute) {
-                    popUpTo(CasinoRoute) { inclusive = false }
+                    popUpTo(LoginRoute) { inclusive = true }
                 }
 
                 esLogin = false
@@ -141,29 +139,20 @@ fun CasinoNavHost(
 
         casinoDestination(
             onNavegarBlackJack = {
-                navController.navigate(BlackJackRoute) {
-                    popUpTo(BlackJackRoute) { inclusive = false }
-                }
+                navController.navigate(BlackJackRoute)
             },
             onNavegarTragaMonedas = {
-                navController.navigate(TragaMonedasRoute) {
-                    popUpTo(TragaMonedasRoute) { inclusive = false }
-                }
+                navController.navigate(TragaMonedasRoute)
             },
             onNavegarRuleta = {
-                navController.navigate(RuletaRoute) {
-                    popUpTo(RuletaRoute) { inclusive = false }
-                }
+                navController.navigate(RuletaRoute)
             },
-            vm = vmCasino,
             vmUsuarioCasino = vmUsuarioC
         )
 
         blackDestination(
             onNavegarCasino = {
-                navController.navigate(CasinoRoute) {
-                    popUpTo(CasinoRoute) { inclusive = false }
-                }
+                navController.popBackStack()
             },
             vm = vmBlackJ,
             vmMaquina = vmMaquina,
@@ -173,9 +162,7 @@ fun CasinoNavHost(
 
         ruletaDestination(
             onNavegarCasino = {
-                navController.navigate(CasinoRoute) {
-                    popUpTo(CasinoRoute) { inclusive = false }
-                }
+                navController.popBackStack()
             },
             vm = vmRuleta,
             vmUsuarioCasino = vmUsuarioC
@@ -183,9 +170,7 @@ fun CasinoNavHost(
 
         tragaDestination(
             onNavegarCasino = {
-                navController.navigate(CasinoRoute) {
-                    popUpTo(CasinoRoute) { inclusive = false }
-                }
+                navController.popBackStack()
             },
             vm = vmTragaM,
             vmUsuarioCasino = vmUsuarioC

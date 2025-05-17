@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package jwt;
+package provider.jwt;
 
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
@@ -16,6 +16,9 @@ import java.io.IOException;
  *
  * @author danie
  */
+/*
+* Esta clase sirve para cuando recibe una petición, comprobar que en el head viene el token del usuario JWT
+*/
 @Provider
 public class AuthFilter implements ContainerRequestFilter {
 
@@ -24,7 +27,7 @@ public class AuthFilter implements ContainerRequestFilter {
         // Obtener el token del header Authorization
         String authorizationHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
 
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ") 
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")
                 && !authorizationHeader.equals("Bearer null")) {
             // Extraer el token
             String token = authorizationHeader.substring("Bearer".length()).trim();

@@ -11,6 +11,7 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import java.util.List;
 import utils.JPAUtil;
 import jpacasino.Juego;
@@ -36,27 +37,17 @@ public class ServiceRestJuegos {
     @Path("todos-juegos")
     @Consumes({MediaType.APPLICATION_JSON})
     public Response getAll() {
-        Response response;
+        List<Juego> listaJuegos = dao.findJuegoEntities();
 
-        try {
-            List<Juego> listaJuegos = dao.findJuegoEntities();
-
-            if (listaJuegos == null || listaJuegos.isEmpty()) {
-                response = Response
-                        .status(Response.Status.BAD_REQUEST)
-                        .build();
-            } else {
-                response = Response
-                        .status(Response.Status.OK)
-                        .entity(new Gson().toJson(listaJuegos))
-                        .build();
-            }
-        } catch (Exception ex) {
-            response = Response
-                    .status(Response.Status.INTERNAL_SERVER_ERROR)
+        if (listaJuegos == null || listaJuegos.isEmpty()) {
+            return Response
+                    .status(Status.BAD_REQUEST)
                     .build();
         }
 
-        return response;
+        return Response
+                .status(Status.OK)
+                .entity(new Gson().toJson(listaJuegos))
+                .build();
     }
 }

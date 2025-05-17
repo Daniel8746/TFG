@@ -4,6 +4,8 @@
  */
 package jpacasino;
 
+import adapters.LocalDateTimeAdapter;
+import com.google.gson.annotations.JsonAdapter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import jakarta.persistence.Basic;
@@ -45,6 +47,7 @@ public class Apuesta implements Serializable {
     private BigDecimal montoApostado;
     @Basic(optional = false)
     @Column(name = "fecha")
+    @JsonAdapter(LocalDateTimeAdapter.class)
     private LocalDateTime fecha;
     @Basic(optional = false)
     @Column(name = "resultado")

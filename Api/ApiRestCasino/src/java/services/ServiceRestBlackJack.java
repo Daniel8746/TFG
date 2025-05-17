@@ -41,66 +41,48 @@ public class ServiceRestBlackJack {
     @Path("carta")
     @Consumes({MediaType.APPLICATION_JSON})
     public Response getCarta() {
-        Response response;
         CartaRecord cartaAzar;
         int posicion;
 
-        try {
-            if (random.nextBoolean()) {
-                posicion = random.nextInt(0, mazo1.size());
-                cartaAzar = mazo1.get(posicion);
-                mazo1.remove(posicion);
-            } else {
-                posicion = random.nextInt(0, mazo2.size());
-                cartaAzar = mazo2.get(posicion);
-                mazo2.remove(posicion);
-            }
-
-            response = Response
-                    .status(Status.OK)
-                    .entity(new Gson().toJson(cartaAzar))
-                    .build();
-        } catch (Exception ex) {
-            response = Response
-                    .status(Status.INTERNAL_SERVER_ERROR)
-                    .build();
+        if (random.nextBoolean()) {
+            posicion = random.nextInt(0, mazo1.size());
+            cartaAzar = mazo1.get(posicion);
+            mazo1.remove(posicion);
+        } else {
+            posicion = random.nextInt(0, mazo2.size());
+            cartaAzar = mazo2.get(posicion);
+            mazo2.remove(posicion);
         }
 
-        return response;
+        return Response
+                .status(Status.OK)
+                .entity(new Gson().toJson(cartaAzar))
+                .build();
     }
 
     @GET
     @Path("iniciarJuego")
     @Consumes({MediaType.APPLICATION_JSON})
     public Response getCartas() {
-        Response response;
         List<CartaRecord> cartaAzar = new ArrayList<>();
         int posicion;
 
-        try {
-            for (int i = 0; i <= 1; ++i) {
-                if (random.nextBoolean()) {
-                    posicion = random.nextInt(0, mazo1.size());
-                    cartaAzar.add(mazo1.get(posicion));
-                    mazo1.remove(posicion);
-                } else {
-                    posicion = random.nextInt(0, mazo2.size());
-                    cartaAzar.add(mazo2.get(posicion));
-                    mazo2.remove(posicion);
-                }
+        for (int i = 0; i <= 1; ++i) {
+            if (random.nextBoolean()) {
+                posicion = random.nextInt(0, mazo1.size());
+                cartaAzar.add(mazo1.get(posicion));
+                mazo1.remove(posicion);
+            } else {
+                posicion = random.nextInt(0, mazo2.size());
+                cartaAzar.add(mazo2.get(posicion));
+                mazo2.remove(posicion);
             }
-
-            response = Response
-                    .status(Status.OK)
-                    .entity(new Gson().toJson(cartaAzar))
-                    .build();
-        } catch (Exception ex) {
-            response = Response
-                    .status(Status.INTERNAL_SERVER_ERROR)
-                    .build();
         }
 
-        return response;
+        return Response
+                .status(Status.OK)
+                .entity(new Gson().toJson(cartaAzar))
+                .build();
     }
 
     @POST
@@ -108,22 +90,11 @@ public class ServiceRestBlackJack {
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     public Response finalizar() {
-        Response response;
+        inicializarCartas();
 
-        try {
-            inicializarCartas();
-
-            response = Response
-                    .status(Status.OK)
-                    .build();
-        } catch (Exception ex) {
-            response = Response
-                    .status(Status.INTERNAL_SERVER_ERROR)
-                    .build();
-        }
-
-        return response;
-
+        return Response
+                .status(Status.OK)
+                .build();
     }
 
     private static void inicializarCartas() {

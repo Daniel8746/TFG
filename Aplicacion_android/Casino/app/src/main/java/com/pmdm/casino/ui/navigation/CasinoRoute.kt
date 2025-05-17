@@ -2,6 +2,7 @@ package com.pmdm.casino.ui.navigation
 
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.pmdm.casino.ui.features.casino.CasinoScreen
@@ -16,10 +17,11 @@ fun NavGraphBuilder.casinoDestination(
     onNavegarBlackJack: () -> Unit,
     onNavegarRuleta: () -> Unit,
     onNavegarTragaMonedas: () -> Unit,
-    vm: JuegosViewModel,
     vmUsuarioCasino: UsuarioCasinoViewModel
 ) {
     composable<CasinoRoute> {
+        val vm = hiltViewModel<JuegosViewModel>()
+
         val context = LocalContext.current
 
         CasinoScreen(

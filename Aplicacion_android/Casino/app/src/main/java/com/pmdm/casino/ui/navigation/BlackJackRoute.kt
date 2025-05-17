@@ -34,7 +34,7 @@ fun NavGraphBuilder.blackDestination(
         val context = LocalContext.current
 
         BlackJackScreen(
-            usuarioUiState = vm.usuarioUiState,
+            usuarioUiState = vmUsuarioCasino.usuarioCasinoUiState,
             puntosUsuario = vm.puntosTotalesUsuario,
             puntosMaquina = vmMaquina.puntosTotalesMaquina,
             reintentarConexion = vm.reintentarConexion,
@@ -51,10 +51,6 @@ fun NavGraphBuilder.blackDestination(
                 vmApuestas.finalizarBlackJack()
             },
             volverAtras = {
-                vmUsuarioCasino.actualizarUsuarioCasino(
-                    correo = vm.usuarioUiState.correo,
-                    saldo = vm.usuarioUiState.saldo
-                )
                 onNavegarCasino()
             },
             reiniciarPartida = {

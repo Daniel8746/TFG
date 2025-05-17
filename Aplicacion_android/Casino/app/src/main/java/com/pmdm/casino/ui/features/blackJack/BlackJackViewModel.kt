@@ -15,7 +15,6 @@ import com.pmdm.casino.ui.features.reiniciarApp
 import com.pmdm.casino.ui.features.sumarPuntos
 import com.pmdm.casino.ui.features.toCartaUiState
 import com.pmdm.casino.ui.features.toCartasUiState
-import com.pmdm.casino.ui.features.usuarioCasino.UsuarioCasinoUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,8 +29,6 @@ import javax.inject.Inject
 class BlackJackViewModel @Inject constructor(
     private val blackJackRepository: BlackJackRepository
 ) : ViewModel() {
-    var usuarioUiState by mutableStateOf(UsuarioCasinoUiState())
-
     private val _cartasUiState = MutableStateFlow<MutableList<CartaUiState>>(mutableListOf())
     val cartasUiState: StateFlow<MutableList<CartaUiState>> = _cartasUiState.asStateFlow()
 

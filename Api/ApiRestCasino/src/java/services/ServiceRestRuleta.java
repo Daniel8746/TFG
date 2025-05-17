@@ -10,6 +10,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -33,41 +34,21 @@ public class ServiceRestRuleta {
     @Path("contador")
     @Consumes({MediaType.APPLICATION_JSON})
     public Response getContador() {
-        Response response;
-
-        try {
-            response = Response
-                    .status(Response.Status.OK)
-                    .entity(new Gson().toJson(contador))
-                    .build();
-        } catch (Exception ex) {
-            response = Response
-                    .status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .build();
-        }
-
-        return response;
+        return Response
+                .status(Status.OK)
+                .entity(new Gson().toJson(contador))
+                .build();
     }
 
     @GET
     @Path("reiniciar")
     @Consumes({MediaType.APPLICATION_JSON})
     public Response reiniciarContadorUsuario() {
-        Response response;
+        reiniciarContador();
 
-        try {
-            reiniciarContador();
-
-            response = Response
-                    .status(Response.Status.OK)
-                    .build();
-        } catch (Exception ex) {
-            response = Response
-                    .status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .build();
-        }
-
-        return response;
+        return Response
+                .status(Status.OK)
+                .build();
     }
 
     private static void iniciarContador() {
