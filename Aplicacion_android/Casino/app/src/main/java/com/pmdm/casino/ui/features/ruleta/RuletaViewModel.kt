@@ -3,7 +3,7 @@ package com.pmdm.casino.ui.features.ruleta
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -32,15 +32,15 @@ class RuletaViewModel @Inject constructor(
     fun reiniciar(context: Context) {
         reintentarConexion = reiniciarApp(context)
     }
-    
+
     var errorApi by mutableStateOf(false)
 
-    private var listaNumerosApostar: List<String> by mutableStateOf(listOf())
+    var listaNumerosApostar: List<String> by mutableStateOf(listOf())
 
     private var _tiempoContador = MutableStateFlow(5000)
     var tiempoContador: StateFlow<Int> = _tiempoContador.asStateFlow()
 
-    var apostado by mutableIntStateOf(1)
+    var apostado by mutableDoubleStateOf(1.00)
 
     fun onRuletaEvent(event: RuletaEvent) {
         viewModelScope.launch {
@@ -49,18 +49,20 @@ class RuletaViewModel @Inject constructor(
 
                 RuletaEvent.FlechaSubirPulsado -> {
                     apostado = when (apostado) {
-                        1 -> 5
-                        else -> apostado + 10
+                        1.00 -> 5.00
+                        else -> apostado + 5.00
                     }
                 }
 
-                RuletaEvent.FlechaBajarPulsado -> apostado -= 5
+                RuletaEvent.FlechaBajarPulsado -> apostado =
+                    if (apostado - 5 < 1) 1.00
+                    else apostado - 5
 
                 is RuletaEvent.ApuestaSeleccionada -> {
-                    listaNumerosApostar = if (event.numero in listaNumerosApostar) {
-                        listaNumerosApostar - event.numero
+                    listaNumerosApostar = if (event.apuestasUiState.valor in listaNumerosApostar) {
+                        listaNumerosApostar - event.apuestasUiState.valor
                     } else {
-                        listaNumerosApostar + event.numero
+                        listaNumerosApostar + event.apuestasUiState.valor
                     }
                 }
 
@@ -98,7 +100,7 @@ class RuletaViewModel @Inject constructor(
             }
 
             if (apostado < 1) {
-                apostado = 1
+                apostado = 1.00
             }
         }
     }

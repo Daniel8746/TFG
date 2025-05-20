@@ -8,7 +8,10 @@ import androidx.navigation.compose.composable
 import com.pmdm.casino.ui.features.apuestas.ApuestasViewModel
 import com.pmdm.casino.ui.features.blackJack.BlackJackScreen
 import com.pmdm.casino.ui.features.blackJack.BlackJackViewModel
+import com.pmdm.casino.ui.features.blackJack.DetallesBlackJack
 import com.pmdm.casino.ui.features.blackJack.MaquinaViewModel
+import com.pmdm.casino.ui.features.evaluarResultado
+import com.pmdm.casino.ui.features.usuarioCasino.UsuarioCasinoEvent
 import com.pmdm.casino.ui.features.usuarioCasino.UsuarioCasinoViewModel
 import kotlinx.serialization.Serializable
 
@@ -27,11 +30,41 @@ fun NavGraphBuilder.blackDestination(
 
         LaunchedEffect(finalizarTurnoUsuario) {
             if (finalizarTurnoUsuario) {
-                vmMaquina.empezarTurnoMaquina()
+                vmMaquina.empezarTurnoMaquina {
+                    vmApuestas.apuestaJuegoBlackJack(
+                        correo = vmUsuarioCasino.usuarioCasinoUiState.correo,
+                        nombreJuego = "Blackjack Europeo",
+                        montoApostado = vm.apuestaUsuario,
+                        resultado = "En curso",
+                        detalles = DetallesBlackJack(
+                            puntosUsuario = vm.puntosTotalesUsuario,
+                            puntosCrupier = vmMaquina.puntosTotalesMaquina,
+                            cartasUsuario = vm.cartasUiState.value,
+                            cartasCrupier = vmMaquina.cartasUiState.value
+                        )
+                    )
+                }
             }
         }
 
         val context = LocalContext.current
+
+        vmUsuarioCasino.onUsuarioCasinoEvent(UsuarioCasinoEvent.BajarSaldo(vm.apuestaUsuario))
+        if (!vmUsuarioCasino.partidaEmpezadaBlackJack) {
+            vmApuestas.apuestaJuegoBlackJack(
+                correo = vmUsuarioCasino.usuarioCasinoUiState.correo,
+                nombreJuego = "Blackjack Europeo",
+                montoApostado = vm.apuestaUsuario,
+                resultado = "En curso",
+                detalles = DetallesBlackJack(
+                    puntosUsuario = vm.puntosTotalesUsuario,
+                    puntosCrupier = vmMaquina.puntosTotalesMaquina,
+                    cartasUsuario = vm.cartasUiState.value,
+                    cartasCrupier = vmMaquina.cartasUiState.value
+                )
+            )
+        }
+        vmUsuarioCasino.setEstadoPartida("Blackjack", true)
 
         BlackJackScreen(
             usuarioUiState = vmUsuarioCasino.usuarioCasinoUiState,
@@ -45,19 +78,50 @@ fun NavGraphBuilder.blackDestination(
             listadoCartas = vm.cartasUiState.collectAsState().value.toList(),
             listadoCartasMaquina = vmMaquina.cartasUiState.collectAsState().value.toList(),
             cartaNueva = vm.cartaRecienteUiState.collectAsState().value,
+            apuestaUsuario = vm.apuestaUsuario,
             onBlackJackEvent = { vm.onBlackJackEvent(it) },
             onFinalizarBlackJack = {
+                vmApuestas.finalizarBlackJack(
+                    resultado = evaluarResultado(
+                        puntosUsuario = vm.puntosTotalesUsuario,
+                        puntosMaquina = vmMaquina.puntosTotalesMaquina
+                    ),
+                    detalles = DetallesBlackJack(
+                        puntosUsuario = vm.puntosTotalesUsuario,
+                        puntosCrupier = vmMaquina.puntosTotalesMaquina,
+                        cartasUsuario = vm.cartasUiState.value,
+                        cartasCrupier = vmMaquina.cartasUiState.value
+                    )
+                )
                 vm.reiniciarCartas()
-                vmApuestas.finalizarBlackJack()
             },
             volverAtras = {
                 onNavegarCasino()
             },
+            setEstadoPartida = {
+                vmUsuarioCasino.setEstadoPartida("Blackjack", false)
+            },
             reiniciarPartida = {
+                vmUsuarioCasino.onUsuarioCasinoEvent(UsuarioCasinoEvent.BajarSaldo(vm.apuestaUsuario))
                 vm.reiniciarPartida()
                 vmMaquina.reiniciarPartida()
             },
-            reiniciar = { vm.reiniciar(context) }
+            reiniciar = { vm.reiniciar(context) },
+            onUsuarioEvent = { vmUsuarioCasino.onUsuarioCasinoEvent(it) },
+            onApuestaBlackJack = {
+                vmApuestas.apuestaJuegoBlackJack(
+                    correo = vmUsuarioCasino.usuarioCasinoUiState.correo,
+                    nombreJuego = "Blackjack Europeo",
+                    montoApostado = vm.apuestaUsuario,
+                    resultado = "En curso",
+                    detalles = DetallesBlackJack(
+                        puntosUsuario = vm.puntosTotalesUsuario,
+                        puntosCrupier = vmMaquina.puntosTotalesMaquina,
+                        cartasUsuario = vm.cartasUiState.value,
+                        cartasCrupier = vmMaquina.cartasUiState.value
+                    )
+                )
+            }
         )
     }
 }

@@ -14,7 +14,9 @@ import com.pmdm.casino.ui.features.blackJack.components.VistaCrupierBlackjack
 import com.pmdm.casino.ui.features.blackJack.components.VistaJugadorBlackjack
 import com.pmdm.casino.ui.features.components.ButtonWithLottie
 import com.pmdm.casino.ui.features.components.FondoBarraCasinoUI
+import com.pmdm.casino.ui.features.usuarioCasino.UsuarioCasinoEvent
 import com.pmdm.casino.ui.features.usuarioCasino.UsuarioCasinoUiState
+import java.math.BigDecimal
 
 @Composable
 fun BlackJackScreen(
@@ -29,11 +31,15 @@ fun BlackJackScreen(
     listadoCartas: List<CartaUiState>,
     listadoCartasMaquina: List<CartaUiState>,
     cartaNueva: CartaUiState?,
+    apuestaUsuario: BigDecimal,
     onBlackJackEvent: (BlackJackEvent) -> Unit,
     onFinalizarBlackJack: () -> Unit,
     volverAtras: () -> Unit,
     reiniciarPartida: () -> Unit,
-    reiniciar: () -> Unit
+    reiniciar: () -> Unit,
+    onUsuarioEvent: (UsuarioCasinoEvent) -> Unit,
+    setEstadoPartida: () -> Unit,
+    onApuestaBlackJack: () -> Unit
 ) {
     FondoBarraCasinoUI(
         usuarioUiState = usuarioUiState,
@@ -41,7 +47,6 @@ fun BlackJackScreen(
         errorApi = errorApi,
         reiniciar = reiniciar,
         volverAtras = volverAtras,
-        onFinalizarJuego = onFinalizarBlackJack
     ) {
         if (!finalizarTurnoMaquina) {
             Column {
@@ -77,6 +82,7 @@ fun BlackJackScreen(
                     text = "Pedir carta",
                     onClick = {
                         onBlackJackEvent(BlackJackEvent.OnPedirCarta)
+                        onApuestaBlackJack()
                     },
                     enabled = poderPulsarBoton
                 )
@@ -96,9 +102,13 @@ fun BlackJackScreen(
             FinDePartidaPanel(
                 puntosUsuario,
                 puntosMaquina,
+                apuestaUsuario,
                 onFinalizarBlackJack,
                 volverAtras,
-                reiniciarPartida
+                reiniciarPartida,
+                onUsuarioEvent,
+                { onBlackJackEvent(BlackJackEvent.OnValueApuestaUsuarioChanged(it.toBigDecimal())) },
+                setEstadoPartida
             )
         }
     }

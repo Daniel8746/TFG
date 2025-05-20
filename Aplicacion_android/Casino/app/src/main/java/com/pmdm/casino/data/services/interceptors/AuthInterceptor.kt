@@ -2,7 +2,7 @@ package com.pmdm.casino.data.services.interceptors
 
 import android.content.Context
 import android.util.Log
-import com.pmdm.casino.model.TokenManager
+import com.pmdm.casino.data.local.TokenManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking

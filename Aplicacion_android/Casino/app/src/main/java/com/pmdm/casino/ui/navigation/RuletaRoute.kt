@@ -25,6 +25,7 @@ fun NavGraphBuilder.ruletaDestination(
             usuarioUiState = vmUsuarioCasino.usuarioCasinoUiState,
             reintentarConexion = vm.reintentarConexion,
             errorApi = vm.errorApi,
+            listaNumerosApostar = vm.listaNumerosApostar,
             reiniciar = { vm.reiniciar(context) },
             volverAtras = {
                 onNavegarCasino()

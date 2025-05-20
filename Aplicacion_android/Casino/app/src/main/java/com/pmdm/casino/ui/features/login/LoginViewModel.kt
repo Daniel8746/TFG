@@ -8,8 +8,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pmdm.casino.data.exceptions.NoNetworkException
+import com.pmdm.casino.data.local.TokenManager
 import com.pmdm.casino.data.repositorys.UsuarioRepository
-import com.pmdm.casino.model.TokenManager
 import com.pmdm.casino.ui.features.reiniciarApp
 import com.pmdm.casino.ui.features.toUsuario
 import dagger.hilt.android.internal.Contexts.getApplication

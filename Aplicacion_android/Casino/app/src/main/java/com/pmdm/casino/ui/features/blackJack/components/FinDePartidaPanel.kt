@@ -13,25 +13,44 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.pmdmiesbalmis.components.ui.composables.OutlinedTextFieldReal
+import com.github.pmdmiesbalmis.components.validacion.Validacion
 import com.pmdm.casino.ui.features.components.ButtonWithLottie
+import com.pmdm.casino.ui.features.evaluarResultado
+import com.pmdm.casino.ui.features.usuarioCasino.UsuarioCasinoEvent
+import java.math.BigDecimal
 
 @Composable
 fun FinDePartidaPanel(
     puntosUsuario: Int,
     puntosMaquina: Int,
+    apuestaUsuario: BigDecimal,
     onFinalizarBlackJack: () -> Unit,
     volverAtras: () -> Unit,
-    reiniciarPartida: () -> Unit
+    reiniciarPartida: () -> Unit,
+    onUsuarioEvent: (UsuarioCasinoEvent) -> Unit,
+    onValueApuestaChanged: (Double) -> Unit,
+    setEstadoPartida: () -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            if (puntosUsuario > 21 || (puntosMaquina in puntosUsuario..21)) {
-                "Has perdido"
-            } else {
-                "Has ganado"
+            when (evaluarResultado(puntosUsuario = puntosUsuario, puntosMaquina = puntosMaquina)) {
+                "Empate" -> {
+                    onUsuarioEvent(UsuarioCasinoEvent.AumentarSaldo(apuestaUsuario))
+                    "Empate"
+                }
+
+                "Perdido" -> "Has perdido"
+
+                "Ganado" -> {
+                    onUsuarioEvent(UsuarioCasinoEvent.AumentarSaldo(apuestaUsuario * BigDecimal(2)))
+                    "Has ganado"
+                }
+
+                else -> ""
             },
             fontSize = 16.sp,
             color = Color.White,
@@ -52,6 +71,13 @@ fun FinDePartidaPanel(
             modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
         )
 
+        OutlinedTextFieldReal(
+            label = "",
+            valorState = apuestaUsuario.toDouble(),
+            validacionState = object : Validacion {},
+            onValueChange = onValueApuestaChanged
+        )
+
         Row(modifier = Modifier.fillMaxWidth()) {
             ButtonWithLottie(
                 modifier = Modifier
@@ -60,6 +86,7 @@ fun FinDePartidaPanel(
                     .padding(5.dp),
                 text = "Salir",
                 onClick = {
+                    setEstadoPartida()
                     onFinalizarBlackJack()
                     volverAtras()
                 }

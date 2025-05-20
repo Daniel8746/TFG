@@ -11,11 +11,11 @@ class ApuestasServiceImplementation @Inject constructor(
 ) {
     private val logTag: String = "OkHttp"
 
-    suspend fun finalizarBlackJack(): Boolean {
-        val mensajeError = "No se ha podido obtener el usuario"
+    suspend fun finalizar(apuesta: ApuestaApiRecord) {
+        val mensajeError = "No se ha podido finalizar el juego"
 
         try {
-            val response = apuestasService.finalizarBlackJack()
+            val response = apuestasService.finalizar(apuesta)
 
             validarCodigoResponse(response)
 
@@ -27,11 +27,28 @@ class ApuestasServiceImplementation @Inject constructor(
                 val body = response.errorBody()?.toString()
                 Log.e(logTag, "$mensajeError (código ${response.code()}): $this\n${body}")
             }
-
-            return response.isSuccessful
         } catch (e: Exception) {
             Log.e(logTag, "Error: ${e.localizedMessage}")
-            return true
+        }
+    }
+
+    suspend fun apuestaJuego(apuesta: ApuestaApiRecord) {
+        val mensajeError = "No se ha podido iniciar la apuesta"
+
+        try {
+            val response = apuestasService.apuestaJuego(apuesta)
+
+            if (response.isSuccessful) {
+                Log.d(logTag, response.toString())
+
+                Log.d(logTag, response.body()?.toString() ?: "No hay respuesta")
+            } else {
+                val body = response.errorBody()?.toString()
+                Log.e(logTag, "$mensajeError (código ${response.code()}): $this\n${body}")
+            }
+
+        } catch (e: Exception) {
+            Log.e(logTag, "Error: ${e.localizedMessage}")
         }
     }
 }

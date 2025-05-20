@@ -35,7 +35,9 @@ import androidx.compose.ui.unit.sp
 import com.pmdm.casino.R
 import com.pmdm.casino.ui.features.casino.components.AyudaScreen
 import com.pmdm.casino.ui.features.components.FondoBarraCasinoUI
+import com.pmdm.casino.ui.features.dialogoErrorNoSaldo.DialogoErrorNoSaldo
 import com.pmdm.casino.ui.features.usuarioCasino.UsuarioCasinoUiState
+import java.math.BigDecimal
 
 @Composable
 fun CasinoScreen(
@@ -44,12 +46,14 @@ fun CasinoScreen(
     isAyudaAbierta: Boolean,
     reintentarConexion: Boolean,
     errorApi: Boolean,
+    mostrarDialogoErrorNoSaldo: Boolean,
     onCasinoEvent: (JuegosEvent) -> Unit,
     onBlackJackEvent: () -> Unit,
     onRuletaEvent: () -> Unit,
     onTragaMonedas: () -> Unit,
     onAyudaEvent: () -> Unit,
-    reiniciar: () -> Unit
+    reiniciar: () -> Unit,
+    onMostrarDialogoErrorNoSaldo: () -> Unit
 ) {
     var ayudaJuego by remember { mutableStateOf("") }
     val accionesJuegos: Map<String, () -> Unit> = remember {
@@ -94,7 +98,11 @@ fun CasinoScreen(
                     items(juegosUiState, key = { it.nombre }) {
                         ElevatedCard(
                             onClick = {
-                                accionesJuegos[it.nombre.toJuegoEnum()?.clave]?.invoke()
+                                if (it.nombre == "Blackjack" && usuarioUiState.saldo < BigDecimal(5)) {
+                                    onMostrarDialogoErrorNoSaldo()
+                                } else {
+                                    accionesJuegos[it.nombre.toJuegoEnum()?.clave]?.invoke()
+                                }
                             },
                             elevation = CardDefaults.elevatedCardElevation(
                                 defaultElevation = 4.dp,
@@ -162,6 +170,13 @@ fun CasinoScreen(
 
         if (isAyudaAbierta && ayudaJuego.isNotEmpty()) {
             AyudaScreen(ayudaJuego, onAyudaEvent)
+        }
+
+        if (mostrarDialogoErrorNoSaldo) {
+            DialogoErrorNoSaldo(
+                mensaje = "Error al hacer la apuesta en el BlackJack, necesitas como mínimo 5€ para jugar.",
+                onCerrarDialogo = onMostrarDialogoErrorNoSaldo
+            )
         }
     }
 }

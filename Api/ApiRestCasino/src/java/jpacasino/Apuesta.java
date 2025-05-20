@@ -52,6 +52,9 @@ public class Apuesta implements Serializable {
     @Basic(optional = false)
     @Column(name = "resultado")
     private String resultado;
+    @Basic(optional = false)
+    @Column(name = "detalles_resultado")
+    private String detallesResultado;
     @JoinColumn(name = "juego_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Juego juegoId;
@@ -66,11 +69,12 @@ public class Apuesta implements Serializable {
         this.id = id;
     }
 
-    public Apuesta(Integer id, BigDecimal montoApostado, LocalDateTime fecha, String resultado) {
+    public Apuesta(Integer id, BigDecimal montoApostado, LocalDateTime fecha, String resultado, String detallesResultado) {
         this.id = id;
         this.montoApostado = montoApostado;
         this.fecha = fecha;
         this.resultado = resultado;
+        this.detallesResultado = detallesResultado;
     }
 
     public Integer getId() {
@@ -105,6 +109,14 @@ public class Apuesta implements Serializable {
         this.resultado = resultado;
     }
 
+    public String getDetallesResultado() {
+        return detallesResultado;
+    }
+
+    public void setDetallesResultado(String detallesResultado) {
+        this.detallesResultado = detallesResultado;
+    }
+
     public Juego getJuegoId() {
         return juegoId;
     }
@@ -135,15 +147,12 @@ public class Apuesta implements Serializable {
             return false;
         }
         Apuesta other = (Apuesta) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
 
     @Override
     public String toString() {
         return "jpacasino.Apuesta[ id=" + id + " ]";
     }
-    
+
 }

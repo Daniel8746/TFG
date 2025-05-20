@@ -7,6 +7,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.pmdm.casino.ui.features.casino.CasinoScreen
 import com.pmdm.casino.ui.features.casino.JuegosViewModel
+import com.pmdm.casino.ui.features.dialogoErrorNoSaldo.DialogoErrorNoSaldoViewModel
 import com.pmdm.casino.ui.features.usuarioCasino.UsuarioCasinoViewModel
 import kotlinx.serialization.Serializable
 
@@ -21,6 +22,7 @@ fun NavGraphBuilder.casinoDestination(
 ) {
     composable<CasinoRoute> {
         val vm = hiltViewModel<JuegosViewModel>()
+        val vmDialogoErrorNoSaldoViewModel = hiltViewModel<DialogoErrorNoSaldoViewModel>()
 
         val context = LocalContext.current
 
@@ -31,11 +33,13 @@ fun NavGraphBuilder.casinoDestination(
             onBlackJackEvent = onNavegarBlackJack,
             onRuletaEvent = onNavegarRuleta,
             onTragaMonedas = onNavegarTragaMonedas,
+            mostrarDialogoErrorNoSaldo = vmDialogoErrorNoSaldoViewModel.mostrarDialogoErrorNoSaldo,
             onAyudaEvent = vm::onAbrirAyuda,
             isAyudaAbierta = vm.isAyudaAbierta,
             reintentarConexion = vm.reintentarConexion,
             errorApi = vm.errorApi,
-            reiniciar = { vm.reiniciar(context) }
+            reiniciar = { vm.reiniciar(context) },
+            onMostrarDialogoErrorNoSaldo = vmDialogoErrorNoSaldoViewModel::onMostrarDialogo
         )
     }
 }

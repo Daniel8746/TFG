@@ -14,8 +14,11 @@ import java.util.Collection;
 import java.util.List;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.TypedQuery;
 import jpacasino.exceptions.IllegalOrphanException;
 import jpacasino.exceptions.NonexistentEntityException;
+import utils.UsuarioUtils;
 
 /**
  *
@@ -197,5 +200,24 @@ public class JuegoJpaController implements Serializable {
             em.close();
         }
     }
-    
+
+    public int findJuegoApuesta(String nombreJuego) {
+        try (EntityManager em = getEntityManager()) {
+            return consultaJuego(em, nombreJuego).getId();
+        }
+    }
+
+    public Juego consultaJuego(EntityManager em, String nombreJuego) {
+        try {
+            TypedQuery<Juego> consulta = em.createNamedQuery(
+                    "Juego.findByNombre", Juego.class
+            );
+
+            consulta.setParameter("nombre", nombreJuego);
+
+            return consulta.getSingleResult();
+        } catch (NoResultException ex) {
+            return null;
+        }
+    }
 }

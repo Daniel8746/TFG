@@ -5,6 +5,13 @@
 package services;
 
 import classRecord.UsuarioRecord;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
@@ -32,6 +39,7 @@ import org.mindrot.jbcrypt.BCrypt;
  */
 // Servicio REST para gestionar operaciones de usuario
 @Path("usuario")
+@Tag(name = "Usuario", description = "Operaciones relacionadas con usuarios")
 public class ServiceRestUsuario {
 
     private static final EntityManagerFactory emf;
@@ -47,8 +55,40 @@ public class ServiceRestUsuario {
     // Método para loguearse: recibe el correo y la contraseña, y si son correctos devuelve los datos del usuario
     @POST
     @Path("login")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Iniciar sesión",
+            description = "Inicia sesión con correo y contraseña, y devuelve un token JWT y el saldo del usuario si las credenciales son válidas.",
+            requestBody = @RequestBody(
+                    required = true,
+                    content = @Content(
+                            schema = @Schema(implementation = UsuarioRecord.class),
+                            examples = @ExampleObject(value = """
+                                { 
+                                  "correo": "usuario@ejemplo.com", 
+                                  "contrasena": "1234" 
+                                }
+                                """)
+                    )
+            ),
+            responses = {
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "Inicio de sesión exitoso con token y saldo",
+                        content = @Content(
+                                mediaType = "application/json",
+                                examples = @ExampleObject(value = """
+                                {
+                                  "token": "jwt.token.ejemplo",
+                                  "saldo": "150.00"
+                                }
+                                """)
+                        )
+                ),
+                @ApiResponse(responseCode = "401", description = "Credenciales incorrectas o token inválido")
+            }
+    )
     public Response getOne(UsuarioRecord usuario, @Context ContainerRequestContext requestContext) {
         HashMap<String, String> mensaje = new HashMap<>();
 
@@ -111,8 +151,29 @@ public class ServiceRestUsuario {
     // Método para eliminar un usuario: recibe el usuario y lo elimina de la base de datos
     @DELETE
     @Path("eliminar")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Eliminar usuario",
+            description = "Elimina un usuario existente en la base de datos.",
+            requestBody = @RequestBody(
+                    required = true,
+                    content = @Content(
+                            schema = @Schema(implementation = UsuarioRecord.class),
+                            examples = @ExampleObject(value = """
+                                { 
+                                  "correo": "usuario@ejemplo.com", 
+                                  "contrasena": "1234" 
+                                }
+                                """)
+                    )
+            ),
+            responses = {
+                @ApiResponse(responseCode = "200", description = "Usuario eliminado correctamente"),
+                @ApiResponse(responseCode = "404", description = "Usuario no encontrado"),
+                @ApiResponse(responseCode = "400", description = "Error al eliminar usuario")
+            }
+    )
     public Response eliminarUsuario(UsuarioRecord usuario) {
         try {
             // Se busca al usuario por correo
@@ -142,8 +203,29 @@ public class ServiceRestUsuario {
     // Método para crear un nuevo usuario: recibe los datos del usuario, lo registra y devuelve un mensaje
     @POST
     @Path("crear-usuario")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Crear un nuevo usuario",
+            description = "Registra un nuevo usuario con correo y contraseña en la base de datos.",
+            requestBody = @RequestBody(
+                    required = true,
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = Usuario.class),
+                            examples = @ExampleObject(value = """
+                                {
+                                  "correo": "usuario@ejemplo.com",
+                                  "contrasenya": "miPassword123"
+                                }
+                                """)
+                    )
+            ),
+            responses = {
+                @ApiResponse(responseCode = "201", description = "Usuario creado exitosamente"),
+                @ApiResponse(responseCode = "400", description = "El usuario ya existe o datos inválidos")
+            }
+    )
     public Response crearUsuario(Usuario usuario) {
         // Se verifica si el correo ya está registrado
         UsuarioRecord usuarioEncontrado = dao.findUsuario(
@@ -166,7 +248,7 @@ public class ServiceRestUsuario {
                     .status(Status.CREATED)
                     .build();
         }
-        
+
         // Si el usuario ya existe, se devuelve un error
         return Response
                 .status(Status.BAD_REQUEST)

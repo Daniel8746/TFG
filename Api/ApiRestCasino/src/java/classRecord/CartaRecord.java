@@ -4,10 +4,17 @@
  */
 package classRecord;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 /**
  *
  * @author danie
  */
-public record CartaRecord(String palo, String valor) {
-    
+@Schema(name = "CartaRecord", description = "Representa una carta del mazo de Blackjack")
+public record CartaRecord(
+        @Schema(description = "Palo de la carta", example = "Pica")
+        String palo,
+        @Schema(description = "Valor de la carta", example = "K")
+        String valor) {
+
 }

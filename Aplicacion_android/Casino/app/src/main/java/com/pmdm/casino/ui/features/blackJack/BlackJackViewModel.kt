@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import javax.inject.Inject
@@ -50,6 +51,8 @@ class BlackJackViewModel @Inject constructor(
     }
 
     var poderPulsarBoton by mutableStateOf(true)
+
+    var apuestaUsuario by mutableStateOf(BigDecimal(5))
 
     init {
         empezarPartida()
@@ -107,6 +110,8 @@ class BlackJackViewModel @Inject constructor(
             is BlackJackEvent.OnPlantarse -> {
                 finalizarPartida = true
             }
+
+            is BlackJackEvent.OnValueApuestaUsuarioChanged -> apuestaUsuario = event.apuesta
         }
         poderPulsarBoton = true
     }

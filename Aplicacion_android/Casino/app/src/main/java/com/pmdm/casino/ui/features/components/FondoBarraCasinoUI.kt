@@ -21,8 +21,7 @@ fun FondoBarraCasinoUI(
     errorApi: Boolean,
     reiniciar: () -> Unit,
     volverAtras: (() -> Unit)? = null,
-    onFinalizarJuego: (() -> Unit)? = null,
-    composable: @Composable() (BoxScope.() -> Unit)
+    composable: @Composable (BoxScope.() -> Unit)
 ) {
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -30,7 +29,6 @@ fun FondoBarraCasinoUI(
             TopBar(
                 usuarioUiState = usuarioUiState,
                 volverAtras = volverAtras,
-                onFinalizar = onFinalizarJuego
             )
         },
         content = { padding ->

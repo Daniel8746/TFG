@@ -5,9 +5,9 @@
 package services;
 
 import com.google.gson.Gson;
-import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
@@ -32,7 +32,7 @@ public class ServiceRestRuleta {
 
     @GET
     @Path("contador")
-    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getContador() {
         return Response
                 .status(Status.OK)
@@ -42,7 +42,7 @@ public class ServiceRestRuleta {
 
     @GET
     @Path("reiniciar")
-    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces(MediaType.APPLICATION_JSON)
     public Response reiniciarContadorUsuario() {
         reiniciarContador();
 

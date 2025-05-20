@@ -50,9 +50,10 @@ class MaquinaViewModel @Inject constructor(
         pedirCarta()
     }
 
-    suspend fun empezarTurnoMaquina() {
+    suspend fun empezarTurnoMaquina(apuestaJuegoBlackJack: () -> Unit) {
         while (puntosTotalesMaquina < 17) {
             pedirCarta()
+            apuestaJuegoBlackJack()
             delay(1500)
         }
 

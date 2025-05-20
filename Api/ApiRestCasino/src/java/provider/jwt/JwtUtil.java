@@ -4,6 +4,7 @@
  */
 package provider.jwt;
 
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import java.security.NoSuchAlgorithmException;
 import javax.crypto.SecretKey;
@@ -40,11 +41,15 @@ public class JwtUtil {
 
     // Verificar y obtener el subject del token (en este caso, el username)
     public static String getCorreoFromToken(String token) {
-        return Jwts.parser()
-                .verifyWith(SECRET_KEY)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getSubject();  // Obtener el correo del token
+        try {
+            return Jwts.parser()
+                    .verifyWith(SECRET_KEY)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .getSubject();  // Obtener el correo del token
+        } catch (JwtException ex) {
+            return null;
+        }
     }
 }

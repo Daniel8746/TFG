@@ -1,4 +1,4 @@
-package com.pmdm.casino.model
+package com.pmdm.casino.data.local
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit

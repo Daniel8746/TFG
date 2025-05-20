@@ -47,3 +47,11 @@ fun sumarPuntos(
 
     return Pair(puntosTotalesUsuarioMetodo, false)
 }
+
+fun evaluarResultado(puntosUsuario: Int, puntosMaquina: Int): String {
+    return when {
+        puntosUsuario == puntosMaquina -> "Empate"
+        puntosUsuario > 21 || (puntosMaquina in puntosUsuario..21) -> "Perdido"
+        else -> "Ganado"
+    }
+}

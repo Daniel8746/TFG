@@ -242,7 +242,7 @@ public class UsuarioJpaController implements Serializable {
             );
 
             consulta.setParameter("correo", correo);
-            
+
             Usuario encontrado = consulta.getSingleResult();
 
             if (isEliminar) {
@@ -258,6 +258,12 @@ public class UsuarioJpaController implements Serializable {
     public UsuarioRecord findUsuario(String correo) {
         try (EntityManager em = getEntityManager()) {
             return consultaUsuario(em, correo);
+        }
+    }
+
+    public int findUsuarioApuesta(String correo) {
+        try (EntityManager em = getEntityManager()) {
+            return ((Usuario) consultaUsuario(em, correo, true)).getId();
         }
     }
 }

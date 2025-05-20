@@ -14,11 +14,35 @@ class UsuarioCasinoViewModel @Inject constructor() : ViewModel() {
     var usuarioCasinoUiState by mutableStateOf(UsuarioCasinoUiState())
         private set
 
-    fun onUsuarioCasinoEvent(event: UsuarioCasinoEvent) {
-        usuarioCasinoUiState = when (event) {
-            is UsuarioCasinoEvent.AumentarSaldo -> usuarioCasinoUiState.copy(saldo = usuarioCasinoUiState.saldo + event.saldo)
+    var partidaEmpezadaBlackJack by mutableStateOf(false)
+    private var partidaEmpezadaRuleta by mutableStateOf(false)
+    private var partidaEmpezadaTragaMonedas by mutableStateOf(false)
 
-            is UsuarioCasinoEvent.BajarSaldo -> usuarioCasinoUiState.copy(saldo = usuarioCasinoUiState.saldo - event.saldo)
+    fun onUsuarioCasinoEvent(event: UsuarioCasinoEvent) {
+        when (event) {
+            is UsuarioCasinoEvent.AumentarSaldo -> actualizarUsuarioCasino(
+                correo = usuarioCasinoUiState.correo,
+                saldo = usuarioCasinoUiState.saldo + event.saldo
+            )
+
+            is UsuarioCasinoEvent.BajarSaldo -> if (
+                !partidaEmpezadaBlackJack ||
+                !partidaEmpezadaRuleta ||
+                !partidaEmpezadaTragaMonedas
+            ) {
+                actualizarUsuarioCasino(
+                    correo = usuarioCasinoUiState.correo,
+                    saldo = usuarioCasinoUiState.saldo - event.saldo
+                )
+            }
+        }
+    }
+
+    fun setEstadoPartida(juego: String, activa: Boolean) {
+        when (juego) {
+            "Blackjack" -> partidaEmpezadaBlackJack = activa
+            "Ruleta" -> partidaEmpezadaRuleta = activa
+            "Tragamonedas" -> partidaEmpezadaTragaMonedas = activa
         }
     }
 

@@ -65,6 +65,15 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+
+        vmApuestas?.finalizar(
+            resultado = "Abandonado",
+            detalles = "Aplicación cerrada en medio de una partida."
+        )
+    }
+
     override fun onPause() {
         super.onPause()
 

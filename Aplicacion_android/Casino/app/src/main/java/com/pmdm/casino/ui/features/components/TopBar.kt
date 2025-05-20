@@ -24,17 +24,15 @@ import com.pmdm.casino.ui.features.usuarioCasino.UsuarioCasinoUiState
 fun TopBar(
     usuarioUiState: UsuarioCasinoUiState,
     volverAtras: (() -> Unit)? = null,
-    onFinalizar: (() -> Unit)? = null
 ) {
     TopAppBar(
         windowInsets = WindowInsets(0, 0, 0, 0),
         title = {},
         navigationIcon = {
-            if (volverAtras != null && onFinalizar != null) {
+            if (volverAtras != null) {
                 IconButton(
                     onClick = {
                         volverAtras()
-                        onFinalizar()
                     }
                 ) {
                     Icon(

@@ -6,6 +6,13 @@ package services;
 
 import classRecord.CartaRecord;
 import com.google.gson.Gson;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -23,6 +30,7 @@ import java.util.List;
  * @author danie
  */
 @Path("black-jack")
+@Tag(name = "Blackjack", description = "Operaciones del juego Blackjack")
 public class ServiceRestBlackJack {
 
     private final static String[] palos = {"Corazon", "Diamante", "Trebol", "Pica"};
@@ -39,7 +47,22 @@ public class ServiceRestBlackJack {
 
     @GET
     @Path("carta")
-    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Obtener una carta aleatoria",
+            description = "Devuelve una carta aleatoria del mazo.",
+            responses = {
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "Carta obtenida con éxito",
+                        content = @Content(
+                                mediaType = "application/json",
+                                schema = @Schema(implementation = CartaRecord.class),
+                                examples = @ExampleObject(value = "{\"palo\":\"Pica\",\"valor\":\"K\"}")
+                        )
+                )
+            }
+    )
     public Response getCarta() {
         CartaRecord cartaAzar;
         int posicion;
@@ -62,7 +85,22 @@ public class ServiceRestBlackJack {
 
     @GET
     @Path("iniciarJuego")
-    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Iniciar una nueva partida",
+            description = "Devuelve dos cartas aleatorias como mano inicial del jugador.",
+            responses = {
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "Mano inicial obtenida con éxito",
+                        content = @Content(
+                                mediaType = "application/json",
+                                array = @ArraySchema(schema = @Schema(implementation = CartaRecord.class)),
+                                examples = @ExampleObject(value = "[{\"palo\":\"Trebol\",\"valor\":\"A\"},{\"palo\":\"Diamante\",\"valor\":\"10\"}]")
+                        )
+                )
+            }
+    )
     public Response getCartas() {
         List<CartaRecord> cartaAzar = new ArrayList<>();
         int posicion;
@@ -87,8 +125,15 @@ public class ServiceRestBlackJack {
 
     @POST
     @Path("reiniciar-cartas")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Reiniciar mazos de cartas",
+            description = "Reinicia el mazo de cartas para comenzar una nueva ronda.",
+            responses = {
+                @ApiResponse(responseCode = "200", description = "Mazos reiniciados con éxito")
+            }
+    )
     public Response finalizar() {
         inicializarCartas();
 
