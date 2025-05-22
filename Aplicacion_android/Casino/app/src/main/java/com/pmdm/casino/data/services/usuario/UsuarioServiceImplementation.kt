@@ -1,8 +1,11 @@
 package com.pmdm.casino.data.services.usuario
 
 import android.util.Log
+import com.pmdm.casino.data.exceptions.NoNetworkException
 import com.pmdm.casino.data.repositorys.validarCodigoResponse
 import java.math.BigDecimal
+import java.net.ConnectException
+import java.net.SocketTimeoutException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -31,12 +34,18 @@ class UsuarioServiceImplementation @Inject constructor(
 
             return Triple(
                 response.isSuccessful,
-                response.body()?.saldo ?: BigDecimal(0),
+                response.body()?.saldo ?: 0.toBigDecimal(),
                 response.body()?.token ?: ""
             )
         } catch (e: Exception) {
             Log.e(logTag, "Error: ${e.localizedMessage}")
-            return Triple(false, BigDecimal(0), "")
+
+            when (e) {
+                is NoNetworkException -> throw NoNetworkException("No Network")
+                is SocketTimeoutException -> throw SocketTimeoutException("Finalizado tiempo espera")
+                is ConnectException -> throw ConnectException("Error al conectar")
+                else -> throw Exception(e.localizedMessage)
+            }
         }
     }
 
@@ -60,7 +69,13 @@ class UsuarioServiceImplementation @Inject constructor(
             return response.isSuccessful
         } catch (e: Exception) {
             Log.e(logTag, "Error: ${e.localizedMessage}")
-            return false
+
+            when (e) {
+                is NoNetworkException -> throw NoNetworkException("No Network")
+                is SocketTimeoutException -> throw SocketTimeoutException("Finalizado tiempo espera")
+                is ConnectException -> throw ConnectException("Error al conectar")
+                else -> throw Exception(e.localizedMessage)
+            }
         }
     }
 
@@ -83,7 +98,13 @@ class UsuarioServiceImplementation @Inject constructor(
             return response.isSuccessful
         } catch (e: Exception) {
             Log.e(logTag, "Error: ${e.localizedMessage}")
-            return false
+
+            when (e) {
+                is NoNetworkException -> throw NoNetworkException("No Network")
+                is SocketTimeoutException -> throw SocketTimeoutException("Finalizado tiempo espera")
+                is ConnectException -> throw ConnectException("Error al conectar")
+                else -> throw Exception(e.localizedMessage)
+            }
         }
     }
 }

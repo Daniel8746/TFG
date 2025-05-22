@@ -1,6 +1,9 @@
 package com.pmdm.casino.data.services.ruleta
 
 import android.util.Log
+import com.pmdm.casino.data.exceptions.NoNetworkException
+import java.net.ConnectException
+import java.net.SocketTimeoutException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -30,7 +33,13 @@ class RuletaServiceImplementation @Inject constructor(
             return response.body() ?: 0
         } catch (e: Exception) {
             Log.e(logTag, "Error: ${e.localizedMessage}")
-            return 0
+
+            when (e) {
+                is NoNetworkException -> throw NoNetworkException("No Network")
+                is SocketTimeoutException -> throw SocketTimeoutException("Finalizado tiempo espera")
+                is ConnectException -> throw ConnectException("Error al conectar")
+                else -> throw Exception(e.localizedMessage)
+            }
         }
     }
 
@@ -52,6 +61,13 @@ class RuletaServiceImplementation @Inject constructor(
             }
         } catch (e: Exception) {
             Log.e(logTag, "Error: ${e.localizedMessage}")
+
+            when (e) {
+                is NoNetworkException -> throw NoNetworkException("No Network")
+                is SocketTimeoutException -> throw SocketTimeoutException("Finalizado tiempo espera")
+                is ConnectException -> throw ConnectException("Error al conectar")
+                else -> throw Exception(e.localizedMessage)
+            }
         }
     }
 }

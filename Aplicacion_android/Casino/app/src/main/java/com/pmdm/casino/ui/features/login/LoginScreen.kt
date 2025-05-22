@@ -1,6 +1,8 @@
 package com.pmdm.casino.ui.features.login
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -86,7 +88,9 @@ fun LoginScreen(
             }
 
             UsuarioPassword(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = if (!isSystemInDarkTheme()) Color(0xFFF5F5F5) else Color.Transparent),
                 loginState = usuarioUiState.login,
                 passwordState = usuarioUiState.password,
                 validacionLogin = validacionLoginUiState.validacionLogin,
@@ -145,12 +149,12 @@ fun LoginScreen(
             TextNewAccount(onClick = onNavigateToNuevaCuenta, color = Color(0xFFFFD700))
         }
 
-        if (errorApi) {
-            AbrirDialogoNoApiRest()
-        } else if (reintentarConexion) {
+        if (reintentarConexion) {
             AbrirDialogoNoConexion {
                 reiniciar()
             }
+        } else if (errorApi) {
+            AbrirDialogoNoApiRest()
         }
     }
 }

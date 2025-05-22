@@ -30,6 +30,6 @@ data class UsuarioApiRecord(
 * CLASE PARA LA RESPUESTA DE LOGIN
 */
 data class UsuarioRespuestaApi(
-    val saldo: BigDecimal = BigDecimal(0),
+    val saldo: BigDecimal = 0.toBigDecimal(),
     val token: String = ""
 )

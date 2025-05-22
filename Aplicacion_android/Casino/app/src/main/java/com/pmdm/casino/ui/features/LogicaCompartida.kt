@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import androidx.compose.ui.util.fastSumBy
-import com.pmdm.casino.ui.features.blackJack.components.CartaUiState
+import com.pmdm.casino.ui.features.blackJack.CartaUiState
 import com.pmdm.casino.ui.views.MainActivity
 
 // TODOS VM
@@ -50,6 +50,7 @@ fun sumarPuntos(
 
 fun evaluarResultado(puntosUsuario: Int, puntosMaquina: Int): String {
     return when {
+        puntosUsuario == 21 -> "Ganado"
         puntosUsuario == puntosMaquina -> "Empate"
         puntosUsuario > 21 || (puntosMaquina in puntosUsuario..21) -> "Perdido"
         else -> "Ganado"

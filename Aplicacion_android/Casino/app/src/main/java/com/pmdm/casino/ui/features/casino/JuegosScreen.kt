@@ -37,7 +37,6 @@ import com.pmdm.casino.ui.features.casino.components.AyudaScreen
 import com.pmdm.casino.ui.features.components.FondoBarraCasinoUI
 import com.pmdm.casino.ui.features.dialogoErrorNoSaldo.DialogoErrorNoSaldo
 import com.pmdm.casino.ui.features.usuarioCasino.UsuarioCasinoUiState
-import java.math.BigDecimal
 
 @Composable
 fun CasinoScreen(
@@ -98,7 +97,9 @@ fun CasinoScreen(
                     items(juegosUiState, key = { it.nombre }) {
                         ElevatedCard(
                             onClick = {
-                                if (it.nombre == "Blackjack" && usuarioUiState.saldo < BigDecimal(5)) {
+                                if (it.nombre.startsWith("Blackjack") &&
+                                    usuarioUiState.saldo < 5.toBigDecimal()
+                                ) {
                                     onMostrarDialogoErrorNoSaldo()
                                 } else {
                                     accionesJuegos[it.nombre.toJuegoEnum()?.clave]?.invoke()

@@ -72,13 +72,13 @@ fun SplashScreen(
                 }
             }
         }
-
-        if (errorApi) {
-            AbrirDialogoNoApiRest()
-        } else if (reintentarConexion) {
+        
+        if (reintentarConexion) {
             AbrirDialogoNoConexion {
                 reiniciar()
             }
+        } else if (errorApi) {
+            AbrirDialogoNoApiRest()
         }
     }
 }

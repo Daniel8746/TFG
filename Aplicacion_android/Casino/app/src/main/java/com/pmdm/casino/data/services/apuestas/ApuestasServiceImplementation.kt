@@ -38,6 +38,8 @@ class ApuestasServiceImplementation @Inject constructor(
         try {
             val response = apuestasService.apuestaJuego(apuesta)
 
+            validarCodigoResponse(response)
+
             if (response.isSuccessful) {
                 Log.d(logTag, response.toString())
 

@@ -10,7 +10,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pmdm.casino.data.exceptions.NoNetworkException
 import com.pmdm.casino.data.repositorys.BlackJackRepository
-import com.pmdm.casino.ui.features.blackJack.components.CartaUiState
 import com.pmdm.casino.ui.features.reiniciarApp
 import com.pmdm.casino.ui.features.sumarPuntos
 import com.pmdm.casino.ui.features.toCartaUiState
@@ -21,7 +20,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
-import java.math.BigDecimal
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import javax.inject.Inject
@@ -52,7 +50,7 @@ class BlackJackViewModel @Inject constructor(
 
     var poderPulsarBoton by mutableStateOf(true)
 
-    var apuestaUsuario by mutableStateOf(BigDecimal(5))
+    var apuestaUsuario by mutableStateOf(5.toBigDecimal())
 
     init {
         empezarPartida()
@@ -111,7 +109,13 @@ class BlackJackViewModel @Inject constructor(
                 finalizarPartida = true
             }
 
-            is BlackJackEvent.OnValueApuestaUsuarioChanged -> apuestaUsuario = event.apuesta
+            is BlackJackEvent.OnValueApuestaUsuarioChanged -> {
+                apuestaUsuario = if (event.apuesta < 5.toBigDecimal()) {
+                    5.toBigDecimal()
+                } else {
+                    event.apuesta
+                }
+            }
         }
         poderPulsarBoton = true
     }

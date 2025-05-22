@@ -26,7 +26,7 @@ import javax.inject.Inject
 class SplashViewModel @Inject constructor(
     private val usuarioRepository: UsuarioRepository,
 ) : ViewModel() {
-    private val _saldo = MutableStateFlow(BigDecimal(0))
+    private val _saldo = MutableStateFlow(0.toBigDecimal())
     val saldoState: StateFlow<BigDecimal> = _saldo.asStateFlow()
 
     private val _correo = MutableStateFlow("")

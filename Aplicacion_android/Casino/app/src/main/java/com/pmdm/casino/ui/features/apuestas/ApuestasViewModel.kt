@@ -21,7 +21,7 @@ class ApuestasViewModel @Inject constructor(
 ) : ViewModel() {
     private var correoUsuario by mutableStateOf("")
     private var nombreJuegos by mutableStateOf("")
-    private var montoApuesta by mutableStateOf(BigDecimal(0))
+    private var montoApuesta by mutableStateOf(0.toBigDecimal())
     private var resultados by mutableStateOf("")
     private var detallesResultado by mutableStateOf("")
 
@@ -38,16 +38,18 @@ class ApuestasViewModel @Inject constructor(
         resultado: String,
         detalles: String
     ) {
-        viewModelScope.launch {
-            apuestasRepository.finalizar(
-                Apuesta(
-                    correoUsuario = correoUsuario,
-                    nombreJuego = nombreJuegos,
-                    montoApostado = montoApuesta,
-                    resultado = resultado,
-                    detallesResultado = detalles
+        if (correoUsuario.isNotBlank()) {
+            viewModelScope.launch {
+                apuestasRepository.finalizar(
+                    Apuesta(
+                        correoUsuario = correoUsuario,
+                        nombreJuego = nombreJuegos,
+                        montoApostado = montoApuesta,
+                        resultado = resultado,
+                        detallesResultado = detalles
+                    )
                 )
-            )
+            }
         }
     }
 

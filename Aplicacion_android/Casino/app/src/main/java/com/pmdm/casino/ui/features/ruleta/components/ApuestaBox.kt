@@ -6,6 +6,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -16,8 +20,14 @@ import androidx.compose.ui.unit.dp
 fun ApuestaBox(
     modifier: Modifier,
     valor: String,
-    color: Color
+    color: Color,
+    isInListaDefinitiva: Boolean
 ) {
+    var fichaEnTablero by remember { mutableStateOf(false) }
+    val onOcultarFicha = fun() {
+        fichaEnTablero = false
+    }
+
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center
@@ -29,6 +39,17 @@ fun ApuestaBox(
                     .clip(CircleShape)
                     .background(if (valor == "ROJO") Color.Red else Color.Black)
             )
-        } else Text(text = valor, color = color)
+        } else {
+            Text(text = valor, color = color)
+        }
+
+        if (isInListaDefinitiva) {
+            FallingFicha()
+            fichaEnTablero = true
+        } else if (fichaEnTablero) {
+            UpingFicha(
+                onOcultarFicha
+            )
+        }
     }
 }

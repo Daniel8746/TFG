@@ -9,7 +9,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pmdm.casino.data.exceptions.NoNetworkException
 import com.pmdm.casino.data.repositorys.BlackJackRepository
-import com.pmdm.casino.ui.features.blackJack.components.CartaUiState
 import com.pmdm.casino.ui.features.sumarPuntos
 import com.pmdm.casino.ui.features.toCartaUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -94,7 +93,7 @@ class MaquinaViewModel @Inject constructor(
         }
     }
 
-    private fun plantarse() {
+    fun plantarse() {
         finalizarPartida = true
     }
 }

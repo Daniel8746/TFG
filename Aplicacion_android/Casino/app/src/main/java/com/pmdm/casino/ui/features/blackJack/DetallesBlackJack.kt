@@ -1,6 +1,5 @@
 package com.pmdm.casino.ui.features.blackJack
 
-import com.pmdm.casino.ui.features.blackJack.components.CartaUiState
 import kotlinx.serialization.Serializable
 
 @Serializable

@@ -19,9 +19,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.pmdm.casino.ui.features.apuestas.ApuestasViewModel
 import com.pmdm.casino.ui.features.blackJack.BlackJackViewModel
+import com.pmdm.casino.ui.features.blackJack.DetallesBlackJack
 import com.pmdm.casino.ui.features.blackJack.MaquinaViewModel
 import com.pmdm.casino.ui.features.ruleta.RuletaViewModel
 import com.pmdm.casino.ui.features.tragaMonedas.TragaMonedasViewModel
+import com.pmdm.casino.ui.features.usuarioCasino.UsuarioCasinoEvent
 import com.pmdm.casino.ui.features.usuarioCasino.UsuarioCasinoViewModel
 
 @Composable
@@ -140,6 +142,22 @@ fun CasinoNavHost(
         casinoDestination(
             onNavegarBlackJack = {
                 navController.navigate(BlackJackRoute)
+                vmUsuarioC.onUsuarioCasinoEvent(UsuarioCasinoEvent.BajarSaldoBlackJack(vmBlackJ.apuestaUsuario))
+                if (!vmUsuarioC.partidaEmpezadaBlackJack) {
+                    vmApuestas.apuestaJuegoBlackJack(
+                        correo = vmUsuarioC.usuarioCasinoUiState.correo,
+                        nombreJuego = "Blackjack Europeo",
+                        montoApostado = vmBlackJ.apuestaUsuario,
+                        resultado = "En curso",
+                        detalles = DetallesBlackJack(
+                            puntosUsuario = vmBlackJ.puntosTotalesUsuario,
+                            puntosCrupier = vmMaquina.puntosTotalesMaquina,
+                            cartasUsuario = vmBlackJ.cartasUiState.value,
+                            cartasCrupier = vmMaquina.cartasUiState.value
+                        )
+                    )
+                }
+                vmUsuarioC.setEstadoPartida("Blackjack", true)
             },
             onNavegarTragaMonedas = {
                 navController.navigate(TragaMonedasRoute)

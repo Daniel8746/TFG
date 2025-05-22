@@ -3,7 +3,6 @@ package com.pmdm.casino.ui.features.ruleta
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -17,6 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import javax.inject.Inject
@@ -35,12 +35,17 @@ class RuletaViewModel @Inject constructor(
 
     var errorApi by mutableStateOf(false)
 
-    var listaNumerosApostar: List<String> by mutableStateOf(listOf())
+    var listaApuestaMarcado: List<ApuestasUiState> by mutableStateOf(listOf())
+
+    private var _listaApuestaDefinitiva =
+        MutableStateFlow<Map<ApuestasUiState, BigDecimal>>(hashMapOf())
+    var listaApuestaDefinitiva: StateFlow<Map<ApuestasUiState, BigDecimal>> =
+        _listaApuestaDefinitiva.asStateFlow()
 
     private var _tiempoContador = MutableStateFlow(5000)
     var tiempoContador: StateFlow<Int> = _tiempoContador.asStateFlow()
 
-    var apostado by mutableDoubleStateOf(1.00)
+    var apostado by mutableStateOf(1.toBigDecimal())
 
     fun onRuletaEvent(event: RuletaEvent) {
         viewModelScope.launch {
@@ -49,29 +54,38 @@ class RuletaViewModel @Inject constructor(
 
                 RuletaEvent.FlechaSubirPulsado -> {
                     apostado = when (apostado) {
-                        1.00 -> 5.00
-                        else -> apostado + 5.00
+                        1.toBigDecimal() -> 5.toBigDecimal()
+                        else -> apostado + 5.toBigDecimal()
                     }
                 }
 
                 RuletaEvent.FlechaBajarPulsado -> apostado =
-                    if (apostado - 5 < 1) 1.00
-                    else apostado - 5
+                    if (apostado - 5.toBigDecimal() < 1.toBigDecimal()) 1.toBigDecimal()
+                    else apostado - 5.toBigDecimal()
 
                 is RuletaEvent.ApuestaSeleccionada -> {
-                    listaNumerosApostar = if (event.apuestasUiState.valor in listaNumerosApostar) {
-                        listaNumerosApostar - event.apuestasUiState.valor
+                    listaApuestaMarcado = if (event.apuestasUiState in listaApuestaMarcado) {
+                        listaApuestaMarcado - event.apuestasUiState
                     } else {
-                        listaNumerosApostar + event.apuestasUiState.valor
+                        listaApuestaMarcado + event.apuestasUiState
                     }
                 }
 
-                RuletaEvent.Apostar -> {
+                is RuletaEvent.Apostar -> {
+                    val nuevaApuesta = listaApuestaMarcado.associateWith { event.apuestaUsuario }
 
+                    val copiaActualizada = _listaApuestaDefinitiva.value.toMutableMap()
+
+                    nuevaApuesta.forEach { (clave, nuevoValor) ->
+                        copiaActualizada[clave] = nuevoValor
+                    }
+
+                    _listaApuestaDefinitiva.value = copiaActualizada.toMap()
                 }
 
                 RuletaEvent.QuitarApuesta -> {
-
+                    _listaApuestaDefinitiva.value =
+                        _listaApuestaDefinitiva.value.filter { it.key !in listaApuestaMarcado }
                 }
 
                 RuletaEvent.EntrarJuego -> ruletaRepository.getContador()
@@ -99,8 +113,8 @@ class RuletaViewModel @Inject constructor(
                 RuletaEvent.FinalizarJuego -> ruletaRepository.reiniciarContador()
             }
 
-            if (apostado < 1) {
-                apostado = 1.00
+            if (apostado < 1.toBigDecimal()) {
+                apostado = 1.toBigDecimal()
             }
         }
     }

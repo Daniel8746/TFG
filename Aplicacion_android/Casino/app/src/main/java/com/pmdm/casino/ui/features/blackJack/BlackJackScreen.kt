@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.pmdm.casino.ui.features.blackJack.components.CartaUiState
 import com.pmdm.casino.ui.features.blackJack.components.DecoracionBlackJack
 import com.pmdm.casino.ui.features.blackJack.components.FinDePartidaPanel
 import com.pmdm.casino.ui.features.blackJack.components.VistaCrupierBlackjack
@@ -100,6 +99,7 @@ fun BlackJackScreen(
             }
         } else {
             FinDePartidaPanel(
+                usuarioUiState.saldo,
                 puntosUsuario,
                 puntosMaquina,
                 apuestaUsuario,
@@ -107,7 +107,7 @@ fun BlackJackScreen(
                 volverAtras,
                 reiniciarPartida,
                 onUsuarioEvent,
-                { onBlackJackEvent(BlackJackEvent.OnValueApuestaUsuarioChanged(it.toBigDecimal())) },
+                { onBlackJackEvent(BlackJackEvent.OnValueApuestaUsuarioChanged(it)) },
                 setEstadoPartida
             )
         }

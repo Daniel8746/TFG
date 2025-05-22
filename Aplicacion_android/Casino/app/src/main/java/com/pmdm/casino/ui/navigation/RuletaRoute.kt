@@ -1,5 +1,6 @@
 package com.pmdm.casino.ui.navigation
 
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -21,11 +22,12 @@ fun NavGraphBuilder.ruletaDestination(
 
         RuletaScreen(
             poderPulsarBoton = vm.poderPulsarBoton,
-            valorState = vm.apostado,
+            apuestaUsuario = vm.apostado,
             usuarioUiState = vmUsuarioCasino.usuarioCasinoUiState,
             reintentarConexion = vm.reintentarConexion,
             errorApi = vm.errorApi,
-            listaNumerosApostar = vm.listaNumerosApostar,
+            listaApuestaMarcado = vm.listaApuestaMarcado,
+            listaApuestaDefinitiva = vm.listaApuestaDefinitiva.collectAsState().value.keys,
             reiniciar = { vm.reiniciar(context) },
             volverAtras = {
                 onNavegarCasino()

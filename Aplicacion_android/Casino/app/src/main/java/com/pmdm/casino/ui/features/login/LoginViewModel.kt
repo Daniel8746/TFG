@@ -44,7 +44,7 @@ class LoginViewModel @Inject constructor(
     var validacionLoginUiState by mutableStateOf(ValidacionLoginUiState())
         private set
 
-    private var _saldo = MutableStateFlow(BigDecimal(0))
+    private var _saldo = MutableStateFlow(0.toBigDecimal())
     val saldo: StateFlow<BigDecimal> = _saldo.asStateFlow()
 
     private var _token = MutableStateFlow("")

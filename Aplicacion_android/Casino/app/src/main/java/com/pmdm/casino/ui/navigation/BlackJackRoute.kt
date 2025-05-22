@@ -30,12 +30,27 @@ fun NavGraphBuilder.blackDestination(
 
         LaunchedEffect(finalizarTurnoUsuario) {
             if (finalizarTurnoUsuario) {
-                vmMaquina.empezarTurnoMaquina {
-                    vmApuestas.apuestaJuegoBlackJack(
-                        correo = vmUsuarioCasino.usuarioCasinoUiState.correo,
-                        nombreJuego = "Blackjack Europeo",
-                        montoApostado = vm.apuestaUsuario,
-                        resultado = "En curso",
+                if (vm.puntosTotalesUsuario < 21) {
+                    vmMaquina.empezarTurnoMaquina {
+                        vmApuestas.apuestaJuegoBlackJack(
+                            correo = vmUsuarioCasino.usuarioCasinoUiState.correo,
+                            nombreJuego = "Blackjack Europeo",
+                            montoApostado = vm.apuestaUsuario,
+                            resultado = "En curso",
+                            detalles = DetallesBlackJack(
+                                puntosUsuario = vm.puntosTotalesUsuario,
+                                puntosCrupier = vmMaquina.puntosTotalesMaquina,
+                                cartasUsuario = vm.cartasUiState.value,
+                                cartasCrupier = vmMaquina.cartasUiState.value
+                            )
+                        )
+                    }
+                } else {
+                    vmApuestas.finalizarBlackJack(
+                        resultado = evaluarResultado(
+                            puntosUsuario = vm.puntosTotalesUsuario,
+                            puntosMaquina = vmMaquina.puntosTotalesMaquina
+                        ),
                         detalles = DetallesBlackJack(
                             puntosUsuario = vm.puntosTotalesUsuario,
                             puntosCrupier = vmMaquina.puntosTotalesMaquina,
@@ -43,28 +58,12 @@ fun NavGraphBuilder.blackDestination(
                             cartasCrupier = vmMaquina.cartasUiState.value
                         )
                     )
+                    vmMaquina.plantarse()
                 }
             }
         }
 
         val context = LocalContext.current
-
-        vmUsuarioCasino.onUsuarioCasinoEvent(UsuarioCasinoEvent.BajarSaldo(vm.apuestaUsuario))
-        if (!vmUsuarioCasino.partidaEmpezadaBlackJack) {
-            vmApuestas.apuestaJuegoBlackJack(
-                correo = vmUsuarioCasino.usuarioCasinoUiState.correo,
-                nombreJuego = "Blackjack Europeo",
-                montoApostado = vm.apuestaUsuario,
-                resultado = "En curso",
-                detalles = DetallesBlackJack(
-                    puntosUsuario = vm.puntosTotalesUsuario,
-                    puntosCrupier = vmMaquina.puntosTotalesMaquina,
-                    cartasUsuario = vm.cartasUiState.value,
-                    cartasCrupier = vmMaquina.cartasUiState.value
-                )
-            )
-        }
-        vmUsuarioCasino.setEstadoPartida("Blackjack", true)
 
         BlackJackScreen(
             usuarioUiState = vmUsuarioCasino.usuarioCasinoUiState,
@@ -102,7 +101,9 @@ fun NavGraphBuilder.blackDestination(
                 vmUsuarioCasino.setEstadoPartida("Blackjack", false)
             },
             reiniciarPartida = {
-                vmUsuarioCasino.onUsuarioCasinoEvent(UsuarioCasinoEvent.BajarSaldo(vm.apuestaUsuario))
+                vmUsuarioCasino.setEstadoPartida("Blackjack", false)
+                vmUsuarioCasino.onUsuarioCasinoEvent(UsuarioCasinoEvent.BajarSaldoBlackJack(vm.apuestaUsuario))
+                vmUsuarioCasino.setEstadoPartida("Blackjack", true)
                 vm.reiniciarPartida()
                 vmMaquina.reiniciarPartida()
             },

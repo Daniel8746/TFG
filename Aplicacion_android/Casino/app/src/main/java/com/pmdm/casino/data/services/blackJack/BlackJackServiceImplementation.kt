@@ -1,7 +1,10 @@
 package com.pmdm.casino.data.services.blackJack
 
 import android.util.Log
+import com.pmdm.casino.data.exceptions.NoNetworkException
 import com.pmdm.casino.data.repositorys.validarCodigoResponse
+import java.net.ConnectException
+import java.net.SocketTimeoutException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -33,7 +36,13 @@ class BlackJackServiceImplementation @Inject constructor(
             return response.body()
         } catch (e: Exception) {
             Log.e(logTag, "Error: ${e.localizedMessage}")
-            return null
+
+            when (e) {
+                is NoNetworkException -> throw NoNetworkException("No Network")
+                is SocketTimeoutException -> throw SocketTimeoutException("Finalizado tiempo espera")
+                is ConnectException -> throw ConnectException("Error al conectar")
+                else -> throw Exception(e.localizedMessage)
+            }
         }
     }
 
@@ -57,7 +66,13 @@ class BlackJackServiceImplementation @Inject constructor(
             return response.body()
         } catch (e: Exception) {
             Log.e(logTag, "Error: ${e.localizedMessage}")
-            return null
+
+            when (e) {
+                is NoNetworkException -> throw NoNetworkException("No Network")
+                is SocketTimeoutException -> throw SocketTimeoutException("Finalizado tiempo espera")
+                is ConnectException -> throw ConnectException("Error al conectar")
+                else -> throw Exception(e.localizedMessage)
+            }
         }
     }
 
@@ -79,6 +94,13 @@ class BlackJackServiceImplementation @Inject constructor(
             }
         } catch (e: Exception) {
             Log.e(logTag, "Error: ${e.localizedMessage}")
+
+            when (e) {
+                is NoNetworkException -> throw NoNetworkException("No Network")
+                is SocketTimeoutException -> throw SocketTimeoutException("Finalizado tiempo espera")
+                is ConnectException -> throw ConnectException("Error al conectar")
+                else -> throw Exception(e.localizedMessage)
+            }
         }
     }
 }

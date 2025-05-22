@@ -4,5 +4,5 @@ import java.math.BigDecimal
 
 data class UsuarioCasinoUiState(
     val correo: String = "",
-    val saldo: BigDecimal = BigDecimal(0)
+    val saldo: BigDecimal = 0.toBigDecimal()
 )

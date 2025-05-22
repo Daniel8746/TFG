@@ -59,7 +59,7 @@ public class ServiceRestApuestas {
 
         String uri = "mongodb://localhost:27017";
         MongoClient mongoClient = MongoClients.create(uri);
-        MongoDatabase database = mongoClient.getDatabase("apuestas");
+        MongoDatabase database = mongoClient.getDatabase("casino");
         collection = database.getCollection("apuesta");
     }
 

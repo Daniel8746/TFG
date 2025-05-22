@@ -2,6 +2,8 @@ package com.pmdm.casino.ui.features.nuevousuario
 
 import TextLogin
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -65,7 +67,10 @@ fun NuevoUsuarioScreen(
                 )
             }
 
-            NuevoUsuarioCreacion(modifier = Modifier.fillMaxWidth(),
+            NuevoUsuarioCreacion(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = if (!isSystemInDarkTheme()) Color(0xFFF5F5F5) else Color.Transparent),
                 nombreState = nuevoUsuarioUiState.nombre,
                 validacionNombre = validacionNuevoUsuarioUiState.validacionNombre,
                 apellidosState = nuevoUsuarioUiState.apellidos,
@@ -95,12 +100,12 @@ fun NuevoUsuarioScreen(
             TextLogin(onClick = onNavigateToLogin, color = Color.Yellow)
         }
 
-        if (errorApi) {
-            AbrirDialogoNoApiRest()
-        } else if (reintentarConexion) {
+        if (reintentarConexion) {
             AbrirDialogoNoConexion {
                 reiniciar()
             }
+        } else if (errorApi) {
+            AbrirDialogoNoApiRest()
         }
     }
 }

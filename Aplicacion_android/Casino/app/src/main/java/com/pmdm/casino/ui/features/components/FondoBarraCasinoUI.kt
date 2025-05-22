@@ -44,12 +44,12 @@ fun FondoBarraCasinoUI(
                     contentScale = ContentScale.FillBounds
                 )
 
-                if (errorApi) {
-                    AbrirDialogoNoApiRest()
-                } else if (reintentarConexion) {
+                if (reintentarConexion) {
                     AbrirDialogoNoConexion {
                         reiniciar()
                     }
+                } else if (errorApi) {
+                    AbrirDialogoNoApiRest()
                 }
 
                 composable()
