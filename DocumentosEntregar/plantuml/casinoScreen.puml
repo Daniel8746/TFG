@@ -1,0 +1,221 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+package "Eventos y Estado" {
+  interface UsuarioCasinoEvent <<sealed interface>> {
+  }
+  class AumentarSaldo {
+    - saldo: BigDecimal
+  }
+  class BajarSaldoBlackJack {
+    - saldo: BigDecimal
+  }
+  class BajarSaldo {
+    - saldo: BigDecimal
+  }
+
+  UsuarioCasinoEvent <|-- AumentarSaldo
+  UsuarioCasinoEvent <|-- BajarSaldoBlackJack
+  UsuarioCasinoEvent <|-- BajarSaldo
+
+  class UsuarioCasinoUiState <<data class>> {
+    - correo: String = ""
+    - saldo: BigDecimal = 0
+  }
+
+  interface NuevoUsuarioEvent <<sealed interface>> {
+  }
+  class NombreChanged {
+    - nombre: String
+  }
+  class ApellidosChanged {
+    - apellidos: String
+  }
+  class CorreoChanged {
+    - correo: String
+  }
+  class PasswordChanged {
+    - password: String
+  }
+  class TelefonoChanged {
+    - telefono: String
+  }
+  class OnClickNuevoUsuario {
+    + onNavigateLogin: (() -> Unit)?
+  }
+  NuevoUsuarioEvent <|-- NombreChanged
+  NuevoUsuarioEvent <|-- ApellidosChanged
+  NuevoUsuarioEvent <|-- CorreoChanged
+  NuevoUsuarioEvent <|-- PasswordChanged
+  NuevoUsuarioEvent <|-- TelefonoChanged
+  NuevoUsuarioEvent <|-- OnClickNuevoUsuario
+
+  class NuevoUsuarioUiState <<data class>> {
+    - id: Int = 0
+    - nombre: String = ""
+    - apellidos: String = ""
+    - correo: String = ""
+    - password: String = ""
+    - telefono: String = ""
+  }
+
+  interface LoginEvent <<sealed interface>> {
+  }
+  class LoginChanged {
+    - login: String
+  }
+  class PasswordChangedLogin {
+    - password: String
+  }
+  class OnClickLogearse {
+    + onNavigateJuego: () -> Unit
+  }
+  class OnClickNuevoUsuarioLogin {
+    + onNavigateNuevoUsuario: () -> Unit
+  }
+  LoginEvent <|-- LoginChanged
+  LoginEvent <|-- PasswordChangedLogin
+  LoginEvent <|-- OnClickLogearse
+  LoginEvent <|-- OnClickNuevoUsuarioLogin
+
+  class LoginUiState <<data class>> {
+    - login: String = ""
+    - password: String = ""
+    - recordarCuenta: Boolean = false
+  }
+
+  interface JuegosEvent <<sealed interface>> {
+  }
+  class OnBlackJack {
+    + onNavigateBlackJack: () -> Unit
+  }
+  class OnRuleta {
+    + onNavigateRuleta: () -> Unit
+  }
+  class OnTragaMonedas {
+    + onNavigateTragaMonedas: () -> Unit
+  }
+  JuegosEvent <|-- OnBlackJack
+  JuegosEvent <|-- OnRuleta
+  JuegosEvent <|-- OnTragaMonedas
+
+  interface BlackJackEvent <<sealed interface>> {
+  }
+  class OnPlantarse {
+  }
+  class OnPedirCarta {
+  }
+  class OnValueApuestaUsuarioChanged {
+    - apuesta: BigDecimal
+  }
+  BlackJackEvent <|-- OnPlantarse
+  BlackJackEvent <|-- OnPedirCarta
+  BlackJackEvent <|-- OnValueApuestaUsuarioChanged
+
+  class CartaUiState <<data class>> {
+    - palo: String
+    - valor: String
+  }
+
+  class JuegosUiState <<data class>> {
+    - nombre: String = ""
+    - tipo: String = ""
+    - reglas: String = ""
+  }
+}
+
+package "Pantallas" {
+  class SplashScreen <<@Composable>> {
+    + correo: String
+    + errorApi: Boolean
+    + reintentarConexion: Boolean
+    + reiniciar(): Unit
+    + onNavegarLogin(): Unit
+    + onNavegarJuegos(): Unit
+  }
+
+  class TragaMonedasScreen <<@Composable>> {
+  }
+
+  class NuevoUsuarioScreen <<@Composable>> {
+    + nuevoUsuarioUiState: NuevoUsuarioUiState
+    + nuevoUsuarioError: Boolean
+    + isLoading: Boolean
+    + reintentarConexion: Boolean
+    + errorApi: Boolean
+    + onNuevoUsuarioEvent: (NuevoUsuarioEvent) -> Unit
+    + onNavigateToLogin: () -> Unit
+    + reiniciar: () -> Unit
+  }
+
+  class LoginScreen <<@Composable>> {
+    + usuarioUiState: LoginUiState
+    + loginErroneo: Boolean
+    + isLoading: Boolean
+    + recordarmeState: Boolean
+    + reintentarConexion: Boolean
+    + errorApi: Boolean
+    + onLoginEvent: (LoginEvent) -> Unit
+    + onNavigateToCasino: () -> Unit
+    + onNavigateToNuevaCuenta: () -> Unit
+    + onRecordarmeState: (Boolean) -> Unit
+    + reiniciar: () -> Unit
+  }
+
+  class CasinoScreen <<@Composable>> {
+    + juegosUiState: List<JuegosUiState>
+    + usuarioUiState: UsuarioCasinoUiState
+    + isAyudaAbierta: Boolean
+    + reintentarConexion: Boolean
+    + errorApi: Boolean
+    + mostrarDialogoErrorNoSaldo: Boolean
+    + onCasinoEvent: (JuegosEvent) -> Unit
+    + onBlackJackEvent: () -> Unit
+    + onRuletaEvent: () -> Unit
+    + onTragaMonedas: () -> Unit
+    + onAyudaEvent: () -> Unit
+    + reiniciar: () -> Unit
+    + onMostrarDialogoErrorNoSaldo: () -> Unit
+  }
+
+  class BlackJackScreen <<@Composable>> {
+    + usuarioUiState: UsuarioCasinoUiState
+    + puntosUsuario: Int
+    + puntosMaquina: Int
+    + reintentarConexion: Boolean
+    + errorApi: Boolean
+    + finalizarTurnoUsuario: Boolean
+    + finalizarTurnoMaquina: Boolean
+    + poderPulsarBoton: Boolean
+    + listadoCartas: List<CartaUiState>
+    + listadoCartasMaquina: List<CartaUiState>
+    + cartaNueva: CartaUiState?
+    + apuestaUsuario: BigDecimal
+    + onBlackJackEvent: (BlackJackEvent) -> Unit
+    + onFinalizarBlackJack: () -> Unit
+    + volverAtras: () -> Unit
+    + reiniciarPartida: () -> Unit
+    + reiniciar: () -> Unit
+    + onUsuarioEvent: (UsuarioCasinoEvent) -> Unit
+    + setEstadoPartida: () -> Unit
+    + onApuestaBlackJack: () -> Unit
+  }
+}
+
+' Relaciones entre eventos y pantallas
+NuevoUsuarioScreen --> NuevoUsuarioEvent
+LoginScreen --> LoginEvent
+CasinoScreen --> JuegosEvent
+BlackJackScreen --> BlackJackEvent
+BlackJackScreen --> UsuarioCasinoEvent
+
+' Relaciones estados con pantallas
+NuevoUsuarioScreen --> NuevoUsuarioUiState
+LoginScreen --> LoginUiState
+CasinoScreen --> UsuarioCasinoUiState
+BlackJackScreen --> UsuarioCasinoUiState
+
+@enduml

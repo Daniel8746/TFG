@@ -1,0 +1,214 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+'========================
+' Paquete Modelo / Dominio
+'========================
+package "Modelo" {
+  class Usuario <<entity>> {
+    - nombre: String
+    - apellidos: String
+    - correo: String
+    - saldo: BigDecimal
+  }
+
+  class Apuesta <<entity>> {
+    - montoApostado: BigDecimal
+    - resultado: String
+  }
+
+  class ListaJuegos <<entity>> {
+    - nombre: String
+    - tipo: String
+  }
+
+  class Blackjack <<entity>>
+  class Ruleta <<entity>>
+  class Tragamonedas <<entity>>
+
+  class Carta <<entity>> {
+    - palo: String
+    - valor: String
+  }
+
+  Usuario "1" o-- "0..*" Apuesta : realiza >
+  Usuario "1" -- "1" ListaJuegos : juega >
+  ListaJuegos "1" o-- "0..*" Apuesta : contiene >
+  ListaJuegos <|-- Blackjack
+  ListaJuegos <|-- Ruleta
+  ListaJuegos <|-- Tragamonedas
+  Blackjack "1" *-- "0..*" Carta
+}
+
+'========================
+' Paquete Utils / Manager
+'========================
+package "Utils" {
+  class TokenManager <<manager>> {
+    + saveToken(context, token): void
+    + getToken(context): String
+    + clearToken(context): void
+  }
+  Usuario ..> TokenManager : utiliza >
+}
+
+'========================
+' Paquete Repository
+'========================
+package "Repository" {
+  class ApuestasRepository <<repository>> {
+    + finalizar(apuesta): Flow<Result>
+    + apostar(apuesta): Flow<Result>
+  }
+
+  class BlackJackRepository <<repository>> {
+    + obtenerCarta(): Flow<Carta?>
+    + iniciarJuego(): Flow<List<Carta>?>
+    + reiniciarCartas(): void
+  }
+
+  class JuegosRepository <<repository>> {
+    + obtenerJuegos(): Flow<List<Juegos>?>
+  }
+
+  class RuletaRepository <<repository>> {
+    + obtenerContador(): Flow<Int>
+    + obtenerNumero(): Flow<Int>
+  }
+
+  class UsuarioRepository <<repository>> {
+    + login(usuario): Flow<Triple<Boolean, BigDecimal, String>>
+    + crear(usuario): Flow<Boolean>
+    + eliminar(usuario): Flow<Boolean>
+  }
+}
+
+'========================
+' Paquete Service
+'========================
+package "Service" {
+  interface ApuestasService <<interface>> {
+    + finalizar(apuesta): Response<Unit>
+    + apostar(apuesta): Response<Unit>
+  }
+
+  class ApuestasServiceImplementation <<service>> {
+    + finalizar(apuesta): void
+    + apostar(apuesta): void
+  }
+
+  interface BlackJackService <<interface>> {
+    + obtenerCarta(): Response<CartaApi>
+    + iniciarJuego(): Response<List<CartaApi>>
+    + finalizarJuego(): Response<Unit>
+  }
+
+  class BlackJackServiceImplementation <<service>> {
+    + obtenerCarta(): CartaApi?
+    + iniciarJuego(): List<CartaApi>?
+    + reiniciarCartas(): void
+  }
+
+  interface JuegosService <<interface>> {
+    + obtenerJuegos(): Response<List<JuegosApi>>
+  }
+
+  class JuegosServiceImplementation <<service>> {
+    + obtenerJuegos(): List<JuegosApi>?
+  }
+
+  interface RuletaService <<interface>> {
+    + obtenerContador(): Response<Int>
+    + obtenerNumero(): Response<Int>
+  }
+
+  class RuletaServiceImplementation <<service>> {
+    + obtenerContador(): Int
+    + obtenerNumero(): Int
+  }
+
+  interface UsuarioService <<interface>> {
+    + crearUsuario(usuario): Response<Unit>
+    + login(usuario): Response<UsuarioRespuestaApi>
+    + eliminarUsuario(usuario): Response<Unit>
+  }
+
+  class UsuarioServiceImplementation <<service>> {
+    + login(usuario): Triple<Boolean, BigDecimal, String>
+    + crearUsuario(usuario): Boolean
+    + eliminarUsuario(usuario): Boolean
+  }
+
+  class AuthInterceptor <<interceptor>> {
+    + intercept(chain): Response
+  }
+
+  class ConnectVerifierInterceptor <<interceptor>> {
+    + intercept(chain): Response
+  }
+
+  interface NetworkMonitorService <<service>> {
+    + estaConectado(): Boolean
+  }
+
+  class NetworkMonitorServiceImplementation <<service>> {
+    + estaConectado(): Boolean
+  }
+}
+
+' Relaciones repositorios -> servicios
+ApuestasRepository --> ApuestasServiceImplementation : usa >
+BlackJackRepository --> BlackJackServiceImplementation : usa >
+JuegosRepository --> JuegosServiceImplementation : usa >
+RuletaRepository --> RuletaServiceImplementation : usa >
+UsuarioRepository --> UsuarioServiceImplementation : usa >
+
+ConnectVerifierInterceptor --> NetworkMonitorService : usa >
+NetworkMonitorServiceImplementation ..|> NetworkMonitorService
+ApuestasServiceImplementation ..|> ApuestasService
+BlackJackServiceImplementation ..|> BlackJackService
+JuegosServiceImplementation ..|> JuegosService
+RuletaServiceImplementation ..|> RuletaService
+UsuarioServiceImplementation ..|> UsuarioService
+
+'========================
+' Paquete ViewModel
+'========================
+package "ViewModel" {
+  class MusicaViewModel <<viewmodel>> {
+    + onPause(): void
+    + onResume(): void
+  }
+
+  class NuevoUsuarioViewModel <<viewmodel>> {
+    + manejarEvento(evento): void
+    + reiniciar(context): void
+  }
+
+  class RuletaViewModel <<viewmodel>> {
+    + manejarEvento(evento): void
+    + reiniciar(context): void
+  }
+
+  class SplashViewModel <<viewmodel>> {
+    + reiniciar(context): void
+  }
+
+  class TragaMonedasViewModel <<viewmodel>>
+
+  class UsuarioCasinoViewModel <<viewmodel>> {
+    + manejarEvento(evento): void
+    + setEstadoPartida(juego, activa): void
+    + actualizarUsuario(correo, saldo): void
+  }
+}
+
+' Relaciones ViewModel -> Repository
+NuevoUsuarioViewModel --> UsuarioRepository : usa >
+RuletaViewModel --> RuletaRepository : usa >
+SplashViewModel --> UsuarioRepository : usa >
+
+@enduml
