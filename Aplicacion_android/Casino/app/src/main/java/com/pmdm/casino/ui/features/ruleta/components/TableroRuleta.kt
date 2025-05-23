@@ -27,57 +27,51 @@ import com.pmdm.casino.ui.features.ruleta.TipoApuestaEnum
 
 @Composable
 fun TableroRuleta(
+    enabled: Boolean,
     listaApuestaMarcado: List<ApuestasUiState>,
     listaApuestaDefinitiva: Set<ApuestasUiState>,
+    esRojo: Set<Int>,
+    bloques: List<List<List<ApuestasUiState>>>,
     onRuletaEvent: (RuletaEvent) -> Unit
 ) {
-    val bloques = remember {
-        (1..36).map { ApuestasUiState(TipoApuestaEnum.NUMERO, it.toString()) }
-            .chunked(3).chunked(4)
-    }
+    val cero = remember { ApuestasUiState("0", Color.Green, TipoApuestaEnum.NUMERO) }
 
     val apuestasUiStateDocenas = remember {
         listOf(
-            ApuestasUiState(TipoApuestaEnum.DOCENA1, "1ª Docena"),
-            ApuestasUiState(TipoApuestaEnum.DOCENA2, "2ª Docena"),
-            ApuestasUiState(TipoApuestaEnum.DOCENA3, "3ª Docena")
+            ApuestasUiState("1ª Docena", Color.LightGray, TipoApuestaEnum.DOCENA1),
+            ApuestasUiState("2ª Docena", Color.LightGray, TipoApuestaEnum.DOCENA2),
+            ApuestasUiState("3ª Docena", Color.LightGray, TipoApuestaEnum.DOCENA3)
         )
     }
 
     val apuestasUiStateEspeciales = remember {
         listOf(
             listOf(
-                ApuestasUiState(TipoApuestaEnum.MITAD1, "1-18"),
-                ApuestasUiState(TipoApuestaEnum.PAR, "PAR")
+                ApuestasUiState("1-18", Color.LightGray, TipoApuestaEnum.MITAD1),
+                ApuestasUiState("PAR", Color.LightGray, TipoApuestaEnum.PAR)
 
             ),
             listOf(
-                ApuestasUiState(TipoApuestaEnum.NEGRO, "NEGRO"),
-                ApuestasUiState(TipoApuestaEnum.ROJO, "ROJO")
+                ApuestasUiState("NEGRO", Color.LightGray, TipoApuestaEnum.NEGRO),
+                ApuestasUiState("ROJO", Color.LightGray, TipoApuestaEnum.ROJO)
             ),
             listOf(
-                ApuestasUiState(TipoApuestaEnum.IMPAR, "IMPAR"),
-                ApuestasUiState(TipoApuestaEnum.MITAD2, "19-36")
+                ApuestasUiState("IMPAR", Color.LightGray, TipoApuestaEnum.IMPAR),
+                ApuestasUiState("19-36", Color.LightGray, TipoApuestaEnum.MITAD2)
             )
         )
     }
 
     val apuestasUiStateColumnas = remember {
         listOf(
-            ApuestasUiState(TipoApuestaEnum.FILA1, "2 a 1"),
-            ApuestasUiState(TipoApuestaEnum.FILA2, "2 a 1"),
-            ApuestasUiState(TipoApuestaEnum.FILA3, "2 a 1")
-        )
-    }
-
-    val esRojo = remember {
-        setOf(
-            1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36
+            ApuestasUiState("2 a 1", Color.LightGray, TipoApuestaEnum.COLUMNA1),
+            ApuestasUiState("2 a 1", Color.LightGray, TipoApuestaEnum.COLUMNA2),
+            ApuestasUiState("2 a 1", Color.LightGray, TipoApuestaEnum.COLUMNA3)
         )
     }
 
     val size = remember {
-        40.dp
+        27.dp
     }
 
     val itemPositions = remember { mutableStateMapOf<ApuestasUiState, Rect>() }
@@ -89,7 +83,7 @@ fun TableroRuleta(
     // en este caso funciona los dos igual, pero root es menos costoso en tema de rendimiento
     val layoutCoordinates = remember { mutableStateOf<LayoutCoordinates?>(null) }
 
-    Column(
+    Row(
         modifier = Modifier
             // Guardamos las coordenadas globales del layout padre (tablero),
             // necesarias para convertir gestos (offsets locales) a coordenadas absolutas (en pantalla)
@@ -174,46 +168,37 @@ fun TableroRuleta(
         ApuestaBox(
             modifier = Modifier
                 .border(
-                    1.dp,
-                    if (listaApuestaMarcado.contains(
-                            ApuestasUiState(
-                                TipoApuestaEnum.NUMERO,
-                                "0"
-                            )
-                        )
-                    ) Color.Magenta
+                    if (listaApuestaMarcado.contains(cero)) 2.dp else 1.dp,
+                    if (listaApuestaMarcado.contains(cero)) Color.Magenta
                     else Color.Yellow
                 )
-                .size(width = size * 3, height = size)
+                .size(width = size, height = size * 3)
                 // Guardamos la posición y tamaño de este elemento cuando se dibuja
                 .onGloballyPositioned { coords ->
                     val position = coords.positionInRoot() // Posición absoluta en pantalla
                     val sizePx = coords.size.toSize() // Tamaño en píxeles
-                    itemPositions[ApuestasUiState(TipoApuestaEnum.NUMERO, "0")] =
+                    itemPositions[cero] =
                         Rect(position, sizePx) // Guardamos su área como un rectángulo
                 }
-                .background(Color.Green),
+                .background(cero.color),
             valor = "0",
             color = Color.White,
-            isInListaDefinitiva = ApuestasUiState(
-                TipoApuestaEnum.NUMERO,
-                "0"
-            ) in listaApuestaDefinitiva
+            isInListaDefinitiva = cero in listaApuestaDefinitiva
         )
 
         // =====================
         // Todos los demás números
         // =====================
         bloques.forEachIndexed { index, filas ->
-            Row {
-                Column {
+            Column {
+                Row {
                     filas.forEach { fila ->
-                        Row {
+                        Column {
                             fila.forEach { numero ->
                                 ApuestaBox(
                                     modifier = Modifier
                                         .border(
-                                            1.dp,
+                                            if (listaApuestaMarcado.contains(numero)) 2.dp else 1.dp,
                                             if (listaApuestaMarcado.contains(numero)) Color.Magenta
                                             else Color.Yellow
                                         )
@@ -242,11 +227,11 @@ fun TableroRuleta(
                 // ============================
                 ApuestaBox(modifier = Modifier
                     .border(
-                        1.dp,
+                        if (listaApuestaMarcado.contains(apuestasUiStateDocenas[index])) 2.dp else 1.dp,
                         if (listaApuestaMarcado.contains(apuestasUiStateDocenas[index])) Color.Magenta
                         else Color.Yellow
                     )
-                    .size(width = size + 40.dp, height = size * 4)
+                    .size(width = size * 4, height = size + 40.dp)
                     .onGloballyPositioned { coords ->
                         val position = coords.positionInRoot()
                         val sizePx = coords.size.toSize()
@@ -262,16 +247,16 @@ fun TableroRuleta(
                 // =============================
                 // Casillas especiales (debajo)
                 // =============================
-                Column {
+                Row {
                     apuestasUiStateEspeciales[index].forEach { especial ->
                         ApuestaBox(
                             modifier = Modifier
                                 .border(
-                                    1.dp,
+                                    if (listaApuestaMarcado.contains(especial)) 2.dp else 1.dp,
                                     if (listaApuestaMarcado.contains(especial)) Color.Magenta
                                     else Color.Yellow
                                 )
-                                .size(width = size + 10.dp, height = size * 2)
+                                .size(width = size * 2, height = size + 10.dp)
                                 .onGloballyPositioned { coords ->
                                     val position = coords.positionInRoot()
                                     val sizePx = coords.size.toSize()
@@ -291,23 +276,23 @@ fun TableroRuleta(
         // =========================================
         // Apuestas especiales por columnas (abajo)
         // =========================================
-        Row {
+        Column {
             apuestasUiStateColumnas.forEach { apuestaColumna ->
                 ApuestaBox(
                     modifier = Modifier
                         .border(
-                            1.dp,
+                            if (listaApuestaMarcado.contains(apuestaColumna)) 2.dp else 1.dp,
                             if (listaApuestaMarcado.contains(apuestaColumna)) Color.Magenta
                             else Color.Yellow
                         )
-                        .size(size)
+                        .size(width = size + 15.dp, height = size)
                         .onGloballyPositioned { coords ->
                             val position = coords.positionInRoot()
                             val sizePx = coords.size.toSize()
                             itemPositions[apuestaColumna] =
                                 Rect(position, sizePx)
                         }
-                        .background(Color.LightGray),
+                        .background(apuestaColumna.color),
                     valor = apuestaColumna.valor,
                     color = Color.White,
                     isInListaDefinitiva = apuestaColumna in listaApuestaDefinitiva

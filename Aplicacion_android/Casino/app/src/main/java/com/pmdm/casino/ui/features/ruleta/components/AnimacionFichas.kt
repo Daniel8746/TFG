@@ -1,8 +1,10 @@
 package com.pmdm.casino.ui.features.ruleta.components
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.EaseInOutBounce
+import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.offset
@@ -20,23 +22,8 @@ import kotlin.math.roundToInt
 
 @Composable
 fun FallingFicha() {
-    val windowInfo = LocalWindowInfo.current
-
-    val screenHeightPx = remember(windowInfo) {
-        windowInfo.containerSize.height.toFloat()
-    }
-
-    val offsetY = remember { Animatable(-screenHeightPx) } // empieza fuera de pantalla
-
-    LaunchedEffect(Unit) {
-        offsetY.animateTo(
-            targetValue = 0f,
-            animationSpec = tween(
-                durationMillis = 1000,
-                easing = EaseInOutBounce // rebote + aceleración
-            )
-        )
-    }
+    val offsetY =
+        animacionDesdeArriba(isDesdeArriba = true, duration = 1000, easing = EaseInOutBounce)
 
     Image(
         painter = painterResource(R.drawable.fichasruleta),
@@ -48,26 +35,46 @@ fun FallingFicha() {
 }
 
 @Composable
-fun UpingFicha(onOcultarFicha: () -> Unit) {
+fun animacionDesdeArriba(
+    isDesdeArriba: Boolean,
+    duration: Int,
+    easing: Easing,
+    onOcultarFicha: (() -> Unit)? = null
+): Animatable<Float, AnimationVector1D> {
     val windowInfo = LocalWindowInfo.current
 
     val screenHeightPx = remember(windowInfo) {
         windowInfo.containerSize.height.toFloat()
     }
 
-    val offsetY = remember { Animatable(0f) }
+    val offsetY =
+        remember { Animatable(if (isDesdeArriba) -screenHeightPx else 0f) } // empieza fuera de pantalla
 
     LaunchedEffect(Unit) {
         offsetY.animateTo(
-            targetValue = -screenHeightPx,
+            targetValue = if (isDesdeArriba) 0f else -screenHeightPx,
             animationSpec = tween(
-                durationMillis = 600,
-                easing = CubicBezierEasing(0.3f, 0f, 0.7f, 1f)
+                durationMillis = duration,
+                easing = easing
             )
         )
 
-        onOcultarFicha()
+        if (onOcultarFicha != null) {
+            onOcultarFicha()
+        }
     }
+
+    return offsetY
+}
+
+@Composable
+fun UpingFicha(onOcultarFicha: () -> Unit) {
+    val offsetY = animacionDesdeArriba(
+        isDesdeArriba = false,
+        duration = 600,
+        easing = CubicBezierEasing(0.3f, 0f, 0.7f, 1f),
+        onOcultarFicha = onOcultarFicha
+    )
 
     Image(
         painter = painterResource(R.drawable.fichasruleta),

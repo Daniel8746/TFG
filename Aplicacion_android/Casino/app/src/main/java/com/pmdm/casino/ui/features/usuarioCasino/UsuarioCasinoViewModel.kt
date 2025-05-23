@@ -31,6 +31,11 @@ class UsuarioCasinoViewModel @Inject constructor() : ViewModel() {
                     saldo = usuarioCasinoUiState.saldo - event.saldo
                 )
             }
+
+            is UsuarioCasinoEvent.BajarSaldo -> actualizarUsuarioCasino(
+                correo = usuarioCasinoUiState.correo,
+                saldo = usuarioCasinoUiState.saldo - event.saldo
+            )
         }
     }
 

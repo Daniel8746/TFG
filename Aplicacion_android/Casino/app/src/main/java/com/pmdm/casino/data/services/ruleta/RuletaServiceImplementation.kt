@@ -2,6 +2,7 @@ package com.pmdm.casino.data.services.ruleta
 
 import android.util.Log
 import com.pmdm.casino.data.exceptions.NoNetworkException
+import com.pmdm.casino.data.repositorys.validarCodigoResponse
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import javax.inject.Inject
@@ -18,6 +19,8 @@ class RuletaServiceImplementation @Inject constructor(
 
         try {
             val response = ruletaService.getContador()
+
+            validarCodigoResponse(response)
 
             if (response.isSuccessful) {
                 Log.d(logTag, response.toString())
@@ -43,11 +46,13 @@ class RuletaServiceImplementation @Inject constructor(
         }
     }
 
-    suspend fun reiniciarContador() {
+    suspend fun getNumeroRuleta(): Int {
         val mensajeError = "No se ha podido obtener el contador"
 
         try {
-            val response = ruletaService.reiniciarContador()
+            val response = ruletaService.getNumeroRuleta()
+
+            validarCodigoResponse(response)
 
             if (response.isSuccessful) {
                 Log.d(logTag, response.toString())
@@ -59,6 +64,8 @@ class RuletaServiceImplementation @Inject constructor(
                 val body = response.errorBody()?.toString()
                 Log.e(logTag, "$mensajeError (código ${response.code()}): $this\n${body}")
             }
+
+            return response.body() ?: 0
         } catch (e: Exception) {
             Log.e(logTag, "Error: ${e.localizedMessage}")
 

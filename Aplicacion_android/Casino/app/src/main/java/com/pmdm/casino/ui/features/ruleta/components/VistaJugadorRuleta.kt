@@ -25,8 +25,10 @@ import java.math.BigDecimal
 fun VistaJugadorRuleta(
     apuestaUsuario: BigDecimal,
     saldo: BigDecimal,
-    poderPulsarBoton: Boolean,
+    enabled: Boolean,
     onRuletaEvent: (RuletaEvent) -> Unit,
+    onAumentarSaldoUsuario: () -> Unit,
+    onBajarSaldoUsuario: () -> Unit
 ) {
     val validar = remember {
         object : Validacion {
@@ -72,8 +74,11 @@ fun VistaJugadorRuleta(
                     .weight(1f)
                     .padding(5.dp),
                 text = "Apostar",
-                onClick = { onRuletaEvent(RuletaEvent.Apostar(apuestaUsuario)) },
-                enabled = poderPulsarBoton,
+                onClick = {
+                    onRuletaEvent(RuletaEvent.Apostar(apuestaUsuario))
+                    onBajarSaldoUsuario()
+                },
+                enabled = enabled,
             )
 
             ButtonWithLottie(
@@ -82,8 +87,11 @@ fun VistaJugadorRuleta(
                     .weight(1f)
                     .padding(5.dp),
                 text = "Quitar apuesta",
-                onClick = { onRuletaEvent(RuletaEvent.QuitarApuesta) },
-                enabled = poderPulsarBoton,
+                onClick = {
+                    onAumentarSaldoUsuario()
+                    onRuletaEvent(RuletaEvent.QuitarApuesta)
+                },
+                enabled = enabled,
             )
         }
     }

@@ -8,6 +8,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import com.github.pmdmiesbalmis.components.ui.composables.OutlinedTextFieldWithErrorState
 import com.github.pmdmiesbalmis.components.validacion.Validacion
 import java.math.BigDecimal
+import java.util.Locale
 
 @Composable
 fun OutlinedTextFieldApuesta(
@@ -22,7 +23,7 @@ fun OutlinedTextFieldApuesta(
     OutlinedTextFieldWithErrorState(
         modifier = modifier,
         label = label,
-        textoState = "%.${numeroDecimales}f".format(valorState),
+        textoState = "%.${numeroDecimales}f".format(Locale.US, valorState),
         validacionState = validacionState,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
         keyboardActions = keyboardActions,

@@ -9,7 +9,7 @@ interface RuletaService {
     @Headers("Accept: application/json")
     suspend fun getContador(): Response<Int>
 
-    @GET("ruleta/reiniciar")
+    @GET("ruleta/numero-aleatorio")
     @Headers("Accept: application/json")
-    suspend fun reiniciarContador(): Response<Unit>
+    suspend fun getNumeroRuleta(): Response<Int>
 }

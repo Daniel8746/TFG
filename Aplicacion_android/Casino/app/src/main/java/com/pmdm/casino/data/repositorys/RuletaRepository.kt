@@ -14,7 +14,7 @@ class RuletaRepository @Inject constructor(
         emit(ruletaService.getContador())
     }.flowOn(Dispatchers.IO)
 
-    suspend fun reiniciarContador(): Flow<Unit> = flow {
-        emit(ruletaService.reiniciarContador())
+    suspend fun getNumeroRuleta(): Flow<Int> = flow {
+        emit(ruletaService.getNumeroRuleta())
     }.flowOn(Dispatchers.IO)
 }

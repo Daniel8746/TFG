@@ -3,6 +3,7 @@ package com.pmdm.casino.ui.features.ruleta
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import okhttp3.internal.notifyAll
 import java.math.BigDecimal
 import java.net.ConnectException
 import java.net.SocketTimeoutException
@@ -25,8 +27,6 @@ import javax.inject.Inject
 class RuletaViewModel @Inject constructor(
     private val ruletaRepository: RuletaRepository
 ) : ViewModel() {
-    var poderPulsarBoton by mutableStateOf(true)
-
     var reintentarConexion by mutableStateOf(false)
 
     fun reiniciar(context: Context) {
@@ -47,6 +47,34 @@ class RuletaViewModel @Inject constructor(
 
     var apostado by mutableStateOf(1.toBigDecimal())
 
+    var numeroRuleta by mutableIntStateOf(-1)
+
+    init {
+        viewModelScope.launch {
+            ruletaRepository.getContador()
+                .catch { e ->
+                    when (e) {
+                        is NoNetworkException -> {
+                            Log.e("NoNetworkException", "Error: ${e.localizedMessage}")
+                            reintentarConexion = true
+                        }
+
+                        is SocketTimeoutException -> {
+                            Log.e("SocketTimeOut", "Error: ${e.localizedMessage}")
+                            errorApi = true
+                        }
+
+                        is ConnectException -> {
+                            Log.e("Connect fail", "Error: ${e.localizedMessage}")
+                            errorApi = true
+                        }
+                    }
+                }.collect {
+                    _tiempoContador.value = it
+                }
+        }
+    }
+
     fun onRuletaEvent(event: RuletaEvent) {
         viewModelScope.launch {
             when (event) {
@@ -59,9 +87,7 @@ class RuletaViewModel @Inject constructor(
                     }
                 }
 
-                RuletaEvent.FlechaBajarPulsado -> apostado =
-                    if (apostado - 5.toBigDecimal() < 1.toBigDecimal()) 1.toBigDecimal()
-                    else apostado - 5.toBigDecimal()
+                RuletaEvent.FlechaBajarPulsado -> apostado -= 5.toBigDecimal()
 
                 is RuletaEvent.ApuestaSeleccionada -> {
                     listaApuestaMarcado = if (event.apuestasUiState in listaApuestaMarcado) {
@@ -88,8 +114,8 @@ class RuletaViewModel @Inject constructor(
                         _listaApuestaDefinitiva.value.filter { it.key !in listaApuestaMarcado }
                 }
 
-                RuletaEvent.EntrarJuego -> ruletaRepository.getContador()
-                    .catch { e ->
+                RuletaEvent.FinalizarJuego -> {
+                    ruletaRepository.getNumeroRuleta().catch { e ->
                         when (e) {
                             is NoNetworkException -> {
                                 Log.e("NoNetworkException", "Error: ${e.localizedMessage}")
@@ -107,10 +133,11 @@ class RuletaViewModel @Inject constructor(
                             }
                         }
                     }.collect {
-                        _tiempoContador.value = it
+                        numeroRuleta = it
                     }
 
-                RuletaEvent.FinalizarJuego -> ruletaRepository.reiniciarContador()
+                    notifyAll()
+                }
             }
 
             if (apostado < 1.toBigDecimal()) {
