@@ -37,7 +37,6 @@ fun BlackJackScreen(
     reiniciarPartida: () -> Unit,
     reiniciar: () -> Unit,
     onUsuarioEvent: (UsuarioCasinoEvent) -> Unit,
-    setEstadoPartida: () -> Unit,
     onApuestaBlackJack: () -> Unit
 ) {
     FondoBarraCasinoUI(
@@ -106,10 +105,8 @@ fun BlackJackScreen(
                 onFinalizarBlackJack,
                 volverAtras,
                 reiniciarPartida,
-                onUsuarioEvent,
-                { onBlackJackEvent(BlackJackEvent.OnValueApuestaUsuarioChanged(it)) },
-                setEstadoPartida
-            )
+                onUsuarioEvent
+            ) { onBlackJackEvent(BlackJackEvent.OnValueApuestaUsuarioChanged(it)) }
         }
     }
 }

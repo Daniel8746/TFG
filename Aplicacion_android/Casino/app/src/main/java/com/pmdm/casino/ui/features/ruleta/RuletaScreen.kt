@@ -3,7 +3,6 @@ package com.pmdm.casino.ui.features.ruleta
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,15 +12,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pmdm.casino.ui.features.components.FondoBarraCasinoUI
-import com.pmdm.casino.ui.features.ruleta.components.RuletaCompleta
+import com.pmdm.casino.ui.features.ruleta.components.RuletaConPelota
 import com.pmdm.casino.ui.features.ruleta.components.TableroRuleta
 import com.pmdm.casino.ui.features.ruleta.components.VistaJugadorRuleta
 import com.pmdm.casino.ui.features.usuarioCasino.UsuarioCasinoUiState
@@ -35,15 +32,17 @@ fun RuletaScreen(
     reintentarConexion: Boolean,
     errorApi: Boolean,
     enabled: Boolean,
+    numeroGanador: Int,
     listaApuestaMarcado: List<ApuestasUiState>,
     listaApuestaDefinitiva: Set<ApuestasUiState>,
     listaNumerosRojos: Set<Int>,
     listaNumeros: List<List<List<ApuestasUiState>>>,
     reiniciar: () -> Unit,
-    volverAtras: () -> Unit,
+    volverAtras: (() -> Unit)?,
     onRuletaEvent: (RuletaEvent) -> Unit,
     onAumentarSaldoUsuario: () -> Unit,
-    onBajarSaldoUsuario: () -> Unit
+    onBajarSaldoUsuario: () -> Unit,
+    onAnimacionAcabada: () -> Unit
 ) {
     val items = remember {
         listOf(
@@ -86,7 +85,6 @@ fun RuletaScreen(
             ApuestasUiState("26", Color.Black, TipoApuestaEnum.NUMERO)
         )
     }
-    val degreesPerItems = remember { 360f / items.size.toFloat() }
 
     FondoBarraCasinoUI(
         usuarioUiState = usuarioUiState,
@@ -113,22 +111,11 @@ fun RuletaScreen(
                 textAlign = TextAlign.Center
             )
 
-            Box {
-                items.forEachIndexed { index, item ->
-                    RuletaCompleta(
-                        modifier = Modifier.rotate(degrees = degreesPerItems * index),
-                        size = 350.dp,
-                        brush = SolidColor(item.color),
-                        degree = degreesPerItems,
-                        dibujarHub = index == items.size - 1
-                    ) {
-                        Text(
-                            text = item.valor,
-                            color = if (item.color == Color.Black) Color.White else Color.Black
-                        )
-                    }
-                }
-            }
+            RuletaConPelota(
+                items = items,
+                numeroGanador = numeroGanador,
+                onAnimacionAcabada = onAnimacionAcabada
+            )
 
             // Tablero de los números y apuestas especiales
             TableroRuleta(

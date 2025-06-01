@@ -11,11 +11,11 @@ import javax.inject.Inject
 class BlackJackRepository @Inject constructor(
     private val blackJackService: BlackJackServiceImplementation
 ) {
-    suspend fun getCarta(): Flow<Carta?> = flow {
+    fun getCarta(): Flow<Carta?> = flow {
         emit(blackJackService.getCarta()?.toCarta())
     }.flowOn(Dispatchers.IO)
 
-    suspend fun iniciarJuego(): Flow<List<Carta>?> = flow {
+    fun iniciarJuego(): Flow<List<Carta>?> = flow {
         emit(blackJackService.iniciarJuego()?.toCartas())
     }.flowOn(Dispatchers.IO)
 

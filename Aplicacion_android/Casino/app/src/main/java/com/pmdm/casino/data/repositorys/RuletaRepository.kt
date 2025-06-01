@@ -10,11 +10,11 @@ import javax.inject.Inject
 class RuletaRepository @Inject constructor(
     private val ruletaService: RuletaServiceImplementation
 ) {
-    suspend fun getContador(): Flow<Int> = flow {
+    fun getContador(): Flow<Int> = flow {
         emit(ruletaService.getContador())
     }.flowOn(Dispatchers.IO)
 
-    suspend fun getNumeroRuleta(): Flow<Int> = flow {
+    fun getNumeroRuleta(): Flow<Int> = flow {
         emit(ruletaService.getNumeroRuleta())
     }.flowOn(Dispatchers.IO)
 }

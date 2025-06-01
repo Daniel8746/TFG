@@ -78,7 +78,7 @@ fun UpingFicha(onOcultarFicha: () -> Unit) {
 
     Image(
         painter = painterResource(R.drawable.fichasruleta),
-        contentDescription = "Ficha cayendo con rebote",
+        contentDescription = "Ficha subiendo",
         modifier = Modifier
             .offset { IntOffset(0, offsetY.value.roundToInt()) }
             .size(40.dp)

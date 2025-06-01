@@ -5,7 +5,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.pmdm.casino.ui.features.apuestas.ApuestasViewModel
+import com.pmdm.casino.ui.features.pagarApuesta
 import com.pmdm.casino.ui.features.ruleta.ApuestasUiState
+import com.pmdm.casino.ui.features.ruleta.DetallesRuleta
+import com.pmdm.casino.ui.features.ruleta.DetallesRuletaFinalizar
 import com.pmdm.casino.ui.features.ruleta.RuletaScreen
 import com.pmdm.casino.ui.features.ruleta.RuletaViewModel
 import com.pmdm.casino.ui.features.ruleta.TipoApuestaEnum
@@ -19,6 +23,7 @@ object RuletaRoute
 fun NavGraphBuilder.ruletaDestination(
     onNavegarCasino: () -> Unit,
     vm: RuletaViewModel,
+    vmApuestas: ApuestasViewModel,
     vmUsuarioCasino: UsuarioCasinoViewModel
 ) {
     composable<RuletaRoute> {
@@ -47,28 +52,78 @@ fun NavGraphBuilder.ruletaDestination(
             enabled = vm.tiempoContador.collectAsState().value > 0,
             listaNumerosRojos = esRojo,
             listaNumeros = bloques,
+            numeroGanador = vm.numeroGanador,
             reiniciar = { vm.reiniciar(context) },
-            volverAtras = {
-                onNavegarCasino()
+            volverAtras = if (vm.tiempoContador.value != 0) {
+                { onNavegarCasino() }
+            } else {
+                null
             },
             onRuletaEvent = { vm.onRuletaEvent(it) },
             onAumentarSaldoUsuario = {
+                val montoApostado = vm.listaApuestaDefinitiva.value.filter {
+                    vm.listaApuestaMarcado.contains(it.key)
+                }.values.sumOf { it }
+
+                vmApuestas.apuestaJuegoRuleta(
+                    vmUsuarioCasino.usuarioCasinoUiState.correo,
+                    "Ruleta Europea",
+                    montoApostado,
+                    "En curso",
+                    DetallesRuleta(
+                        vm.listaApuestaDefinitiva.value.keys
+                    )
+                )
+
                 vmUsuarioCasino.onUsuarioCasinoEvent(
                     UsuarioCasinoEvent.AumentarSaldo(
-                        vm.listaApuestaDefinitiva.value.filter {
-                            vm.listaApuestaMarcado.contains(it.key)
-                        }.values.sumOf { it }
+                        montoApostado
                     )
                 )
             },
             onBajarSaldoUsuario = {
-                vmUsuarioCasino.onUsuarioCasinoEvent(
-                    UsuarioCasinoEvent.BajarSaldo(
-                        vm.listaApuestaDefinitiva.value.filter {
-                            vm.listaApuestaMarcado.contains(it.key)
-                        }.values.sumOf { it }
+                val montoApostado = vm.listaApuestaDefinitiva.value.filter {
+                    vm.listaApuestaMarcado.contains(it.key)
+                }.values.sumOf { it }
+
+                vmApuestas.apuestaJuegoRuleta(
+                    vmUsuarioCasino.usuarioCasinoUiState.correo,
+                    "Ruleta Europea",
+                    montoApostado,
+                    "En curso",
+                    DetallesRuleta(
+                        vm.listaApuestaDefinitiva.value.keys
                     )
                 )
+
+                vmUsuarioCasino.onUsuarioCasinoEvent(
+                    UsuarioCasinoEvent.BajarSaldo(
+                        montoApostado
+                    )
+                )
+            },
+            onAnimacionAcabada = {
+                val ganado = pagarApuesta(
+                    numeroGanador = vm.numeroGanador,
+                    apuestaUsuario = vm.listaApuestaDefinitiva.value,
+                    listaNumeros = bloques,
+                    listaNumerosRojos = esRojo
+                )
+
+                vmUsuarioCasino.onUsuarioCasinoEvent(
+                    UsuarioCasinoEvent.AumentarSaldo(
+                        ganado
+                    )
+                )
+                vmApuestas.finalizarRuleta(
+                    resultado = "El jugador ${vmUsuarioCasino.usuarioCasinoUiState.correo} ha ganado: $ganado€",
+                    detalles = DetallesRuletaFinalizar(
+                        vm.listaApuestaDefinitiva.value.keys,
+                        vm.numeroGanador,
+                        if (vm.numeroGanador == 0) Color.Green else if (esRojo.contains(vm.numeroGanador)) Color.Red else Color.Black
+                    )
+                )
+                vm.onAnimacionAcabada()
             }
         )
     }

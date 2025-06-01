@@ -3,7 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/Proyecto/Api/ApiRestCasino/src/java/services/ServiceRestApuestas.java</file>
+            <file>file:/D:/Proyecto/Api/ApiRestCasino/src/java/api/services/ServiceRestApuestas.java</file>
+            <file>file:/D:/Proyecto/Api/ApiRestCasino/src/java/api/services/ServiceRestUsuario.java</file>
+            <file>file:/D:/Proyecto/Api/ApiRestCasino/src/java/api/services/ServiceRestRuleta.java</file>
+            <file>file:/D:/Proyecto/Api/ApiRestCasino/src/java/api/classRecord/ApuestaRecord.java</file>
         </group>
     </open-files>
 </project-private>

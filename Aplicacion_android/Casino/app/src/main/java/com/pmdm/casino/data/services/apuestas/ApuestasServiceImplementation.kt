@@ -1,7 +1,6 @@
 package com.pmdm.casino.data.services.apuestas
 
 import android.util.Log
-import com.pmdm.casino.data.repositorys.validarCodigoResponse
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -16,8 +15,6 @@ class ApuestasServiceImplementation @Inject constructor(
 
         try {
             val response = apuestasService.finalizar(apuesta)
-
-            validarCodigoResponse(response)
 
             if (response.isSuccessful) {
                 Log.d(logTag, response.toString())
@@ -37,8 +34,6 @@ class ApuestasServiceImplementation @Inject constructor(
 
         try {
             val response = apuestasService.apuestaJuego(apuesta)
-
-            validarCodigoResponse(response)
 
             if (response.isSuccessful) {
                 Log.d(logTag, response.toString())

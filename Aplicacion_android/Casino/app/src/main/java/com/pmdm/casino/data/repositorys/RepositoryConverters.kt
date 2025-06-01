@@ -40,7 +40,8 @@ fun List<CartaApi>.toCartas(): List<Carta> =
 fun Apuesta.toApuestaApi(): ApuestaApiRecord = ApuestaApiRecord(
     correoUsuario = correoUsuario,
     nombreJuego = nombreJuego,
-    saldoApostado = montoApostado,
-    resultado = resultado
+    montoApostado = montoApostado,
+    resultado = resultado,
+    detallesResultado = detallesResultado
 )
 

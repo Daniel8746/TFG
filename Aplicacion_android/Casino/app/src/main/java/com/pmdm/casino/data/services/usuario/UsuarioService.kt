@@ -18,4 +18,8 @@ interface UsuarioService {
     @DELETE("usuario/eliminar")
     @Headers("Accept: application/json", "Content-Type: application/json")
     suspend fun eliminarUsuario(@Body usuario: NuevoUsuarioApi): Response<Unit>
+
+    @POST("usuario/actualizar-saldo")
+    @Headers("Accept: application/json", "Content-Type: application/json")
+    suspend fun actualizarSaldo(@Body usuario: UsuarioApiRecord): Response<Unit>
 }

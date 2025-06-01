@@ -4,12 +4,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.pmdm.casino.data.repositorys.UsuarioRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
-class UsuarioCasinoViewModel @Inject constructor() : ViewModel() {
+class UsuarioCasinoViewModel @Inject constructor(
+    private val usuarioRepository: UsuarioRepository,
+) : ViewModel() {
 
     var usuarioCasinoUiState by mutableStateOf(UsuarioCasinoUiState())
         private set
@@ -22,15 +27,6 @@ class UsuarioCasinoViewModel @Inject constructor() : ViewModel() {
                 correo = usuarioCasinoUiState.correo,
                 saldo = usuarioCasinoUiState.saldo + event.saldo
             )
-
-            is UsuarioCasinoEvent.BajarSaldoBlackJack -> if (
-                !partidaEmpezadaBlackJack
-            ) {
-                actualizarUsuarioCasino(
-                    correo = usuarioCasinoUiState.correo,
-                    saldo = usuarioCasinoUiState.saldo - event.saldo
-                )
-            }
 
             is UsuarioCasinoEvent.BajarSaldo -> actualizarUsuarioCasino(
                 correo = usuarioCasinoUiState.correo,
@@ -51,6 +47,17 @@ class UsuarioCasinoViewModel @Inject constructor() : ViewModel() {
                 correo = correo,
                 saldo = saldo
             )
+        }
+    }
+
+    fun actualizarSaldoUsuario() {
+        if (usuarioCasinoUiState.correo.isNotEmpty()) {
+            viewModelScope.launch {
+                usuarioRepository.actualizarSaldo(
+                    correo = usuarioCasinoUiState.correo,
+                    saldo = usuarioCasinoUiState.saldo
+                )
+            }
         }
     }
 }

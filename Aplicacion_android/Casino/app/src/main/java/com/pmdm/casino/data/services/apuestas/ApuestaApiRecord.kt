@@ -5,6 +5,7 @@ import java.math.BigDecimal
 data class ApuestaApiRecord(
     val correoUsuario: String,
     val nombreJuego: String,
-    val saldoApostado: BigDecimal,
-    val resultado: String
+    val montoApostado: BigDecimal,
+    val resultado: String,
+    val detallesResultado: String
 )

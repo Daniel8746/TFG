@@ -37,8 +37,7 @@ fun FinDePartidaPanel(
     volverAtras: () -> Unit,
     reiniciarPartida: () -> Unit,
     onUsuarioEvent: (UsuarioCasinoEvent) -> Unit,
-    onValueApuestaChanged: (BigDecimal) -> Unit,
-    setEstadoPartida: () -> Unit
+    onValueApuestaChanged: (BigDecimal) -> Unit
 ) {
     var aumentarSaldoPrimeraVez by remember { mutableStateOf(true) }
 
@@ -120,9 +119,8 @@ fun FinDePartidaPanel(
                     .padding(5.dp),
                 text = "Salir",
                 onClick = {
-                    setEstadoPartida()
-                    onFinalizarBlackJack()
                     volverAtras()
+                    onFinalizarBlackJack()
                 }
             )
 
@@ -132,10 +130,7 @@ fun FinDePartidaPanel(
                     .weight(1f)
                     .padding(5.dp),
                 text = "Reiniciar",
-                onClick = {
-                    onFinalizarBlackJack()
-                    reiniciarPartida()
-                },
+                onClick = reiniciarPartida,
                 enabled = !validar.hayError
             )
         }

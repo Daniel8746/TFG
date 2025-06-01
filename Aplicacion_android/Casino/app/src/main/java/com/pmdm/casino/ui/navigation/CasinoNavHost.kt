@@ -28,7 +28,8 @@ import com.pmdm.casino.ui.features.usuarioCasino.UsuarioCasinoViewModel
 
 @Composable
 fun CasinoNavHost(
-    vmApuestas: ApuestasViewModel
+    vmApuestas: ApuestasViewModel,
+    vmUsuarioC: UsuarioCasinoViewModel
 ) {
     val navController: NavHostController = rememberNavController()
     var esLogin by remember { mutableStateOf(true) }
@@ -37,7 +38,6 @@ fun CasinoNavHost(
     val vmMaquina = hiltViewModel<MaquinaViewModel>()
     val vmRuleta = hiltViewModel<RuletaViewModel>()
     val vmTragaM = hiltViewModel<TragaMonedasViewModel>()
-    val vmUsuarioC = hiltViewModel<UsuarioCasinoViewModel>()
 
     NavHost(
         navController = navController,
@@ -141,9 +141,8 @@ fun CasinoNavHost(
 
         casinoDestination(
             onNavegarBlackJack = {
-                navController.navigate(BlackJackRoute)
-                vmUsuarioC.onUsuarioCasinoEvent(UsuarioCasinoEvent.BajarSaldoBlackJack(vmBlackJ.apuestaUsuario))
                 if (!vmUsuarioC.partidaEmpezadaBlackJack) {
+                    vmUsuarioC.onUsuarioCasinoEvent(UsuarioCasinoEvent.BajarSaldo(vmBlackJ.apuestaUsuario))
                     vmApuestas.apuestaJuegoBlackJack(
                         correo = vmUsuarioC.usuarioCasinoUiState.correo,
                         nombreJuego = "Blackjack Europeo",
@@ -156,13 +155,15 @@ fun CasinoNavHost(
                             cartasCrupier = vmMaquina.cartasUiState.value
                         )
                     )
+                    vmUsuarioC.setEstadoPartida("Blackjack", true)
                 }
-                vmUsuarioC.setEstadoPartida("Blackjack", true)
+                navController.navigate(BlackJackRoute)
             },
             onNavegarTragaMonedas = {
                 navController.navigate(TragaMonedasRoute)
             },
             onNavegarRuleta = {
+                vmRuleta.getContador()
                 navController.navigate(RuletaRoute)
             },
             vmUsuarioCasino = vmUsuarioC
@@ -180,9 +181,11 @@ fun CasinoNavHost(
 
         ruletaDestination(
             onNavegarCasino = {
+                vmRuleta.stopContador()
                 navController.popBackStack()
             },
             vm = vmRuleta,
+            vmApuestas = vmApuestas,
             vmUsuarioCasino = vmUsuarioC
         )
 

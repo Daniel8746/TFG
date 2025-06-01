@@ -14,6 +14,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.pmdm.casino.ui.features.apuestas.ApuestasViewModel
 import com.pmdm.casino.ui.features.musicaFondo.MusicaViewModel
+import com.pmdm.casino.ui.features.usuarioCasino.UsuarioCasinoViewModel
 import com.pmdm.casino.ui.navigation.CasinoNavHost
 import com.pmdm.casino.ui.theme.CasinoTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,6 +25,7 @@ class MainActivity : ComponentActivity() {
     // Musica fondo
     private var musicaVm: MusicaViewModel? = null
     private var vmApuestas: ApuestasViewModel? = null
+    private var vmUsuarioC: UsuarioCasinoViewModel? = null
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,13 +54,15 @@ class MainActivity : ComponentActivity() {
             CasinoTheme {
                 musicaVm = hiltViewModel()
                 vmApuestas = hiltViewModel()
+                vmUsuarioC = hiltViewModel()
 
                 Surface(
                     modifier = Modifier
                         .fillMaxSize()
                 ) {
                     CasinoNavHost(
-                        vmApuestas = vmApuestas!!
+                        vmApuestas = vmApuestas!!,
+                        vmUsuarioC = vmUsuarioC!!
                     )
                 }
             }
@@ -72,6 +76,8 @@ class MainActivity : ComponentActivity() {
             resultado = "Abandonado",
             detalles = "Aplicación cerrada en medio de una partida."
         )
+
+        vmUsuarioC?.actualizarSaldoUsuario()
     }
 
     override fun onPause() {

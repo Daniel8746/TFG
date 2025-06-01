@@ -63,54 +63,61 @@ fun evaluarResultado(puntosUsuario: Int, puntosMaquina: Int): String {
 
 // Ruleta
 fun pagarApuesta(
-    numeroSalido: String,
+    numeroGanador: Int,
     apuestaUsuario: Map<ApuestasUiState, BigDecimal>,
     listaNumeros: List<List<List<ApuestasUiState>>>,
     listaNumerosRojos: Set<Int>
 ): BigDecimal {
     var paga: BigDecimal = 0.toBigDecimal()
+    val numeroGanadorString = numeroGanador.toString()
 
     apuestaUsuario.forEach {
+        val tipo = it.key.tipoApuesta
+        val valor = it.key.valor
+        val apuesta = it.value
+
         paga += when {
             // APUESTAS NUMEROS
-            it.key.tipoApuesta == TipoApuestaEnum.NUMERO && numeroSalido == it.key.valor -> it.value * 35.toBigDecimal()
+            tipo == TipoApuestaEnum.NUMERO && numeroGanadorString == valor -> apuesta * 35.toBigDecimal()
 
             // APUESTA COLOR
-            (it.key.tipoApuesta == TipoApuestaEnum.NEGRO && listaNumerosRojos.contains(numeroSalido.toInt()))
-                    || (it.key.tipoApuesta == TipoApuestaEnum.ROJO && listaNumerosRojos.contains(
-                numeroSalido.toInt()
-            )) -> it.value * 2.toBigDecimal()
+            (tipo == TipoApuestaEnum.NEGRO && !listaNumerosRojos.contains(
+                numeroGanador
+            ))
+                    || (tipo == TipoApuestaEnum.ROJO && listaNumerosRojos.contains(
+                numeroGanador
+            )) -> apuesta * 2.toBigDecimal()
 
             // APUESTA PAR/IMPAR
-            (it.key.tipoApuesta == TipoApuestaEnum.PAR && numeroSalido.toInt() != 0 && (numeroSalido.toInt() % 2 == 0))
-                    || (it.key.tipoApuesta == TipoApuestaEnum.IMPAR && (numeroSalido.toInt() % 2 != 0)) -> it.value * 2.toBigDecimal()
+            (tipo == TipoApuestaEnum.PAR && numeroGanador != 0 && (numeroGanador % 2 == 0))
+                    || (tipo == TipoApuestaEnum.IMPAR && (numeroGanador % 2 != 0)) -> apuesta * 2.toBigDecimal()
 
             // APUESTA MITADES
-            (it.key.tipoApuesta == TipoApuestaEnum.MITAD1 && numeroSalido.toInt() > 0 && numeroSalido.toInt() <= 18)
-                    || (it.key.tipoApuesta == TipoApuestaEnum.MITAD2 && numeroSalido.toInt() > 18 && numeroSalido.toInt() <= 36) -> it.value * 2.toBigDecimal()
+            (tipo == TipoApuestaEnum.MITAD1 && numeroGanador > 0 && numeroGanador <= 18)
+                    || (tipo == TipoApuestaEnum.MITAD2 && numeroGanador > 18 && numeroGanador <= 36) -> apuesta * 2.toBigDecimal()
 
             // APUESTA DOCENAS
-            (it.key.tipoApuesta == TipoApuestaEnum.DOCENA1 && numeroSalido.toInt() > 0 && numeroSalido.toInt() <= 12)
-                    || (it.key.tipoApuesta == TipoApuestaEnum.DOCENA2 && numeroSalido.toInt() > 12 && numeroSalido.toInt() <= 24)
-                    || (it.key.tipoApuesta == TipoApuestaEnum.DOCENA3 && numeroSalido.toInt() > 24 && numeroSalido.toInt() <= 36) -> it.value * 4.toBigDecimal()
+            (tipo == TipoApuestaEnum.DOCENA1 && numeroGanador > 0 && numeroGanador <= 12)
+                    || (tipo == TipoApuestaEnum.DOCENA2 && numeroGanador > 12 && numeroGanador <= 24)
+                    || (tipo == TipoApuestaEnum.DOCENA3 && numeroGanador > 24 && numeroGanador <= 36) -> apuesta * 4.toBigDecimal()
 
             // APUESTA COLUMNA
-            (it.key.tipoApuesta == TipoApuestaEnum.COLUMNA1 &&
+            (tipo == TipoApuestaEnum.COLUMNA1 &&
                     listaNumeros.fastAny { listaIntermedia ->
                         listaIntermedia.fastAny { listaProfunda ->
-                            listaProfunda[0].valor == numeroSalido
+                            listaProfunda[0].valor == numeroGanadorString
                         }
                     })
-                    || (it.key.tipoApuesta == TipoApuestaEnum.COLUMNA2 && listaNumeros.fastAny { listaIntermedia ->
+                    || (tipo == TipoApuestaEnum.COLUMNA2 && listaNumeros.fastAny { listaIntermedia ->
                 listaIntermedia.fastAny { listaProfunda ->
-                    listaProfunda[1].valor == numeroSalido
+                    listaProfunda[1].valor == numeroGanadorString
                 }
             })
-                    || (it.key.tipoApuesta == TipoApuestaEnum.COLUMNA3 && listaNumeros.fastAny { listaIntermedia ->
+                    || (tipo == TipoApuestaEnum.COLUMNA3 && listaNumeros.fastAny { listaIntermedia ->
                 listaIntermedia.fastAny { listaProfunda ->
-                    listaProfunda[2].valor == numeroSalido
+                    listaProfunda[2].valor == numeroGanadorString
                 }
-            }) -> it.value * 4.toBigDecimal()
+            }) -> apuesta * 4.toBigDecimal()
 
             else -> 0.toBigDecimal()
         }

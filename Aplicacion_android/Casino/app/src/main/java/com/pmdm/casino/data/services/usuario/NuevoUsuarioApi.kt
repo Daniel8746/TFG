@@ -23,7 +23,8 @@ data class NuevoUsuarioApi(
 data class UsuarioApiRecord(
     val correo: String,
     @SerializedName("contrasenya")
-    val contrasena: String
+    val contrasena: String = "",
+    val saldo: BigDecimal = 0.toBigDecimal()
 )
 
 /*

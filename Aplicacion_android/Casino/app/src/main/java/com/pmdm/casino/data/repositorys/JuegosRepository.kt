@@ -11,7 +11,7 @@ import javax.inject.Inject
 class JuegosRepository @Inject constructor(
     private val juegosService: JuegosServiceImplementation
 ) {
-    suspend fun getJuegos(): Flow<List<Juegos>?> = flow {
+    fun getJuegos(): Flow<List<Juegos>?> = flow {
         emit(juegosService.getJuegos()?.toJuegos())
     }.flowOn(Dispatchers.IO)
 }

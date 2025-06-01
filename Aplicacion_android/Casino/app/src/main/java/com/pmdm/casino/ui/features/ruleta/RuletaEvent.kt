@@ -9,5 +9,4 @@ sealed interface RuletaEvent {
     data class ApuestaSeleccionada(val apuestasUiState: ApuestasUiState) : RuletaEvent
     data class Apostar(val apuestaUsuario: BigDecimal) : RuletaEvent
     data object QuitarApuesta : RuletaEvent
-    data object FinalizarJuego : RuletaEvent
 }

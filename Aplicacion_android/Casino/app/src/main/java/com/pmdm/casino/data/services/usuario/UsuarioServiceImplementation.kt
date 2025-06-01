@@ -107,4 +107,31 @@ class UsuarioServiceImplementation @Inject constructor(
             }
         }
     }
+
+    suspend fun actualizarSaldo(usuario: UsuarioApiRecord) {
+        val mensajeError = "No se ha podido actualizar el saldo del usuario"
+
+        try {
+            val response = usuarioService.actualizarSaldo(usuario)
+
+            validarCodigoResponse(response)
+
+            if (response.isSuccessful) {
+                Log.d(logTag, response.toString())
+                Log.d(logTag, response.body()?.toString() ?: "No hay respuesta")
+            } else {
+                val body = response.errorBody()?.toString()
+                Log.e(logTag, "$mensajeError (código ${response.code()}): $this\n${body}")
+            }
+        } catch (e: Exception) {
+            Log.e(logTag, "Error: ${e.localizedMessage}")
+
+            when (e) {
+                is NoNetworkException -> throw NoNetworkException("No Network")
+                is SocketTimeoutException -> throw SocketTimeoutException("Finalizado tiempo espera")
+                is ConnectException -> throw ConnectException("Error al conectar")
+                else -> throw Exception(e.localizedMessage)
+            }
+        }
+    }
 }

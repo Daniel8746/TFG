@@ -12,12 +12,13 @@ import com.pmdm.casino.data.exceptions.NoNetworkException
 import com.pmdm.casino.data.repositorys.RuletaRepository
 import com.pmdm.casino.ui.features.reiniciarApp
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
-import okhttp3.internal.notifyAll
 import java.math.BigDecimal
 import java.net.ConnectException
 import java.net.SocketTimeoutException
@@ -38,7 +39,7 @@ class RuletaViewModel @Inject constructor(
     var listaApuestaMarcado: List<ApuestasUiState> by mutableStateOf(listOf())
 
     private var _listaApuestaDefinitiva =
-        MutableStateFlow<Map<ApuestasUiState, BigDecimal>>(hashMapOf())
+        MutableStateFlow<Map<ApuestasUiState, BigDecimal>>(mapOf())
     var listaApuestaDefinitiva: StateFlow<Map<ApuestasUiState, BigDecimal>> =
         _listaApuestaDefinitiva.asStateFlow()
 
@@ -47,33 +48,11 @@ class RuletaViewModel @Inject constructor(
 
     var apostado by mutableStateOf(1.toBigDecimal())
 
-    var numeroRuleta by mutableIntStateOf(-1)
+    var numeroGanador by mutableIntStateOf(-1)
 
-    init {
-        viewModelScope.launch {
-            ruletaRepository.getContador()
-                .catch { e ->
-                    when (e) {
-                        is NoNetworkException -> {
-                            Log.e("NoNetworkException", "Error: ${e.localizedMessage}")
-                            reintentarConexion = true
-                        }
+    private var contadorActivo by mutableStateOf(false)
 
-                        is SocketTimeoutException -> {
-                            Log.e("SocketTimeOut", "Error: ${e.localizedMessage}")
-                            errorApi = true
-                        }
-
-                        is ConnectException -> {
-                            Log.e("Connect fail", "Error: ${e.localizedMessage}")
-                            errorApi = true
-                        }
-                    }
-                }.collect {
-                    _tiempoContador.value = it
-                }
-        }
-    }
+    private var animacionAcabada = CompletableDeferred<Unit>()
 
     fun onRuletaEvent(event: RuletaEvent) {
         viewModelScope.launch {
@@ -113,36 +92,86 @@ class RuletaViewModel @Inject constructor(
                     _listaApuestaDefinitiva.value =
                         _listaApuestaDefinitiva.value.filter { it.key !in listaApuestaMarcado }
                 }
-
-                RuletaEvent.FinalizarJuego -> {
-                    ruletaRepository.getNumeroRuleta().catch { e ->
-                        when (e) {
-                            is NoNetworkException -> {
-                                Log.e("NoNetworkException", "Error: ${e.localizedMessage}")
-                                reintentarConexion = true
-                            }
-
-                            is SocketTimeoutException -> {
-                                Log.e("SocketTimeOut", "Error: ${e.localizedMessage}")
-                                errorApi = true
-                            }
-
-                            is ConnectException -> {
-                                Log.e("Connect fail", "Error: ${e.localizedMessage}")
-                                errorApi = true
-                            }
-                        }
-                    }.collect {
-                        numeroRuleta = it
-                    }
-
-                    notifyAll()
-                }
             }
 
             if (apostado < 1.toBigDecimal()) {
                 apostado = 1.toBigDecimal()
             }
         }
+    }
+
+    fun getContador() {
+        contadorActivo = true
+        viewModelScope.launch {
+            ruletaRepository.getContador()
+                .catch { e ->
+                    when (e) {
+                        is NoNetworkException -> {
+                            Log.e("NoNetworkException", "Error: ${e.localizedMessage}")
+                            reintentarConexion = true
+                        }
+
+                        is SocketTimeoutException -> {
+                            Log.e("SocketTimeOut", "Error: ${e.localizedMessage}")
+                            errorApi = true
+                        }
+
+                        is ConnectException -> {
+                            Log.e("Connect fail", "Error: ${e.localizedMessage}")
+                            errorApi = true
+                        }
+                    }
+                }.collect {
+                    _tiempoContador.value = it
+                }
+
+            while (contadorActivo) {
+                if (_tiempoContador.value == 0) {
+                    getNumeroGanador()
+                    animacionAcabada.await()
+                    animacionAcabada = CompletableDeferred()
+                    _tiempoContador.value = 20
+                } else {
+                    delay(1000)
+                    --_tiempoContador.value
+                }
+            }
+        }
+    }
+
+    private suspend fun getNumeroGanador() {
+        ruletaRepository.getNumeroRuleta().catch { e ->
+            when (e) {
+                is NoNetworkException -> {
+                    Log.e("NoNetworkException", "Error: ${e.localizedMessage}")
+                    reintentarConexion = true
+                }
+
+                is SocketTimeoutException -> {
+                    Log.e("SocketTimeOut", "Error: ${e.localizedMessage}")
+                    errorApi = true
+                }
+
+                is ConnectException -> {
+                    Log.e("Connect fail", "Error: ${e.localizedMessage}")
+                    errorApi = true
+                }
+            }
+        }.collect {
+            numeroGanador = it
+        }
+    }
+
+    fun stopContador() {
+        contadorActivo = false
+    }
+
+    fun onAnimacionAcabada() {
+        if (!animacionAcabada.isCompleted) {
+            animacionAcabada.complete(Unit)
+        }
+
+        numeroGanador = -1
+        _listaApuestaDefinitiva.value = mapOf()
     }
 }

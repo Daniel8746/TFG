@@ -53,7 +53,7 @@ object NetworkModule {
         okHttpClient: OkHttpClient
     ): Retrofit = Retrofit.Builder()
         .client(okHttpClient)
-        .baseUrl("http://192.168.100.9:8080/casino/api/")
+        .baseUrl("http://192.168.0.25:8080/casino/api/")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 

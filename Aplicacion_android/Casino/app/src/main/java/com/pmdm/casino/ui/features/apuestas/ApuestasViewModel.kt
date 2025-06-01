@@ -8,6 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.pmdm.casino.data.repositorys.ApuestasRepository
 import com.pmdm.casino.model.Apuesta
 import com.pmdm.casino.ui.features.blackJack.DetallesBlackJack
+import com.pmdm.casino.ui.features.ruleta.DetallesRuleta
+import com.pmdm.casino.ui.features.ruleta.DetallesRuletaFinalizar
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
@@ -28,6 +30,15 @@ class ApuestasViewModel @Inject constructor(
     fun finalizarBlackJack(
         resultado: String,
         detalles: DetallesBlackJack
+    ) {
+        val detallesJson = Json.encodeToString(detalles)
+
+        finalizar(resultado, detallesJson)
+    }
+
+    fun finalizarRuleta(
+        resultado: String,
+        detalles: DetallesRuletaFinalizar
     ) {
         val detallesJson = Json.encodeToString(detalles)
 
@@ -77,6 +88,24 @@ class ApuestasViewModel @Inject constructor(
                 )
             )
         }
+    }
+
+    fun apuestaJuegoRuleta(
+        correo: String,
+        nombreJuego: String,
+        montoApostado: BigDecimal,
+        resultado: String,
+        detalles: DetallesRuleta
+    ) {
+        val detallesJson = Json.encodeToString(detalles)
+
+        apuesta(
+            correo = correo,
+            nombreJuego = nombreJuego,
+            montoApostado = montoApostado,
+            resultado = resultado,
+            detalles = detallesJson
+        )
     }
 
     fun apuestaJuegoBlackJack(
