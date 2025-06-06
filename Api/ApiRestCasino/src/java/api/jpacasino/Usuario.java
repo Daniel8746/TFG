@@ -4,7 +4,6 @@
  */
 package api.jpacasino;
 
-import jakarta.json.bind.annotation.JsonbTransient;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -57,7 +56,6 @@ public class Usuario implements Serializable {
     @Column(name = "saldo")
     private BigDecimal saldo;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "usuarioId")
-    @JsonbTransient
     private Collection<Apuesta> apuestaCollection;
 
     public Usuario() {

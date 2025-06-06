@@ -27,7 +27,6 @@ import com.pmdm.casino.ui.features.ruleta.TipoApuestaEnum
 
 @Composable
 fun TableroRuleta(
-    enabled: Boolean,
     listaApuestaMarcado: List<ApuestasUiState>,
     listaApuestaDefinitiva: Set<ApuestasUiState>,
     esRojo: Set<Int>,

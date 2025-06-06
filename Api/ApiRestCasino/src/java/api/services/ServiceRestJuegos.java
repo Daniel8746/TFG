@@ -4,6 +4,7 @@
  */
 package api.services;
 
+import api.classRecord.JuegosRecord;
 import com.google.gson.Gson;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -23,6 +24,8 @@ import java.util.List;
 import api.utils.JPAUtil;
 import api.jpacasino.Juego;
 import api.jpacasino.JuegoJpaController;
+import api.utils.JuegosUtils;
+import java.util.ArrayList;
 
 /**
  *
@@ -72,10 +75,11 @@ public class ServiceRestJuegos {
                 )
             }
     )
-    public Response getAll() {
-        List<Juego> listaJuegos = dao.findJuegoEntities();
+    public Response getTodosJuegos() {
+        ArrayList<JuegosRecord> listaJuegos = new ArrayList<>();
+        dao.findJuegoEntities().forEach(juego -> listaJuegos.add(JuegosUtils.toJuegosRecord(juego)));
 
-        if (listaJuegos == null || listaJuegos.isEmpty()) {
+        if (listaJuegos.isEmpty()) {
             return Response
                     .status(Status.BAD_REQUEST)
                     .build();

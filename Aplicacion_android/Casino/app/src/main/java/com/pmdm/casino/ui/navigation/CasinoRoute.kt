@@ -5,9 +5,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.pmdm.casino.ui.features.casino.CasinoScreen
-import com.pmdm.casino.ui.features.casino.JuegosViewModel
 import com.pmdm.casino.ui.features.dialogoErrorNoSaldo.DialogoErrorNoSaldoViewModel
+import com.pmdm.casino.ui.features.juegos.CasinoScreen
+import com.pmdm.casino.ui.features.juegos.JuegosViewModel
 import com.pmdm.casino.ui.features.usuarioCasino.UsuarioCasinoViewModel
 import kotlinx.serialization.Serializable
 

@@ -28,4 +28,12 @@ class UsuarioRepository @Inject constructor(
     suspend fun actualizarSaldo(correo: String, saldo: BigDecimal) = usuarioService.actualizarSaldo(
         UsuarioApiRecord(correo = correo, saldo = saldo)
     )
+
+    suspend fun modificarContrasenya(usuario: Usuario): Flow<Boolean> = flow {
+        emit(
+            usuarioService.modificarContrasenya(
+                usuario.toUsuarioApiRecord()
+            )
+        )
+    }.flowOn(Dispatchers.IO)
 }

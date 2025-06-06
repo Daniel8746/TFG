@@ -1,6 +1,5 @@
 package com.pmdm.casino.data.services.usuario
 
-import com.google.gson.annotations.SerializedName
 import java.math.BigDecimal
 
 /*
@@ -10,8 +9,7 @@ data class NuevoUsuarioApi(
     val nombre: String,
     val apellidos: String,
     val correo: String,
-    @SerializedName("contrasenya")
-    val contrasena: String,
+    val contrasenya: String,
     val telefono: String,
     val saldo: BigDecimal,
     val recordarCuenta: Boolean
@@ -22,8 +20,7 @@ data class NuevoUsuarioApi(
  */
 data class UsuarioApiRecord(
     val correo: String,
-    @SerializedName("contrasenya")
-    val contrasena: String = "",
+    val contrasenya: String = "",
     val saldo: BigDecimal = 0.toBigDecimal()
 )
 

@@ -119,7 +119,6 @@ fun RuletaScreen(
 
             // Tablero de los números y apuestas especiales
             TableroRuleta(
-                enabled = enabled,
                 listaApuestaMarcado = listaApuestaMarcado,
                 listaApuestaDefinitiva = listaApuestaDefinitiva,
                 esRojo = listaNumerosRojos,

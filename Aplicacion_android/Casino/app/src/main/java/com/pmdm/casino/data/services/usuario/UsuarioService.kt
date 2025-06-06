@@ -5,6 +5,7 @@ import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.Headers
 import retrofit2.http.POST
+import retrofit2.http.PUT
 
 interface UsuarioService {
     @POST("usuario/crear-usuario")
@@ -22,4 +23,8 @@ interface UsuarioService {
     @POST("usuario/actualizar-saldo")
     @Headers("Accept: application/json", "Content-Type: application/json")
     suspend fun actualizarSaldo(@Body usuario: UsuarioApiRecord): Response<Unit>
+
+    @PUT("usuario/modificar-contraseña")
+    @Headers("Accept: application/json", "Content-Type: application/json")
+    suspend fun modificarContrasenya(@Body usuario: UsuarioApiRecord): Response<Unit>
 }

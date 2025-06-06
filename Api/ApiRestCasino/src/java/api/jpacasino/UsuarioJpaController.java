@@ -213,6 +213,12 @@ public class UsuarioJpaController implements Serializable {
             ) ? usuarioEncontrado : null;
         }
     }
+    
+    public UsuarioRecord findUsuarioRecord(String correo) {
+        try (EntityManager em = getEntityManager()) {
+            return consultaUsuario(em, correo);
+        }
+    }
 
     public Usuario findUsuario(UsuarioRecord usuarioRecord) {
         try (EntityManager em = getEntityManager()) {
@@ -222,6 +228,12 @@ public class UsuarioJpaController implements Serializable {
                     usuarioEncontrado.getContrasenya(),
                     usuarioRecord.contrasenya()
             ) ? usuarioEncontrado : null;
+        }
+    }
+    
+    public Usuario findUsuario(String correo) {
+        try (EntityManager em = getEntityManager()) {
+            return consultaUsuario(em, correo, true);
         }
     }
 
@@ -235,7 +247,7 @@ public class UsuarioJpaController implements Serializable {
         return consultaUsuario(em, correo, false);
     }
 
-    public <T> T consultaUsuario(EntityManager em, String correo, Boolean isEliminar) {
+    public <T> T consultaUsuario(EntityManager em, String correo, Boolean isUsuario) {
         try {
             TypedQuery<Usuario> consulta = em.createNamedQuery(
                     "Usuario.findByCorreo", Usuario.class
@@ -245,19 +257,13 @@ public class UsuarioJpaController implements Serializable {
 
             Usuario encontrado = consulta.getSingleResult();
 
-            if (isEliminar) {
+            if (isUsuario) {
                 return (T) encontrado;
             }
 
             return (T) UsuarioUtils.toUsuarioRecord(encontrado);
         } catch (NoResultException ex) {
             return null;
-        }
-    }
-
-    public UsuarioRecord findUsuarioRecord(String correo) {
-        try (EntityManager em = getEntityManager()) {
-            return consultaUsuario(em, correo);
         }
     }
 

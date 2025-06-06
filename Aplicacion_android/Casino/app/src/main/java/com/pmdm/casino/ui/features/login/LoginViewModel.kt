@@ -63,6 +63,9 @@ class LoginViewModel @Inject constructor(
         reintentarConexion = reiniciarApp(context)
     }
 
+    var mostrarDialogo: Boolean? by mutableStateOf(null)
+    var modificacionCorrecta by mutableStateOf(true)
+
     fun onLoginEvent(loginEvent: LoginEvent) {
         when (loginEvent) {
             is LoginEvent.LoginChanged -> {
@@ -139,5 +142,28 @@ class LoginViewModel @Inject constructor(
                 delay(2500)
                 _isLoading.value = false
             }
+    }
+
+    fun onAbrirDialogoModificar(isModificar: Boolean) {
+        mostrarDialogo = isModificar
+    }
+
+    fun onConfirmarDialogo() {
+        viewModelScope.launch {
+            validacionLoginUiState = validadorLogin.valida(usuarioUiState)
+
+            if (!validacionLoginUiState.hayError) {
+                if (mostrarDialogo == true) {
+                    usuarioRepository.modificarContrasenya(usuarioUiState.toUsuario())
+                } else {
+                    usuarioRepository.eliminar(usuarioUiState.toUsuario())
+                }
+            }
+        }
+    }
+
+    fun onCerrarDialogo() {
+        mostrarDialogo = null
+        usuarioUiState = LoginUiState()
     }
 }

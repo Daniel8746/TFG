@@ -84,7 +84,7 @@ public class ServiceRestBlackJack {
     }
 
     @GET
-    @Path("iniciarJuego")
+    @Path("iniciar-juego")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(
             summary = "Iniciar una nueva partida",

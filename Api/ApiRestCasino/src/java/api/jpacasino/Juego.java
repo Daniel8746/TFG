@@ -4,7 +4,6 @@
  */
 package api.jpacasino;
 
-import jakarta.json.bind.annotation.JsonbTransient;
 import java.io.Serializable;
 import java.util.Collection;
 import jakarta.persistence.Basic;
@@ -49,7 +48,6 @@ public class Juego implements Serializable {
     @Column(name = "reglas")
     private String reglas;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "juegoId")
-    @JsonbTransient
     private Collection<Apuesta> apuestaCollection;
 
     public Juego() {

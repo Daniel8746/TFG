@@ -9,7 +9,7 @@ interface BlackJackService {
     @Headers("Accept: application/json")
     suspend fun getCarta(): Response<CartaApi>
 
-    @GET("black-jack/iniciarJuego")
+    @GET("black-jack/iniciar-juego")
     @Headers("Accept: application/json")
     suspend fun iniciarJuego(): Response<List<CartaApi>>
 

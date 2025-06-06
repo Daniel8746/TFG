@@ -41,6 +41,7 @@ import com.pmdm.casino.ui.features.ruleta.ApuestasUiState
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 @Composable
 fun RuletaConPelota(
@@ -59,103 +60,15 @@ fun RuletaConPelota(
     val offsetPelotaRotation = remember { Animatable(0f) }
     var mostrarNumeroGanador by remember { mutableStateOf(false) }
 
-    /*LaunchedEffect(numeroGanador) {
-        if (numeroGanador != -1) {
-            // Antes de empezar, sincronizamos la pelota con la ruleta actual
-            offsetPelotaRotation.snapTo(offsetRuleta.value)
-
-            // Ángulo aleatorio donde se detendrá la ruleta
-            val randomStopDegrees = Random.nextFloat() * 360f + 3f * 360f
-
-            // 1. Pelota cae y ruleta da 1 vuelta rápida *paralelo*
-            coroutineScope {
-                launch {
-                    offsetPelotaY.animateTo(
-                        targetValue = 0.dp,
-                        animationSpec = tween(800, easing = EaseInOutBounce)
-                    )
-                }
-                launch {
-                    offsetRuleta.animateTo(
-                        targetValue = offsetRuleta.value + 360f,
-                        animationSpec = tween(800, easing = LinearEasing)
-                    )
-                }
-            }
-
-            // 2. Mientras ruleta gira lento hacia aleatorio, pelota gira sincronizada
-            coroutineScope {
-                launch {
-                    offsetRuleta.animateTo(
-                        targetValue = offsetRuleta.value + randomStopDegrees,
-                        animationSpec = tween(4000, easing = EaseOutQuad)
-                    )
-                }
-                launch {
-                    // Pelota gira (para que gire junto y luzca natural)
-                    offsetPelotaRotation.animateTo(
-                        targetValue = offsetPelotaRotation.value + randomStopDegrees,
-                        animationSpec = tween(4000, easing = EaseOutQuad)
-                    )
-                }
-            }
-
-            // 3. Calculamos la rotación FINAL que debe tener la pelota
-            val indexGanador = items.indexOfFirst { it.valor == numeroGanador.toString() }
-
-            // Ángulo del sector ganador
-            val anguloCasillaVisual = (indexGanador * degreesPerItem + 360f) % 360f
-
-            // Ángulo actual de la ruleta (normalizado)
-            val anguloRuleta = (offsetRuleta.value % 360f + 360f) % 360f
-
-            // Ajustamos para que el 0 esté a las 12 (menos 90 grados)
-            val anguloObjetivoPelota = (anguloCasillaVisual - anguloRuleta - 90f + 360f) % 360f
-
-            // Ángulo actual de la pelota (normalizado)
-            val anguloPelotaActual = (offsetPelotaRotation.value % 360f + 360f) % 360f
-
-            // Diferencia para girar la pelota hasta el objetivo, en rango [-180,180]
-            var diferenciaRotacion = (anguloObjetivoPelota - anguloPelotaActual + 360f) % 360f
-            if (diferenciaRotacion > 180f) diferenciaRotacion -= 360f
-
-            // Rotación final corregida
-            val rotacionFinalCorregida = offsetPelotaRotation.value + diferenciaRotacion
-
-            // 4. Pelota gira para posicionarse sobre ganador con efecto suave
-            offsetPelotaRotation.animateTo(
-                targetValue = rotacionFinalCorregida,
-                animationSpec = tween(4000, easing = EaseOutQuad)
-            )
-
-            mostrarNumeroGanador = true
-            delay(2000)
-
-            // 5. Pelota sube
-            offsetPelotaY.animateTo(
-                targetValue = -screenHeightDp,
-                animationSpec = tween(600, easing = CubicBezierEasing(0.3f, 0f, 0.7f, 1f))
-            )
-
-            mostrarNumeroGanador = false
-            onAnimacionAcabada()
-        }
-    }*/
-
     LaunchedEffect(numeroGanador) {
         if (numeroGanador != -1) {
             val indexGanador = items.indexOfFirst { it.valor == numeroGanador.toString() }
-            val vueltasCompletas = 3
+            val anguloGanador = indexGanador * degreesPerItem
+            val vueltas = 3 * 360f
+            val anguloInicialPelota = Random.nextFloat() * 360f
 
-            // Ángulo central corregido para centrar sector ganador arriba
-            val centerAngleGanador = indexGanador * degreesPerItem - 90f + degreesPerItem / 2f
-
-            // Reseteamos a 0 para evitar acumulación de rotaciones anteriores
             offsetRuleta.snapTo(0f)
-            offsetPelotaRotation.snapTo(0f)
-
-            // Rotación final: vueltas completas menos el ángulo para dejar ganador arriba
-            val rotacionFinal = vueltasCompletas * 360f - centerAngleGanador
+            offsetPelotaRotation.snapTo(anguloInicialPelota)
 
             // 1. Pelota cae y ruleta da 1 vuelta rápida (en paralelo)
             coroutineScope {
@@ -173,17 +86,21 @@ fun RuletaConPelota(
                 }
             }
 
+            val rotacionFinalRuleta = vueltas - anguloGanador
+            val diferencia = (anguloInicialPelota - anguloGanador + 360f) % 360f
+            val rotacionFinalPelota = vueltas - diferencia
+
             // 2. Ruleta gira lento hasta rotacionFinal y pelota sincronizada
             coroutineScope {
                 launch {
                     offsetRuleta.animateTo(
-                        targetValue = rotacionFinal,
+                        targetValue = rotacionFinalRuleta,
                         animationSpec = tween(4000, easing = EaseOutQuad)
                     )
                 }
                 launch {
                     offsetPelotaRotation.animateTo(
-                        targetValue = rotacionFinal,
+                        targetValue = rotacionFinalPelota,
                         animationSpec = tween(4000, easing = EaseOutQuad)
                     )
                 }

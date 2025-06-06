@@ -2,6 +2,7 @@ package com.pmdm.casino.ui.features.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,6 +34,7 @@ import com.pmdm.casino.R
 import com.pmdm.casino.ui.features.components.AbrirDialogoNoApiRest
 import com.pmdm.casino.ui.features.components.AbrirDialogoNoConexion
 import com.pmdm.casino.ui.features.login.components.CircularImageFromResource
+import com.pmdm.casino.ui.features.login.components.DialogoGestionCuenta
 import com.pmdm.casino.ui.features.login.components.TextNewAccount
 import com.pmdm.casino.ui.features.login.components.UsuarioPassword
 import com.pmdm.casino.ui.theme.CasinoTheme
@@ -47,11 +49,16 @@ fun LoginScreen(
     recordarmeState: Boolean,
     reintentarConexion: Boolean,
     errorApi: Boolean,
+    mostrarDialogo: Boolean?,
+    modificacionCorrecta: Boolean,
     onLoginEvent: (LoginEvent) -> Unit,
     onNavigateToCasino: () -> Unit,
     onNavigateToNuevaCuenta: () -> Unit,
     onRecordarmeState: (Boolean) -> Unit,
-    reiniciar: () -> Unit
+    reiniciar: () -> Unit,
+    onAbrirDialogoModificar: (Boolean) -> Unit,
+    onConfirmarDialogo: () -> Unit,
+    onCerrarDialogo: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
@@ -111,12 +118,30 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Text(
-                text = "¿Olvidaste tu contraseña?",
-                fontSize = 14.sp,
-                fontStyle = FontStyle.Italic,
-                color = Color.White.copy(alpha = 0.8f)
-            )
+            Row {
+                Text(
+                    modifier = Modifier.clickable(onClick = { onAbrirDialogoModificar(true) }),
+                    text = "¿Olvidaste tu contraseña?",
+                    fontSize = 14.sp,
+                    fontStyle = FontStyle.Italic,
+                    color = Color(0xFFFFD700)
+                )
+
+                Text(
+                    text = "/",
+                    fontSize = 14.sp,
+                    fontStyle = FontStyle.Italic,
+                    color = Color.White.copy(alpha = 0.8f)
+                )
+
+                Text(
+                    modifier = Modifier.clickable(onClick = { onAbrirDialogoModificar(false) }),
+                    text = "Eliminar cuenta",
+                    fontSize = 14.sp,
+                    fontStyle = FontStyle.Italic,
+                    color = Color(0xFFFFD700)
+                )
+            }
 
             Text(
                 text = "ó",
@@ -149,6 +174,33 @@ fun LoginScreen(
             TextNewAccount(onClick = onNavigateToNuevaCuenta, color = Color(0xFFFFD700))
         }
 
+        if (mostrarDialogo != null) {
+            DialogoGestionCuenta(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = if (!isSystemInDarkTheme()) Color(0xFFF5F5F5) else Color.Transparent),
+                titulo = if (mostrarDialogo) {
+                    "Modificar contraseña"
+                } else {
+                    "Eliminar cuenta"
+                },
+                loginState = usuarioUiState.login,
+                validacionLogin = validacionLoginUiState.validacionLogin,
+                passwordState = usuarioUiState.password,
+                validacionPassword = validacionLoginUiState.validacionPassword,
+                onValueChangePassword = { onLoginEvent(LoginEvent.LoginChanged(it)) },
+                onValueChangeLogin = { onLoginEvent(LoginEvent.PasswordChanged(it)) },
+                onCerrarDialogo = onCerrarDialogo,
+                onConfirmar = {
+                    onConfirmarDialogo()
+
+                    if (modificacionCorrecta) {
+                        onCerrarDialogo()
+                    }
+                }
+            )
+        }
+
         if (reintentarConexion) {
             AbrirDialogoNoConexion {
                 reiniciar()
@@ -176,11 +228,16 @@ fun LoginScreenPreview() {
                 recordarmeState = false,
                 reintentarConexion = false,
                 false,
+                null,
+                false,
                 onLoginEvent = loginViewModel::onLoginEvent,
                 onNavigateToNuevaCuenta = {},
                 reiniciar = {},
                 onNavigateToCasino = {},
-                onRecordarmeState = {})
+                onRecordarmeState = {},
+                onAbrirDialogoModificar = {},
+                onCerrarDialogo = {},
+                onConfirmarDialogo = {})
         }
     }
 }

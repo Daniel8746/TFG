@@ -31,6 +31,8 @@ fun NavGraphBuilder.loginDestination(
             recordarmeState = vm.recordarmeState,
             reintentarConexion = vm.reintentarConexion,
             errorApi = vm.errorApi,
+            mostrarDialogo = vm.mostrarDialogo,
+            modificacionCorrecta = vm.modificacionCorrecta,
             onLoginEvent = { vm.onLoginEvent(it) },
             onNavigateToCasino = {
                 vmUsuarioCasino.actualizarUsuarioCasino(
@@ -41,7 +43,10 @@ fun NavGraphBuilder.loginDestination(
             },
             onNavigateToNuevaCuenta = onNavegarNuevaCuenta,
             onRecordarmeState = { vm.onRecordarmeState(it) },
-            reiniciar = { vm.reiniciar(context) }
+            reiniciar = { vm.reiniciar(context) },
+            onAbrirDialogoModificar = { vm.onAbrirDialogoModificar(it) },
+            onCerrarDialogo = { vm.onCerrarDialogo() },
+            onConfirmarDialogo = { vm.onConfirmarDialogo() }
         )
     }
 }

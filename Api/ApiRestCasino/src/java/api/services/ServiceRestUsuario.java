@@ -31,7 +31,7 @@ import api.jpacasino.UsuarioJpaController;
 import api.jpacasino.exceptions.IllegalOrphanException;
 import api.jpacasino.exceptions.NonexistentEntityException;
 import api.provider.jwt.JwtUtil;
-import java.util.logging.Level;
+import jakarta.ws.rs.PUT;
 import org.mindrot.jbcrypt.BCrypt;
 
 /**
@@ -90,7 +90,7 @@ public class ServiceRestUsuario {
                 @ApiResponse(responseCode = "401", description = "Credenciales incorrectas o token inválido")
             }
     )
-    public Response getOne(UsuarioRecord usuario, @Context ContainerRequestContext requestContext) {
+    public Response getUsuario(UsuarioRecord usuario, @Context ContainerRequestContext requestContext) {
         HashMap<String, String> mensaje = new HashMap<>();
 
         // Obtener el correo desde el contexto
@@ -189,6 +189,7 @@ public class ServiceRestUsuario {
 
             // Si el usuario existe, se elimina de la base de datos
             dao.destroy(usuarioEncontrado.getId());
+            
             return Response
                     .status(Status.OK)
                     .build();
@@ -285,15 +286,74 @@ public class ServiceRestUsuario {
     public Response actualizarSaldo(UsuarioRecord usuario) {
         try {
             Usuario usuarioEncontrado = dao.findUsuario(usuario);
+            if (usuarioEncontrado == null) {
+                return Response
+                        .status(Status.NOT_FOUND)
+                        .build();
+            }
+
+            usuarioEncontrado.setSaldo(usuario.saldo());
+            
             dao.edit(usuarioEncontrado);
 
             return Response
                     .status(Status.ACCEPTED)
                     .build();
-        } catch (NonexistentEntityException ex) {
+        } catch (Exception ex) {
             return Response
-                    .status(Status.NOT_FOUND)
+                    .status(Status.INTERNAL_SERVER_ERROR)
                     .build();
+        }
+    }
+
+    @PUT
+    @Path("modificar-contraseña")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Actualizar contraseña del usuario",
+            description = "Actualiza la contraseña del usuario en la base de datos.",
+            requestBody = @RequestBody(
+                    required = true,
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = UsuarioRecord.class),
+                            examples = @ExampleObject(value = """
+                                {
+                                  "correo": "usuario@ejemplo.com",
+                                  "contraseña": "98765432"
+                                }
+                                """)
+                    )
+            ),
+            responses = {
+                @ApiResponse(responseCode = "200", description = "Contraseña actualizada exitosamente"),
+                @ApiResponse(responseCode = "404", description = "Usuario no encontrado"),
+                @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+            }
+    )
+    public Response modificarContraseña(UsuarioRecord usuario) {
+        try {
+            Usuario usuarioEncontrado = dao.findUsuario(usuario.correo());
+            if (usuarioEncontrado == null) {
+                return Response
+                        .status(Status.NOT_FOUND)
+                        .build();
+            }
+            
+            usuarioEncontrado.setContrasenya(
+                    BCrypt.hashpw(
+                            usuario.contrasenya(),
+                            BCrypt.gensalt()
+                    )
+            );
+            
+            dao.edit(usuarioEncontrado);
+
+            return Response
+                    .status(Status.ACCEPTED)
+                    .build();
+
         } catch (Exception ex) {
             return Response
                     .status(Status.INTERNAL_SERVER_ERROR)
