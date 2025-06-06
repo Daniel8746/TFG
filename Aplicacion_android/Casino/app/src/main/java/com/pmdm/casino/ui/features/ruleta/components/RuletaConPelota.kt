@@ -87,8 +87,7 @@ fun RuletaConPelota(
             }
 
             val rotacionFinalRuleta = vueltas - anguloGanador
-            val diferencia = (anguloInicialPelota - anguloGanador + 360f) % 360f
-            val rotacionFinalPelota = vueltas - diferencia
+            val rotacionFinalPelota = vueltas - anguloInicialPelota - anguloGanador
 
             // 2. Ruleta gira lento hasta rotacionFinal y pelota sincronizada
             coroutineScope {
